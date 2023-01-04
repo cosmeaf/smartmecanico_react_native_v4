@@ -1,18 +1,30 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { Button, View, Text } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SearcheArea from '../../../componentes/SearcheArea';
+import ServicesTypes from '../../../componentes/ServicesTypes';
+import CategoryTypes from '../../../componentes/CategoryTypes';
 
-function HomeScreen({ navigation }) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <StatusBar style='none' />
-        <Text>Home Screen</Text>
-        <Button
-          title="Go to Details"
-          onPress={() => navigation.navigate('Details')}
-        />
-      </View>
-    );
+
+export default ({ navigation, route }) => {
+
+  function handleClick(data) {
+    navigation.navigate(data)
   }
 
-  export default HomeScreen;
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
+      <ScrollView>
+        <StatusBar style="auto" />
+        <SearcheArea />
+        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Serviços</Text>
+        <ServicesTypes onPress={handleClick} />
+        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Categorias</Text>
+        <CategoryTypes />
+      </ScrollView>
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({})
