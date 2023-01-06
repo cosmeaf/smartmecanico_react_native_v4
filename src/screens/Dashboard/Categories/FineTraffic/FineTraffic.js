@@ -7,9 +7,9 @@ import GlobalContext from '../../../../Contexts/Context';
 import Api from '../../../../service/Api';
 
 
-const Insurance = ({ navigation }) => {
+const FineTraffic = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
-  const [insurance, setInsurance] = useState([]);
+  const [fineTraffic, setFineTraffic] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
@@ -22,15 +22,15 @@ const Insurance = ({ navigation }) => {
   }
 
   useEffect(() => {
-    getInsurance();
+    getFineTraffic();
   }, [authentication])
 
-  const getInsurance = async () => {
+  const getFineTraffic = async () => {
     setIsLoading(true);
-    setInsurance([]);
-    let res = await Api.getInsurance();
+    setFineTraffic([]);
+    let res = await Api.getFineTraffic();
     if (res) {
-      setInsurance(res)
+      setFineTraffic(res)
     } else {
       signout();
     }
@@ -38,13 +38,13 @@ const Insurance = ({ navigation }) => {
   }
 
   const onRefresh = React.useCallback(() => {
-    setInsurance([]);
+    setFineTraffic([]);
     setRefreshing(true);
     wait(800).then(() => setRefreshing(false));
-    getInsurance();
+    getFineTraffic();
   }, []);
 
-  if (insurance.length === 0) {
+  if (fineTraffic.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {isLoading &&
@@ -60,21 +60,21 @@ const Insurance = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {insurance.length === 0 && isLoading &&
+          {fineTraffic.length === 0 && isLoading &&
             <LoadingIcon size='large' color="#54Af89" />
           }
-          {insurance.map((item, index) => (
+          {fineTraffic.map((item, index) => (
 
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
-              onPress={() => navigation.navigate('InsuranceDetails', item)}
+              onPress={() => navigation.navigate('FineTrafficDetails', item)}
             >
-              <Image source={require('../../../../assets/icons/insurance.png')} style={{ width: 30, height: 30 }} />
+              <Image source={require('../../../../assets/icons/document.png')} style={{ width: 30, height: 30 }} />
               <View>
-                <Text style={{ fontSize: 14 }}>{item.name}</Text>
+                <Text style={{ fontSize: 14 }}>{item.date ? item.date.split('-').reverse().join('/') : ''}</Text>
               </View>
               <View>
-                <Text style={{ fontSize: 14 }}>R${item.price}</Text>
+                <Text style={{ fontSize: 14 }}>R${item.price ? item.price : ''}</Text>
               </View>
               <Ionicons name='chevron-forward' size={30} />
             </TouchableOpacity>
@@ -89,7 +89,7 @@ const Insurance = ({ navigation }) => {
 
 }
 
-export default Insurance;
+export default FineTraffic;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

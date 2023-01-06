@@ -826,7 +826,6 @@ export default {
   },
   createInsurance: async (name, price, due_date, policy, broker_name, agent_name, phone_number, email, url) => {
     const data = { name, price, due_date, policy, broker_name, agent_name, phone_number, email, url }
-    console.log('API INSURANCE', data)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -855,6 +854,79 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/insurance/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // END POINT API SMART MECANICO FINE TRAFFIC
+  //-------------------------------------------------------------------------
+  getFineTraffic: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/fine-traffic/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createFineTraffic: async (date, price, number, point, description) => {
+    const data = { date, price, number, point, description }
+    console.log('API MULTA ', data)
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/fine-traffic/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteFineTraffic: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/fine-traffic/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",

@@ -32,7 +32,7 @@ export default [
   {
     id: 6,
     title: 'Multas',
-    subtitle: 'Fine-traffics',
+    subtitle: 'FineTraffic',
     image: require('../../assets/icons/document.png'),
   },
   {

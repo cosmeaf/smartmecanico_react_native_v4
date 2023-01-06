@@ -43,6 +43,11 @@ import FinancingDetails from '../screens/Dashboard/Categories/Financing/Financin
 import Insurance from '../screens/Dashboard/Categories/Insurance/Insurance';
 import AddInsurance from '../screens/Dashboard/Categories/Insurance/AddInsurance';
 import InsuranceDetails from '../screens/Dashboard/Categories/Insurance/InsuranceDetails';
+import FineTraffic from '../screens/Dashboard/Categories/FineTraffic/FineTraffic';
+import AddFineTraffic from '../screens/Dashboard/Categories/FineTraffic/AddFineTraffic';
+import FineTrafficDetails from '../screens/Dashboard/Categories/FineTraffic/FineTrafficDetails';
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -165,6 +170,21 @@ const AppStack = ({ navigation }) => {
       )} />
       <Stack.Screen name='AddInsurance' component={AddInsurance} options={{ title: 'Cadastrar Seguradora', headerShown: true }} />
       <Stack.Screen name='InsuranceDetails' component={InsuranceDetails} options={{ title: 'Detalhes de Seguradora', headerShown: true }} />
+      {/* FineTraffic | Multas */}
+      <Stack.Screen name='FineTraffic' component={FineTraffic} options={({ navigation, route }) => ({
+        title: 'Multas',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddFineTraffic')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddFineTraffic' component={AddFineTraffic} options={{ title: 'Cadastrar Multas', headerShown: true }} />
+      <Stack.Screen name='FineTrafficDetails' component={FineTrafficDetails} options={{ title: 'Detalhes de Multas', headerShown: true }} />
     </Stack.Navigator>
 
 
