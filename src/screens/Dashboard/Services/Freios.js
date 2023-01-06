@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import ScheduleModal from '../../../componentes/ScheduleModal';
 import AppointmentModal from '../../../componentes/AppointmentModal';
 import Api from '../../../service/Api';
 const image = require('../../../assets/image/slide/007_image.jpg')

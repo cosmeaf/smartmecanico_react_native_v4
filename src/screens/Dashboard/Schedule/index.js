@@ -28,7 +28,6 @@ export default () => {
       setSchedule(res)
     } else {
       signout();
-      console.warn('Ops! Estamos com problema para acessar suas informação. Pro Favor Tente mais tarde', `Error ${res.status}`)
     }
   }
 
@@ -71,7 +70,7 @@ export default () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {schedules.length > 0 ?
+      {schedules.length === 0 ?
         <FlatList
           keyExtractor={(schedule) => schedule.id}
           ItemSeparatorComponent={ItemSeparatorView}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+
 import {
-  StyleSheet,
   Text,
   View,
   StatusBar,
@@ -40,8 +40,8 @@ export default () => {
 
   function Login() {
     const { signin } = useContext(GlobalContext);
-    const [username, setUsername] = useState('fulano');
-    const [password, setPassword] = useState('qweasd32');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
     const [isloading, setIsLoading] = useState(false);
 
@@ -137,10 +137,10 @@ export default () => {
     const { signup } = useContext(GlobalContext);
     const [showRegisterPassword, setShowRegisterPassword] = useState(false);
     const [showRegisterPassword2, setShowRegisterPassword2] = useState(false);
-    const [username, setUsername] = useState('fulano');
-    const [email, setEmail] = useState('fulano@gmail.com');
-    const [password, setPassword] = useState('qweasd32');
-    const [password2, setPassword2] = useState('qweasd32');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [password2, setPassword2] = useState('');
     const [isloading, setIsLoading] = useState(false);
 
     const startLoading = () => {
@@ -233,6 +233,7 @@ export default () => {
             secureTextEntry={!showRegisterPassword}
             textContentType='password'
             keyboardType='default'
+            autoCapitalize='none'
             returnKeyType='next'
             value={password}
             onChangeText={text => setPassword(text)}
@@ -256,7 +257,6 @@ export default () => {
         <View style={styles.inputView}>
           <Icon
             style={{ paddingHorizontal: 4, width: 30 }}
-            autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
             name='key'
             type='font-awesome-5'
             color='#fff'
@@ -264,11 +264,13 @@ export default () => {
           />
           <TextInput
             style={styles.input}
+            autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
             placeholder='Confirmar Senha'
             placeholderTextColor='#f1f2f6'
             secureTextEntry={!showRegisterPassword2}
             textContentType='password'
             returnKeyType='done'
+            autoCapitalize='none'
             value={password2}
             onChangeText={text => setPassword2(text)}
           />

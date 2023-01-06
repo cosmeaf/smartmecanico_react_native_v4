@@ -29,7 +29,6 @@ export default {
     }
   },
   tokenkRefresh: async (refresh) => {
-    //console.debug(refreshToken)
     try {
       const response = await fetch(`${BASE_API}/refresh/`, {
         method: 'POST',
@@ -497,6 +496,149 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/schedule/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // API SUPPLY SECTION
+  //-------------------------------------------------------------------------
+  getSupply: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/supply/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createSupply: async (date, liter, price, kilometer) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/supply/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ date, liter, price, kilometer})
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteSupply: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/supply/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // API SUPPLY MAINTENANCE
+  //-------------------------------------------------------------------------
+  getMaintenance: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/maintenance/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createMaintenance: async (date, name, end_kilometer, start_kilometer) => {
+    console.log('API MAINTENANCE POST ', date, name, end_kilometer, start_kilometer)
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/maintenance/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({date, name, end_kilometer, start_kilometer})
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteMaintenance: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/maintenance/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",

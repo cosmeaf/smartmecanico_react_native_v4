@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearcheArea from '../../../componentes/SearcheArea';
 import ServicesTypes from '../../../componentes/ServicesTypes';
@@ -15,13 +15,13 @@ export default ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
+      <StatusBar style="auto" />
       <ScrollView>
-        <StatusBar style="auto" />
         <SearcheArea />
         <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Serviços</Text>
         <ServicesTypes onPress={handleClick} />
-        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Categorias</Text>
-        <CategoryTypes />
+        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Categoria</Text>
+        <CategoryTypes onPress={handleClick} />
       </ScrollView>
     </SafeAreaView>
   )

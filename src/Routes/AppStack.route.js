@@ -27,7 +27,13 @@ import TrocaDeOleoRevisaoBasica from '../screens/Dashboard/Services/TrocaDeOleoR
 import ListaTrocaDeOleoRevisaoBasica from '../screens/Dashboard/Services/ListaTrocaDeOleoRevisaoBasica';
 import TrocaDeOleoRevisaoCompleta from '../screens/Dashboard/Services/TrocaDeOleoRevisaoCompleta';
 import ListaTrocaDeOleoRevisaoCompleta from '../screens/Dashboard/Services/ListaTrocaDeOleoRevisaoCompleta';
-
+// Pages Category SmartMecanico
+import Supply from '../screens/Dashboard/Categories/Supply';
+import AddSupply from '../screens/Dashboard/Categories/AddSupply';
+import SupplyDetails from '../screens/Dashboard/Categories/SupplyDetails';
+import Maintenance from '../screens/Dashboard/Categories/Maintenance/Maintenance';
+import MaintenanceDetails from '../screens/Dashboard/Categories/Maintenance/MaintenanceDetails';
+import AddMaintenance from '../screens/Dashboard/Categories/Maintenance/AddMaintenance';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,7 +79,37 @@ const AppStack = ({ navigation }) => {
         options={{ title: 'Troca de Oleo Revisao Completa', headerShown: true, }} />
       <Stack.Screen name='ListaTrocaDeOleoRevisaoCompleta' component={ListaTrocaDeOleoRevisaoCompleta}
         options={{ title: 'Categoria de Serviços', headerShown: true, }} />
+      {/* Categories Page */}
+      <Stack.Screen name='Supply' component={Supply} options={({ navigation, route }) => ({
+        title: 'Combustível',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddSupply')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
 
+      )} />
+      <Stack.Screen name='AddSupply' component={AddSupply} options={{ title: 'Cadastrar Combustível', headerShown: true }} />
+      <Stack.Screen name='SupplyDetails' component={SupplyDetails} options={{ title: 'Detalhes de Abastecimento', headerShown: true }} />
+      {/* Maintenance Page */}
+      <Stack.Screen name='Maintenance' component={Maintenance} options={({ navigation, route }) => ({
+        title: 'Combustível',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddMaintenance')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddMaintenance' component={AddMaintenance} options={{ title: 'Cadastrar Revisões', headerShown: true }} />
+      <Stack.Screen name='MaintenanceDetails' component={MaintenanceDetails} options={{ title: 'Detalhes de Revião', headerShown: true }} />
     </Stack.Navigator>
 
   );

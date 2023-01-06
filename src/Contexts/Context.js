@@ -26,8 +26,8 @@ export const GlobalProvider = ({ children }) => {
       await AsyncStorage.setItem("refreshToken", JSON.stringify(json.refresh));
       setAuthentication(true)
     } else {
-      setIsLoading(false);
       setAuthentication(false);
+      setIsLoading(false);
     }
     setIsLoading(false)
   }
