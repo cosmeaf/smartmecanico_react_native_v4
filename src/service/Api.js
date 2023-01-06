@@ -7,7 +7,9 @@ const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
 
 // Authentication
 export default {
-  // TOKEN VERIFY
+  //-------------------------------------------------------------------------
+  // API AUTH USER
+  //-------------------------------------------------------------------------
   tokenkVerify: async (token) => {
     try {
       const response = await fetch(`${BASE_API}/verify/`, {
@@ -163,7 +165,6 @@ export default {
       return error;
     }
   },
-
   //-------------------------------------------------------------------------
   // API ACCESS PROFILE
   //-------------------------------------------------------------------------
@@ -780,6 +781,80 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/financing/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // END POINT API SMART MECANICO | INSURANCE
+  //-------------------------------------------------------------------------
+  getInsurance: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/insurance/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createInsurance: async (name, price, due_date, policy, broker_name, agent_name, phone_number, email, url) => {
+    const data = { name, price, due_date, policy, broker_name, agent_name, phone_number, email, url }
+    console.log('API INSURANCE', data)
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/insurance/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        console.log(response.data)
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteInsurance: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/insurance/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",

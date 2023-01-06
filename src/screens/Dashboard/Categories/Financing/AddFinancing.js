@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
 import { Ionicons } from '@expo/vector-icons';
@@ -80,8 +80,12 @@ const AddFinancing = ({ navigation }) => {
             <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
               <TextInput
                 style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                mode='outlined'
+                placeholderTextColor='#54Af89'
                 keyboardType='default'
+                textContentType='name'
+                autoCapitalize='none'
+                returnKeyType='next'
+                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={name ? name : 'Nome da Financeira'}
                 value={name}
                 onChangeText={text => setName(text)}
@@ -113,7 +117,6 @@ const AddFinancing = ({ navigation }) => {
               options={{
                 prefix: 'R$ ',
                 decimalSeparator: '.',
-                groupSeparator: ',',
                 precision: 2,
               }}
               onChangeText={(text, rawText) => setPrice(text, rawText)}

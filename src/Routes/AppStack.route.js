@@ -40,6 +40,9 @@ import IpvaDetails from '../screens/Dashboard/Categories/Ipva/IpvaDetails';
 import Financing from '../screens/Dashboard/Categories/Financing/Financing';
 import AddFinancing from '../screens/Dashboard/Categories/Financing/AddFinancing';
 import FinancingDetails from '../screens/Dashboard/Categories/Financing/FinancingDetails';
+import Insurance from '../screens/Dashboard/Categories/Insurance/Insurance';
+import AddInsurance from '../screens/Dashboard/Categories/Insurance/AddInsurance';
+import InsuranceDetails from '../screens/Dashboard/Categories/Insurance/InsuranceDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -146,7 +149,24 @@ const AppStack = ({ navigation }) => {
       )} />
       <Stack.Screen name='AddFinancing' component={AddFinancing} options={{ title: 'Cadastrar Financiamento', headerShown: true }} />
       <Stack.Screen name='FinancingDetails' component={FinancingDetails} options={{ title: 'Detalhes de Financiamento', headerShown: true }} />
+
+      {/* Insurance */}
+      <Stack.Screen name='Insurance' component={Insurance} options={({ navigation, route }) => ({
+        title: 'Seguradora',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddInsurance')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddInsurance' component={AddInsurance} options={{ title: 'Cadastrar Seguradora', headerShown: true }} />
+      <Stack.Screen name='InsuranceDetails' component={InsuranceDetails} options={{ title: 'Detalhes de Seguradora', headerShown: true }} />
     </Stack.Navigator>
+
 
   );
 }

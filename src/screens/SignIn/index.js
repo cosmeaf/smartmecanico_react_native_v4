@@ -97,7 +97,7 @@ export default () => {
           <TextInput
             style={styles.input}
             placeholder='Senha'
-            placeholderTextColor='#f1f2f6'
+            placeholderTextColor='#FFF'
             secureTextEntry={!showLoginPassword}
             textContentType='password'
             autoCapitalize='none'
