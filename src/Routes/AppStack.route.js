@@ -37,6 +37,9 @@ import AddMaintenance from '../screens/Dashboard/Categories/Maintenance/AddMaint
 import Ipva from '../screens/Dashboard/Categories/Ipva/Ipva';
 import AddIpva from '../screens/Dashboard/Categories/Ipva/AddIpva';
 import IpvaDetails from '../screens/Dashboard/Categories/Ipva/IpvaDetails';
+import Financing from '../screens/Dashboard/Categories/Financing/Financing';
+import AddFinancing from '../screens/Dashboard/Categories/Financing/AddFinancing';
+import FinancingDetails from '../screens/Dashboard/Categories/Financing/FinancingDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -128,6 +131,21 @@ const AppStack = ({ navigation }) => {
       )} />
       <Stack.Screen name='AddIpva' component={AddIpva} options={{ title: 'Cadastrar Ipva', headerShown: true }} />
       <Stack.Screen name='IpvaDetails' component={IpvaDetails} options={{ title: 'Detalhes de Ipva', headerShown: true }} />
+      {/* Financing Page */}
+      <Stack.Screen name='Financing' component={Financing} options={({ navigation, route }) => ({
+        title: 'Financiamento',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddFinancing')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddFinancing' component={AddFinancing} options={{ title: 'Cadastrar Financiamento', headerShown: true }} />
+      <Stack.Screen name='FinancingDetails' component={FinancingDetails} options={{ title: 'Detalhes de Financiamento', headerShown: true }} />
     </Stack.Navigator>
 
   );

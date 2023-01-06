@@ -611,7 +611,6 @@ export default {
     }
   },
   createMaintenance: async (date, name, end_kilometer, start_kilometer) => {
-    console.log('API MAINTENANCE POST ', date, name, end_kilometer, start_kilometer)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -683,7 +682,6 @@ export default {
     }
   },
   createIpva: async (date, price) => {
-    console.log('API IPVA POST ', date, price)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -711,6 +709,77 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/ipva/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // FINANCING IPVA
+  //-------------------------------------------------------------------------
+  getFinancing: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/financing/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createFinancing: async (name, price) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/financing/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, price })
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteFinancinga: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/financing/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",
