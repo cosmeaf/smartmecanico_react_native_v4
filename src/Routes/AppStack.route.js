@@ -34,6 +34,9 @@ import SupplyDetails from '../screens/Dashboard/Categories/SupplyDetails';
 import Maintenance from '../screens/Dashboard/Categories/Maintenance/Maintenance';
 import MaintenanceDetails from '../screens/Dashboard/Categories/Maintenance/MaintenanceDetails';
 import AddMaintenance from '../screens/Dashboard/Categories/Maintenance/AddMaintenance';
+import Ipva from '../screens/Dashboard/Categories/Ipva/Ipva';
+import AddIpva from '../screens/Dashboard/Categories/Ipva/AddIpva';
+import IpvaDetails from '../screens/Dashboard/Categories/Ipva/IpvaDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +113,21 @@ const AppStack = ({ navigation }) => {
       )} />
       <Stack.Screen name='AddMaintenance' component={AddMaintenance} options={{ title: 'Cadastrar Revisões', headerShown: true }} />
       <Stack.Screen name='MaintenanceDetails' component={MaintenanceDetails} options={{ title: 'Detalhes de Revião', headerShown: true }} />
+      {/* IPVA Page */}
+      <Stack.Screen name='Ipva' component={Ipva} options={({ navigation, route }) => ({
+        title: 'Ipva',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddIpva')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddIpva' component={AddIpva} options={{ title: 'Cadastrar Ipva', headerShown: true }} />
+      <Stack.Screen name='IpvaDetails' component={IpvaDetails} options={{ title: 'Detalhes de Ipva', headerShown: true }} />
     </Stack.Navigator>
 
   );

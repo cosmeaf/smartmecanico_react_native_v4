@@ -14,7 +14,7 @@ export default [
   {
     id: 3,
     title: 'IPVA',
-    subtitle: 'ipva',
+    subtitle: 'Ipva',
     image: require('../../assets/icons/resume.png'),
   },
   {

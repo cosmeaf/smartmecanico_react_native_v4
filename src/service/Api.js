@@ -550,7 +550,7 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ date, liter, price, kilometer})
+        body: JSON.stringify({ date, liter, price, kilometer })
       });
       if (response.status === 201) {
         const json = await response.json();
@@ -586,7 +586,7 @@ export default {
     }
   },
   //-------------------------------------------------------------------------
-  // API SUPPLY MAINTENANCE
+  // API MAINTENANCE
   //-------------------------------------------------------------------------
   getMaintenance: async () => {
     const value = await AsyncStorage.getItem('accessToken');
@@ -622,7 +622,7 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({date, name, end_kilometer, start_kilometer})
+        body: JSON.stringify({ date, name, end_kilometer, start_kilometer })
       });
       if (response.status === 201) {
         const json = await response.json();
@@ -639,6 +639,78 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/maintenance/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // API IPVA
+  //-------------------------------------------------------------------------
+  getIpva: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/ipva/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createIpva: async (date, price) => {
+    console.log('API IPVA POST ', date, price)
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/ipva/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ date, price })
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteIpva: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/ipva/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",
