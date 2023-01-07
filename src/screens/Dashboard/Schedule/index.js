@@ -70,7 +70,7 @@ export default () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {schedules.length === 0 ?
+      {schedules.length !== 0 ?
         <FlatList
           keyExtractor={(schedule) => schedule.id}
           ItemSeparatorComponent={ItemSeparatorView}

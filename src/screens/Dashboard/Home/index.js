@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import GlobalContext from '../../../Contexts/Context';
 import SearcheArea from '../../../componentes/SearcheArea';
 import ServicesTypes from '../../../componentes/ServicesTypes';
 import CategoryTypes from '../../../componentes/CategoryTypes';
 
 
 export default ({ navigation, route }) => {
+  const { authentication, signout } = useContext(GlobalContext);
+
+  if (!authentication) {
+    signout();
+  }
 
   function handleClick(data) {
     navigation.navigate(data)

@@ -43,32 +43,29 @@ export default () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
-    const [isloading, setIsLoading] = useState(false);
-
-    const startLoading = () => {
-      setIsLoading(true);
-      setTimeout(() => {
-        signin(username, password);
-        setActiveTab('Login');
-        setIsLoading(false);
-      }, 1000);
-    };
+    const [isLoading, setIsLoading] = useState(false)
 
     const hundleSignIn = (username, password) => {
-      if (username == '' && password == '') {
-        alert('Campos não podem ser vazios')
+      if (!username.length) {
+        Alert.alert('Campos usuário não podem ser vazio')
+      } else if (!password.length) {
+        Alert.alert('Campo Password não podem ser vazio')
+      } else if (password.length <= 6) {
+        Alert.alert('Campo password não pode ser menor que 6 Caracteres')
       } else {
-        startLoading();
+        setIsLoading(true);
+        signin(username, password)
       }
     }
 
-    if (isloading) {
+    if (isLoading) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89' }}>
           <ActivityIndicator size='large' color="#FFF" />
         </View>
       )
     }
+
     return (
       <View style={{ marginTop: 10 }}>
         <View style={styles.inputView}>
@@ -131,6 +128,9 @@ export default () => {
     );
 
 
+
+
+
   }
 
   function Register() {
@@ -141,31 +141,30 @@ export default () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const [isloading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
 
-    const startLoading = () => {
-      setIsLoading(true);
-      setTimeout(() => {
-        signup(username, email, password, password2)
-        setActiveTab('Login')
-        setIsLoading(false);
-      }, 800);
-    };
 
     const handleSignUp = (username, email, password, password2) => {
-      if (username == '' && email == '' && password == '' && password2 == '') {
-        Alert.alert('Error', 'Ops! Você não preencheu nenhum campo. Desta forma não consiguirá realizar seu cadastro, vamos lá, falta só um pouco')
+      if (!username.length) {
+        Alert.alert('Campos usuário não podem ser vazio')
+      } else if (!password.length) {
+        Alert.alert('Campo Password não podem ser vazio')
+      } else if (password.length <= 6) {
+        Alert.alert('Campo password não pode ser menor que 6 Caracteres')
+      } else if (password !== password2) {
+        Alert.alert('Campo password são diferentes')
+      } else {
+        setIsLoading(true);
+        signup(username, email, password, password2);
+        setTimeout(() => {
+          setIsLoading(false);
+          setActiveTab('Login');
+        }, 800);
       }
-      if (username == '' || email == '' || password == '' || password2 == '') {
-        Alert.alert('Error', 'Ops! Acho que algum campo ficou sem preencher, Verifique en tente novamente')
-      }
-      if (password != password2) {
-        Alert.alert('Error', 'Ops! Acho que a senha que digitou não são iguais... Verifique se digitou algo errado e tente novamente!')
-      }
-      startLoading();
+
     }
 
-    if (isloading) {
+    if (isLoading) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89' }}>
           <ActivityIndicator size='large' color="#FFF" />

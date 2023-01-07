@@ -38,7 +38,7 @@ export default [
   {
     id: 7,
     title: ' Calibragem de Pneu ',
-    subtitle: 'Pneus',
+    subtitle: 'CalibrateTire',
     image: require('../../assets/icons/pneu.png'),
   },
   {

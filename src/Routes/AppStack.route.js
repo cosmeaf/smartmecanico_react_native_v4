@@ -46,6 +46,15 @@ import InsuranceDetails from '../screens/Dashboard/Categories/Insurance/Insuranc
 import FineTraffic from '../screens/Dashboard/Categories/FineTraffic/FineTraffic';
 import AddFineTraffic from '../screens/Dashboard/Categories/FineTraffic/AddFineTraffic';
 import FineTrafficDetails from '../screens/Dashboard/Categories/FineTraffic/FineTrafficDetails';
+import CalibrateTire from '../screens/Dashboard/Categories/CalibrateTire/CalibrateTire';
+import AddCalibrateTire from '../screens/Dashboard/Categories/CalibrateTire/AddCalibrateTire';
+import CalibrateTireDetails from '../screens/Dashboard/Categories/CalibrateTire/CalibrateTireDetails';
+import Budget from '../screens/Dashboard/Categories/Budget/Budget';
+import AddBudget from '../screens/Dashboard/Categories/Budget/AddBudget';
+import BudgetDetails from '../screens/Dashboard/Categories/Budget/BudgetDetails';
+import GeoLocation from '../screens/Dashboard/Categories/GeoLocation/GeoLocation';
+import AddGeoLocation from '../screens/Dashboard/Categories/GeoLocation/AddGeoLocation';
+import GeoLocationDetails from '../screens/Dashboard/Categories/GeoLocation/GeoLocationDetails';
 
 
 
@@ -185,6 +194,51 @@ const AppStack = ({ navigation }) => {
       )} />
       <Stack.Screen name='AddFineTraffic' component={AddFineTraffic} options={{ title: 'Cadastrar Multas', headerShown: true }} />
       <Stack.Screen name='FineTrafficDetails' component={FineTrafficDetails} options={{ title: 'Detalhes de Multas', headerShown: true }} />
+      {/* Calibrate Tire | Pneus */}
+      <Stack.Screen name='CalibrateTire' component={CalibrateTire} options={({ navigation, route }) => ({
+        title: 'Calibrar Pneus',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddCalibrateTire')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddCalibrateTire' component={AddCalibrateTire} options={{ title: 'Cadastrar Calibragem', headerShown: true }} />
+      <Stack.Screen name='CalibrateTireDetails' component={CalibrateTireDetails} options={{ title: 'Detalhes de Calibragem', headerShown: true }} />
+      {/* Budget | Expense Tracker */}
+      <Stack.Screen name='Budget' component={Budget} options={({ navigation, route }) => ({
+        title: 'Controle de Gastos',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddBudget')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddBudget' component={AddBudget} options={{ title: 'Registrar Gastos', headerShown: true }} />
+      <Stack.Screen name='BudgetDetails' component={BudgetDetails} options={{ title: 'Detalhes de Gastos', headerShown: true }} />
+      {/* GeoLocation | GPS Tracker */}
+      <Stack.Screen name='GeoLocation' component={GeoLocation} options={({ navigation, route }) => ({
+        title: 'Rastreamento Veícular',
+        headerShown: true,
+        headerRight: () => (
+          <Button
+            onPress={() => navigation.navigate('AddGeoLocation')}
+            type='clear'
+            title="Novo"
+          />
+        ),
+      }
+      )} />
+      <Stack.Screen name='AddGeoLocation' component={AddGeoLocation} options={{ title: 'Registrar Veículo', headerShown: true }} />
+      <Stack.Screen name='GeoLocationDetails' component={GeoLocationDetails} options={{ title: 'Detalhes de Veículo', headerShown: true }} />
     </Stack.Navigator>
 
 

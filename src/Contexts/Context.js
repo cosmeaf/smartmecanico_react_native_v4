@@ -19,15 +19,15 @@ export const GlobalProvider = ({ children }) => {
   // Sign-In
   const signin = async (username, password) => {
     let json = await Api.signIn(username, password)
-    // console.log('SIGN-IN REFRESH ===========> ' + json.refresh)
-    // console.log('SIGN-IN ACCESS ===========> ' + json.access)
     if (json.access && json.refresh) {
       await AsyncStorage.setItem("accessToken", JSON.stringify(json.access));
       await AsyncStorage.setItem("refreshToken", JSON.stringify(json.refresh));
       setAuthentication(true)
-    } else {
+    } else if (json.code !== 200) {
+      Alert.alert(`Authentication Error: ${json.code}`, `${json.message}`)
       setAuthentication(false);
       setIsLoading(false);
+      return false;
     }
     setIsLoading(false)
   }
@@ -38,9 +38,11 @@ export const GlobalProvider = ({ children }) => {
     if (json.id) {
       setAuthentication(false)
       return true;
-    } else {
+    } else if (json.code !== 201) {
+      Alert.alert(`Authentication Error: ${json.code}`,
+        `${json.message.email ? json.message.email : ''} \n\n 
+        ${json.message.password ? json.message.password : ''}`)
       setAuthentication(false)
-      Alert.alert('Ops!', `${json.data.username} ou ${json.data.email}`)
       return false;
     }
   }

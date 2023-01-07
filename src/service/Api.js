@@ -64,15 +64,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        throw new Error(`${response.status}`);
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json.detail };
       }
     } catch (error) {
       return error;
     }
   },
   // SIGN-UP
-  signUp: async (username, email, password, password2, first_name = null, last_name = null) => {
+  signUp: async (username, email, password, password2, first_name, last_name) => {
+    const data = { username, email, password, password2, first_name, last_name }
     try {
       const response = await fetch(`${BASE_API}/register/`, {
         method: 'POST',
@@ -80,15 +82,14 @@ export default {
           Accept: "application/json",
           "Content-type": "application/json;charset=UTF-8"
         },
-        body: JSON.stringify({ username, email, password, password2, first_name, last_name, })
+        body: JSON.stringify(data)
       });
       if (response.status === 201) {
         const json = await response.json();
         return json;
       } else if (response.status !== 201) {
-        const status = response.status;
         const json = await response.json();
-        return { code: status, data: json }
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
       return error;
@@ -899,7 +900,6 @@ export default {
   },
   createFineTraffic: async (date, price, number, point, description) => {
     const data = { date, price, number, point, description }
-    console.log('API MULTA ', data)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -927,6 +927,79 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/fine-traffic/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  //-------------------------------------------------------------------------
+  // END POINT API SMART MECANICO CALIBRATE TIRE | PNEU
+  //-------------------------------------------------------------------------
+  getCalibrateTire: async () => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/calibrate-tire/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  createCalibrateTire: async (date, libra) => {
+    const data = { date, libra }
+    console.log('API CALIBRAGEM DE PNEU ', data)
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/calibrate-tire/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else {
+        return response.status;
+      }
+    } catch (error) {
+      return error;
+    }
+  },
+  deleteCalibrateTire: async (id) => {
+    const value = await AsyncStorage.getItem('accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/calibrate-tire/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",
