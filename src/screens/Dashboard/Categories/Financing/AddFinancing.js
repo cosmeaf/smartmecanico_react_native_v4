@@ -114,6 +114,7 @@ const AddFinancing = ({ navigation }) => {
               style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
               keyboardType="numeric"
+              maxLength={11}
               options={{
                 prefix: 'R$ ',
                 decimalSeparator: '.',

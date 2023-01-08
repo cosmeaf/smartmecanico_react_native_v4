@@ -176,6 +176,7 @@ const AddInsurance = ({ navigation }) => {
               style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
               keyboardType="numeric"
+              maxLength={11}
               options={{
                 prefix: 'R$ ',
                 decimalSeparator: '.',
@@ -238,6 +239,7 @@ const AddInsurance = ({ navigation }) => {
                 textContentType='none'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={20}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={policy ? policy : 'Numero Apólice'}
                 value={policy}
@@ -271,6 +273,7 @@ const AddInsurance = ({ navigation }) => {
                 textContentType='name'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={30}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={broker_name ? broker_name : 'Nome da Corretora'}
                 value={broker_name}
@@ -304,6 +307,7 @@ const AddInsurance = ({ navigation }) => {
                 textContentType='name'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={30}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={agent_name ? agent_name : 'Nome Agente Corretor'}
                 value={agent_name}
@@ -335,6 +339,7 @@ const AddInsurance = ({ navigation }) => {
                 mask="+55(21)9-999-9999"
                 type="number"
                 keyboardType="numeric"
+                maxLength={17}
                 onChangeText={(text, rawText) => setPhone_number(text, rawText)}
               />
             </View>
@@ -365,6 +370,7 @@ const AddInsurance = ({ navigation }) => {
                 textContentType='emailAddress'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={100}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={email ? email : 'E-mail Agente Corretor'}
                 value={email}
@@ -398,6 +404,7 @@ const AddInsurance = ({ navigation }) => {
                 textContentType='URL'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={255}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={url ? url : 'Site da Seguradora'}
                 value={url}

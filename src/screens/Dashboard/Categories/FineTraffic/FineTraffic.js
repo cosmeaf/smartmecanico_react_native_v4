@@ -11,7 +11,7 @@ const FineTraffic = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [fineTraffic, setFineTraffic] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+
 
   if (!authentication) {
     signout();
@@ -22,19 +22,23 @@ const FineTraffic = ({ navigation }) => {
   }
 
   useEffect(() => {
-    getFineTraffic();
-  }, [authentication])
+    setFineTraffic();
+    navigation.addListener('focus', () => {
+      setFineTraffic([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getFineTraffic();
+    });
+  }, [authentication, navigation])
 
   const getFineTraffic = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setFineTraffic([]);
     let res = await Api.getFineTraffic();
     if (res) {
       setFineTraffic(res)
-    } else {
-      signout();
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
@@ -47,9 +51,6 @@ const FineTraffic = ({ navigation }) => {
   if (fineTraffic.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 22 }}>Você não possui</Text>
           <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
@@ -60,11 +61,7 @@ const FineTraffic = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {fineTraffic.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
           {fineTraffic.map((item, index) => (
-
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
               onPress={() => navigation.navigate('FineTrafficDetails', item)}
@@ -78,7 +75,6 @@ const FineTraffic = ({ navigation }) => {
               </View>
               <Ionicons name='chevron-forward' size={30} />
             </TouchableOpacity>
-
           ))}
         </ScrollView>
       </SafeAreaView>

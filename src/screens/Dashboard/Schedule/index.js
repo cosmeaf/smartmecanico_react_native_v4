@@ -7,9 +7,8 @@ import Moment from 'moment';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
 
-export default () => {
+export default ({ navigation }) => {
   const { authentication, isLoading, signout } = useContext(GlobalContext);
-  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(true);
   const [schedules, setSchedule] = useState([]);
 
@@ -17,17 +16,25 @@ export default () => {
     signout();
   }
 
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
   useEffect(() => {
     getSchedule();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setSchedule([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getSchedule();
+    });
+  }, [authentication, navigation])
 
   const getSchedule = async () => {
     let res = await Api.getSchedule();
     if (res) {
       setRefreshing(false)
       setSchedule(res)
-    } else {
-      signout();
     }
   }
 
@@ -44,23 +51,24 @@ export default () => {
     );
   };
 
-  const onRefresh = () => {
-    //Clear old data of the list
-    getSchedule([]);
-    //Call the Service to get the latest data
+  const onRefresh = React.useCallback(() => {
+    setSchedule([]);
+    setRefreshing(true);
+    wait(800).then(() => setRefreshing(false));
     getSchedule();
-  };
+  }, []);
+
 
   function getScheduleItem({ item: schedule }) {
     return (
       <TouchableOpacity style={styles.TouchableOpacityRender} onPress={() => navigation.navigate('ScheduleDetails', schedule)}>
         <Image source={require('../../../assets/icons/schedule.png')} style={{ width: 40, height: 40 }} />
         <View>
-          <Text style={{ fontSize: 14, }}>{schedule.service}</Text>
+          <Text style={{ fontSize: 14, }}>{schedule.service.split('+').shift()}</Text>
           <Text style={{ fontSize: 14, }}>{schedule.vehicle}</Text>
         </View>
         <View>
-          <Text style={{ fontSize: 14 }}>{schedule.day.split('-').reverse('/')}</Text>
+          <Text style={{ fontSize: 14 }}>{schedule.day.split('-').reverse().join('/')}</Text>
           <Text style={{ fontSize: 14 }}>{schedule.hour}</Text>
         </View>
         <Ionicons name='chevron-forward' size={30} />

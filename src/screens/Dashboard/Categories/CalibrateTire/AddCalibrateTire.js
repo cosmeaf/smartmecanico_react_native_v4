@@ -105,6 +105,7 @@ const AddCalibrateTire = ({ navigation }) => {
               style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               mode='outlined'
               keyboardType='numeric'
+              maxLength={2}
               placeholder={libra ? libra : 'Quantidade em Libra'}
               value={libra}
               onChangeText={(text, rawText) => setLibra(text, rawText)}

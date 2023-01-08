@@ -11,7 +11,7 @@ const Financing = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [financing, setFinancing] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+
 
   if (!authentication) {
     signout();
@@ -23,18 +23,22 @@ const Financing = ({ navigation }) => {
 
   useEffect(() => {
     getFinancing();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setFinancing([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getFinancing();
+    });
+  }, [authentication, navigation])
 
   const getFinancing = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setFinancing([]);
     let res = await Api.getFinancing();
     if (res) {
       setFinancing(res)
-    } else {
-      signout();
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
@@ -47,9 +51,6 @@ const Financing = ({ navigation }) => {
   if (financing.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 22 }}>Você não possui</Text>
           <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
@@ -60,11 +61,7 @@ const Financing = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {financing.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
           {financing.map((item, index) => (
-
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
               onPress={() => navigation.navigate('FinancingDetails', item)}

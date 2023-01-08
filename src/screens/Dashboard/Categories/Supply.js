@@ -5,73 +5,86 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LoadingIcon from '../../../componentes/LoadingIcon';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
+import TabOneLine from '../../../componentes/TabOneLine';
 
 
 const Supply = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [supplies, setSupplies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
   if (!authentication) {
     signout();
   }
 
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
   useEffect(() => {
     getSupply();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setSupplies([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getSupply();
+    });
+  }, [authentication, navigation])
+
 
   const getSupply = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setSupplies([]);
     let res = await Api.getSupply();
     if (res) {
-        setSupplies(res)
-    } else {
-      signout();
+      setSupplies(res)
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
-  if(supplies.length === 0){
-    return(
-      <SafeAreaView style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-          {isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
-        <View style={{marginTop:20}}>
-          <Text style={{fontSize:22}}>Você não possui</Text>
-          <Text style={{fontSize:22}}>Itens Cadastrado</Text>
+  const onRefresh = React.useCallback(() => {
+    setSupplies([]);
+    setRefreshing(true);
+    wait(800).then(() => setRefreshing(false));
+    getSupply();
+  }, []);
+
+  if (supplies.length === 0) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ fontSize: 22 }}>Você não possui</Text>
+          <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
         </View>
       </SafeAreaView>
     )
-  }else{
+  } else {
     return (
-      <SafeAreaView style={styles.container}>
-        {supplies.length === 0 && isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
-        {supplies.map((item,index)=>(
-          <TouchableOpacity key={index}
-            style={styles.TouchableOpacityRender} 
-            onPress={() => navigation.navigate('SupplyDetails', item)}
-          >
-          <Image source={require('../../../assets/icons/gas.png')} style={{ width: 30, height: 30 }} />
-          <View>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{item.date.split('-').reverse().join('/')}</Text>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Km {item.kilometer}</Text>
-          </View>
-          <View>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{item.liter} Litro`s</Text>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>R$ {item.price}</Text>
-          </View>
-          <Ionicons name='chevron-forward' size={30} />
-        </TouchableOpacity>
-        ))}
+      <SafeAreaView >
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          {
+            supplies.map((item, index) => (
+              <TouchableOpacity key={index}
+                style={styles.TouchableOpacityRender}
+                onPress={() => navigation.navigate('SupplyDetails', item)}
+              >
+                <Image source={require('../../../assets/icons/gas.png')} style={{ width: 30, height: 30 }} />
+                <View>
+                  <Text style={{ fontSize: 14 }}> Data </Text>
+                  <Text style={{ fontSize: 14 }}>{item.date.split('-').reverse().join('/')}</Text>
+                </View>
+                <View>
+                  <Text style={{ fontSize: 14 }}> Libras</Text>
+                  <Text style={{ fontSize: 14 }}>{item.liter}</Text>
+                </View>
+                <Ionicons name='chevron-forward' size={30} />
+              </TouchableOpacity>
+            ))
+          }
+        </ScrollView>
       </SafeAreaView>
     )
   }
-
-
 
 }
 
@@ -86,7 +99,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.1,
     alignItems: 'center',
     paddingTop: 10,
-    paddingBottom:10,
+    paddingBottom: 10,
     paddingEnd: 20,
     paddingStart: 20,
     marginBottom: 10,

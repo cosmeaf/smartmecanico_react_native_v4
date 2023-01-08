@@ -11,7 +11,6 @@ const Insurance = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [insurance, setInsurance] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
 
   if (!authentication) {
     signout();
@@ -23,18 +22,22 @@ const Insurance = ({ navigation }) => {
 
   useEffect(() => {
     getInsurance();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setInsurance([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getInsurance();
+    });
+  }, [authentication, navigation])
 
   const getInsurance = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setInsurance([]);
     let res = await Api.getInsurance();
     if (res) {
       setInsurance(res)
-    } else {
-      signout();
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
@@ -47,9 +50,6 @@ const Insurance = ({ navigation }) => {
   if (insurance.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 22 }}>Você não possui</Text>
           <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
@@ -60,11 +60,7 @@ const Insurance = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {insurance.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
           {insurance.map((item, index) => (
-
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
               onPress={() => navigation.navigate('InsuranceDetails', item)}

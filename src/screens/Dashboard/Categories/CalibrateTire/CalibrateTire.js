@@ -10,8 +10,8 @@ import Api from '../../../../service/Api';
 const CalibrateTire = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [calibrateTire, setCalibrateTire] = useState([]);
+  const [isLoading, setIsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
 
   if (!authentication) {
     signout();
@@ -23,18 +23,22 @@ const CalibrateTire = ({ navigation }) => {
 
   useEffect(() => {
     getCalibrateTire();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setCalibrateTire([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getCalibrateTire();
+    });
+  }, [authentication, navigation])
 
   const getCalibrateTire = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setCalibrateTire([]);
     let res = await Api.getCalibrateTire();
     if (res) {
       setCalibrateTire(res)
-    } else {
-      signout();
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
@@ -47,9 +51,6 @@ const CalibrateTire = ({ navigation }) => {
   if (calibrateTire.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 22 }}>Você não possui</Text>
           <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
@@ -60,11 +61,7 @@ const CalibrateTire = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {calibrateTire.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
           {calibrateTire.map((item, index) => (
-
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
               onPress={() => navigation.navigate('CalibrateTireDetails', item)}

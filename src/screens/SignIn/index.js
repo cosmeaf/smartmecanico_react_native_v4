@@ -15,6 +15,7 @@ import {
 // expo install expo-linear-gradient (For Expo Users)
 // Alternate: npm i react-native-linear-gradient (For non-expo users)
 import { LinearGradient } from 'expo-linear-gradient';
+import LoadingIcon from '../../componentes/LoadingIcon';
 
 // npm install react-native-elements
 import { Icon } from 'react-native-elements';
@@ -60,9 +61,7 @@ export default () => {
 
     if (isLoading) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89' }}>
-          <ActivityIndicator size='large' color="#FFF" />
-        </View>
+        <LoadingIcon />
       )
     }
 
@@ -166,9 +165,7 @@ export default () => {
 
     if (isLoading) {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89' }}>
-          <ActivityIndicator size='large' color="#FFF" />
-        </View>
+        <LoadingIcon />
       );
     }
     return (

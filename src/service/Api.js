@@ -439,7 +439,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status;
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
       return error;
@@ -542,6 +543,7 @@ export default {
     }
   },
   createSupply: async (date, liter, price, kilometer) => {
+    console.log('API SUPPLY ', date, liter, price, kilometer)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -558,7 +560,9 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status;
+        const json = await response.json();
+        console.log(response.status, json)
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
       return error;
@@ -843,8 +847,9 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        console.log(response.data)
-        return response.status;
+        const json = await response.json();
+        console.log(response.status, json)
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -916,6 +921,7 @@ export default {
         const json = await response.json();
         return json;
       } else {
+        console.log(json)
         return response.status;
       }
     } catch (error) {
@@ -972,7 +978,6 @@ export default {
   },
   createCalibrateTire: async (date, libra) => {
     const data = { date, libra }
-    console.log('API CALIBRAGEM DE PNEU ', data)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {

@@ -142,10 +142,10 @@ const AddFineTraffic = ({ navigation }) => {
               style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
               keyboardType="numeric"
+              maxLength={10}
               options={{
-                prefix: 'R$',
+                prefix: 'R$ ',
                 decimalSeparator: '.',
-                groupSeparator: ',',
                 precision: 2,
               }}
               onChangeText={(text, rawText) => setPrice(text, rawText)}
@@ -177,6 +177,7 @@ const AddFineTraffic = ({ navigation }) => {
                 textContentType='none'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={10}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={number ? number : 'Código da Infração'}
                 value={number}
@@ -210,6 +211,7 @@ const AddFineTraffic = ({ navigation }) => {
                 textContentType='none'
                 autoCapitalize='none'
                 returnKeyType='next'
+                maxLength={2}
                 autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
                 placeholder={point ? point : 'Pontuação'}
                 value={point}

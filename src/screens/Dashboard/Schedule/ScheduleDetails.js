@@ -1,13 +1,30 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TabOneLine from '../../../componentes/TabOneLine';
+import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
 
 
-
 const ScheduleDetails = ({ navigation, route }) => {
+  const { authentication, signout } = useContext(GlobalContext);
+  const [refreshing, setRefreshing] = useState(false);
+
+  if (!authentication) {
+    signout();
+  }
+
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      setRefreshing(true);
+      wait(800).then(() => setRefreshing(false));
+    });
+  }, [authentication, navigation])
 
   const deleteSchdule = (id) => {
     if (id) {
@@ -15,9 +32,10 @@ const ScheduleDetails = ({ navigation, route }) => {
         {
           text: "Sim",
           onPress: () => {
-            console.log(id)
+            setRefreshing(true);
             Api.deleteSchedule(id);
             navigation.navigate('Schedule');
+            setRefreshing(false);
           }
         },
         {
@@ -29,15 +47,21 @@ const ScheduleDetails = ({ navigation, route }) => {
     }
   }
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(800).then(() => setRefreshing(false));
+    setRefreshing(false);
+  }, []);
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <Text style={{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 16, fontWeight: '500' }}>Detalhes:</Text>
         {/* Brand */}
         <TabOneLine title='Serviço:' subTitle={route.params.service} />
         <TabOneLine title='Veículo:' subTitle={route.params.vehicle} />
-        <TabOneLine title='Data:' subTitle={route.params.day} />
+        <TabOneLine title='Data:' subTitle={route.params.day.split('-').reverse().join('/')} />
         <TabOneLine title='Hora:' subTitle={route.params.hour} />
       </ScrollView>
       <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>

@@ -11,23 +11,21 @@ import TabOneLine from '../../../../componentes/TabOneLine';
 
 
 const data = [
-    { label: 'ÓLEO DE MOTOR', value: '1' },
-    { label: 'FILTRO DE ÓLEO', value: '2' },
-    { label: 'FILTRO ÓLEO COMBUSTÍVEL', value: '3' },
-    { label: 'FILTRO AR CONDICIONADO', value: '4' },
-    
-    
-  ];
+  { label: 'ÓLEO DE MOTOR', value: '1' },
+  { label: 'FILTRO DE ÓLEO', value: '2' },
+  { label: 'FILTRO ÓLEO COMBUSTÍVEL', value: '3' },
+  { label: 'FILTRO AR CONDICIONADO', value: '4' },
+];
 
 
-const AddMaintenance = ({navigation}) => {
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [date, setDate] = useState('');
-    const [name, setName] = useState('');
-    const [startKilometer, setStartKilometer] = useState('');
-    const [endKilometer, setEndKilometer] = useState(false)
+const AddMaintenance = ({ navigation }) => {
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const [date, setDate] = useState('');
+  const [name, setName] = useState('');
+  const [startKilometer, setStartKilometer] = useState('');
+  const [endKilometer, setEndKilometer] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
 
   const [isModalVisibleDate, setIsModalVisibleDate] = useState(false);
@@ -41,33 +39,33 @@ const AddMaintenance = ({navigation}) => {
   const handleModalEndKilometer = () => setIsModalVisibleEndKilometer(() => !isModalVisibleEndKilometer);
 
 
-  const handleSaveClick = (date, name, startKilometer, endKilometer) =>{
+  const handleSaveClick = (date, name, startKilometer, endKilometer) => {
     console.debug('Save Maintenace ', date, name, startKilometer, endKilometer)
-    setIsLoading(true)
-    if(date.length === 0){
-        Alert.alert('Campo Data não pode ser vázio')   
+    setRefreshing(true)
+    if (date.length === 0) {
+      Alert.alert('Campo Data não pode ser vázio')
     }
-    else if(name.length === 0){
-        Alert.alert('Campo Serviço não pode ser vázio')
+    else if (name.length === 0) {
+      Alert.alert('Campo Serviço não pode ser vázio')
     }
-    else if(startKilometer.length === 0){
-        Alert.alert('Campo KM Início não pode ser vázio')
+    else if (startKilometer.length === 0) {
+      Alert.alert('Campo KM Início não pode ser vázio')
     }
-    else if(endKilometer.length === 0){
-        Alert.alert('Campo KM Final não pode ser vázio')
-    }else{
-        createMaintenance(date, name, startKilometer, endKilometer)
+    else if (endKilometer.length === 0) {
+      Alert.alert('Campo KM Final não pode ser vázio')
+    } else {
+      createMaintenance(date, name, startKilometer, endKilometer)
     }
-    setIsLoading(false)
+    setRefreshing(false)
   }
 
 
   const createMaintenance = async (date, name, startKilometer, endKilometer) => {
-    let newDate =  date.split('/').reverse().join('-')
-    let json = await Api.createMaintenance(newDate, name, startKilometer, endKilometer)   
-    if(json.id){
+    let newDate = date.split('/').reverse().join('-')
+    let json = await Api.createMaintenance(newDate, name, startKilometer, endKilometer)
+    if (json.id) {
       navigation.navigate('Maintenance')
-    }else{
+    } else {
       Alert.alert('Ops! Algo errado aconteceu, tente mais tarde', `Error ${json}`)
     }
   }
@@ -77,45 +75,42 @@ const AddMaintenance = ({navigation}) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
       <ScrollView>
         <Text style={styles.headerTitle}>Entre com dados de abastecimento</Text>
         {/* Date */}
-        <TabOneLine 
-        title='Data:'
-        subTitle={date ? date : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalDate} 
+        <TabOneLine
+          title='Data:'
+          subTitle={date ? date : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalDate}
         />
         {/* name */}
-        <TabOneLine 
-        title='Serviço:'
-        subTitle={name ? name : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalName} 
+        <TabOneLine
+          title='Serviço:'
+          subTitle={name ? name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalName}
         />
         {/* Begin Kilometer */}
-        <TabOneLine 
-        title='Km Inícial:'
-        subTitle={startKilometer ? startKilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalStartKilometer} 
+        <TabOneLine
+          title='Km Saída:'
+          subTitle={startKilometer ? startKilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalStartKilometer}
         />
         {/* End Kilometer */}
-        <TabOneLine 
-        title='Km Final:'
-        subTitle={endKilometer ? endKilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalEndKilometer} 
+        <TabOneLine
+          title='Km Retorno:'
+          subTitle={endKilometer ? endKilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalEndKilometer}
         />
 
         {/* Modal Date */}
         <Modal isVisible={isModalVisibleDate} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               mask="99/99/9999"
               placeholder="DD/MM/YYYY"
               keyboardType="numeric"
-              onChangeText={(text, rawText) => setDate(text, rawText) }
+              onChangeText={(text, rawText) => setDate(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -124,7 +119,7 @@ const AddMaintenance = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleDate(false)}>
@@ -137,7 +132,7 @@ const AddMaintenance = ({navigation}) => {
         <Modal isVisible={isModalVisibleName} style={styles.modal}>
           <View style={styles.modalContainer}>
             <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-            <Dropdown
+              <Dropdown
                 style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
@@ -154,14 +149,14 @@ const AddMaintenance = ({navigation}) => {
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
                 onChange={item => {
-                    setValue(item.value);
-                    setIsFocus(false);
-                    setName(item.label);
+                  setValue(item.value);
+                  setIsFocus(false);
+                  setName(item.label);
                 }}
                 renderLeftIcon={() => (
-                    <Ionicons name="ios-search" size={20} color={isFocus ? '#54Af89' : 'black'} />
+                  <Ionicons name="ios-search" size={20} color={isFocus ? '#54Af89' : 'black'} />
                 )}
-                />
+              />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -170,7 +165,7 @@ const AddMaintenance = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleName(false)}>
@@ -183,15 +178,16 @@ const AddMaintenance = ({navigation}) => {
         <Modal isVisible={isModalVisibleStartKilometer} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-                type="currency"
-                options={{
-                    decimalSeparator: '.',
-                    precision: 3,
-                }}
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              type="currency"
+              maxLength={7}
+              options={{
+                decimalSeparator: '.',
+                precision: 3,
+              }}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               keyboardType='numeric'
               placeholder={startKilometer ? startKilometer : 'Digite Kilometragem Inícial'}
-              onChangeText={(text, rawText) => setStartKilometer(text, rawText) }
+              onChangeText={(text, rawText) => setStartKilometer(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -200,7 +196,7 @@ const AddMaintenance = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleStartKilometer(false)}>
@@ -208,20 +204,21 @@ const AddMaintenance = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>              
+        </Modal>
         {/* KM END */}
         <Modal isVisible={isModalVisibleEndKilometer} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-                type="currency"
-                options={{
-                    decimalSeparator: '.',
-                    precision: 3,
-                }}
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              type="currency"
+              maxLength={7}
+              options={{
+                decimalSeparator: '.',
+                precision: 3,
+              }}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               keyboardType='numeric'
               placeholder={endKilometer ? endKilometer : 'Digite Kilometragem Final'}
-              onChangeText={(text, rawText) => setEndKilometer(text, rawText) }
+              onChangeText={(text, rawText) => setEndKilometer(text, rawText)}
             />
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
@@ -231,7 +228,7 @@ const AddMaintenance = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleEndKilometer(false)}>
@@ -239,14 +236,14 @@ const AddMaintenance = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
-        </Modal> 
+        </Modal>
       </ScrollView>
 
-       {/* Save Button */}
+      {/* Save Button */}
       <View style={styles.areaButton}>
-        <TouchableOpacity 
-        style={styles.button}
-        onPress={()=>handleSaveClick(date, name, startKilometer, endKilometer)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleSaveClick(date, name, startKilometer, endKilometer)}>
           <Text style={styles.textButton}>Salvar</Text>
         </TouchableOpacity>
       </View>
@@ -257,18 +254,19 @@ const AddMaintenance = ({navigation}) => {
 export default AddMaintenance;
 
 const styles = StyleSheet.create({
-  headerTitle:{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 16, fontWeight: '500' },
-  areaButton:{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
-  button: {width: '94%', backgroundColor: '#54Af89',
-  marginRight: 10, marginLeft: 10, 
-  marginTop: 10, marginBottom: 20, 
-  justifyContent: 'center', 
-  alignItems: 'center', 
-  padding: 10, 
-  borderRadius: 10, 
-  borderWidth: 0.5 
-},
-  textButton:{ fontSize: 18, fontWeight: '500', color: '#FFF' },
+  headerTitle: { marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 16, fontWeight: '500' },
+  areaButton: { justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  button: {
+    width: '94%', backgroundColor: '#54Af89',
+    marginRight: 10, marginLeft: 10,
+    marginTop: 10, marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 0.5
+  },
+  textButton: { fontSize: 18, fontWeight: '500', color: '#FFF' },
   modal: { justifyContent: 'center', alignItems: 'center' },
   modalContainer: { justifyContent: 'center', padding: 10, backgroundColor: '#FFF', height: 180, width: '94%', borderRadius: 10 },
   modaTextInput: { height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 14, fontSize: 16, backgroundColor: '#F2F2F2' },

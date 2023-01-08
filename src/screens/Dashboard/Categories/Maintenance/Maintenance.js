@@ -11,7 +11,6 @@ const Maintenance = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [maintenances, setMaintenance] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
 
   if (!authentication) {
     signout();
@@ -23,18 +22,22 @@ const Maintenance = ({ navigation }) => {
 
   useEffect(() => {
     getMaintenance();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setMaintenance([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getMaintenance();
+    });
+  }, [authentication, navigation])
 
   const getMaintenance = async () => {
-    setIsLoading(true);
+    setRefreshing(true);
     setMaintenance([]);
     let res = await Api.getMaintenance();
     if (res) {
-        setMaintenance(res)
-    } else {
-      signout();
+      setMaintenance(res)
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
@@ -44,44 +47,33 @@ const Maintenance = ({ navigation }) => {
     getMaintenance();
   }, []);
 
-  if(maintenances.length === 0){
-    return(
-      <SafeAreaView style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-          {isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
-        <View style={{marginTop:20}}>
-          <Text style={{fontSize:22}}>Você não possui</Text>
-          <Text style={{fontSize:22}}>Itens Cadastrado</Text>
+  if (maintenances.length === 0) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ fontSize: 22 }}>Você não possui</Text>
+          <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
         </View>
       </SafeAreaView>
     )
-  }else{
+  } else {
     return (
-    <SafeAreaView >
-        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-            {maintenances.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-            }
-            {maintenances.map((item,index)=>(
-            
-                <TouchableOpacity key={index}
-                    style={styles.TouchableOpacityRender} 
-                    onPress={() => navigation.navigate('MaintenanceDetails', item)}
-                >
-                <Image source={require('../../../../assets/icons/tools.png')} style={{ width: 30, height: 30 }} />
-                <View>
-                    <Text style={{ fontSize: 14 }}>{item.date.split('-').reverse().join('/')}</Text>
-                    <Text style={{ fontSize: 14 }}>{item.name}</Text>
-                </View>
-                <View>
-                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Km {item.start_kilometer}</Text>
-                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Km {item.end_kilometer}</Text>
-                </View>
-                    <Ionicons name='chevron-forward' size={30} />
-                </TouchableOpacity>
+      <SafeAreaView >
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          {maintenances.map((item, index) => (
+            <TouchableOpacity key={index}
+              style={styles.TouchableOpacityRender}
+              onPress={() => navigation.navigate('MaintenanceDetails', item)}
+            >
+              <Image source={require('../../../../assets/icons/tools.png')} style={{ width: 30, height: 30 }} />
+              <View>
+                <Text style={{ fontSize: 14 }}>{item.date.split('-').reverse().join('/')}</Text>
+                <Text style={{ fontSize: 14 }}>{item.name}</Text>
+              </View>
+              <Ionicons name='chevron-forward' size={30} />
+            </TouchableOpacity>
 
-            ))}
+          ))}
         </ScrollView>
       </SafeAreaView>
     )
@@ -102,7 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.1,
     alignItems: 'center',
     paddingTop: 10,
-    paddingBottom:10,
+    paddingBottom: 10,
     paddingEnd: 20,
     paddingStart: 20,
     marginBottom: 10,

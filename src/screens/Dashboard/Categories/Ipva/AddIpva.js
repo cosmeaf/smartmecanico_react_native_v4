@@ -26,13 +26,12 @@ const AddIpva = ({ navigation }) => {
 
 
   const handleSaveClick = (date, price) => {
-    console.debug('Save IPVA ', date, price)
     setIsLoading(true)
     if (date.length === 0) {
       Alert.alert('Campo Data não pode ser vázio')
     }
     else if (price.length === 0) {
-      Alert.alert('Campo Serviço não pode ser vázio')
+      Alert.alert('Campo Preço não pode ser vázio')
     } else {
       createIpva(date, price)
     }
@@ -61,13 +60,13 @@ const AddIpva = ({ navigation }) => {
         <Text style={styles.headerTitle}>Entre com dados de abastecimento</Text>
         {/* Date */}
         <TabOneLine
-          title='Data:'
+          title='Vencimento:'
           subTitle={date ? date : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
           onPress={handleModalDate}
         />
         {/* name */}
         <TabOneLine
-          title='Serviço:'
+          title='Preço:'
           subTitle={price ? price : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
           onPress={handleModalPrice}
         />
@@ -106,10 +105,10 @@ const AddIpva = ({ navigation }) => {
               style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
               keyboardType="numeric"
+              maxLength={11}
               options={{
-                prefix: 'R$',
+                prefix: 'R$ ',
                 decimalSeparator: '.',
-                groupSeparator: ',',
                 precision: 2,
               }}
               onChangeText={(text, rawText) => setPrice(text, rawText)}

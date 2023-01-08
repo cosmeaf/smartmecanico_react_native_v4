@@ -11,7 +11,7 @@ import TabOneLine from '../../../componentes/TabOneLine';
 
 
 
-const AddSupply = ({navigation}) => {
+const AddSupply = ({ navigation }) => {
   const [kilometer, setKilometer] = useState('');
   const [date, setDate] = useState('');
   const [liter, setLiter] = useState('');
@@ -29,32 +29,33 @@ const AddSupply = ({navigation}) => {
   const handleModalKilometer = () => setIsModalVisibleKilometer(() => !isModalVisibleKilometer);
 
 
-  const handleSaveClick = (date, liter, price, kilometer) =>{
+  const handleSaveClick = (date, liter, price, kilometer) => {
     setIsLoading(true)
-    if(date.length === 0){
-      Alert.alert('Campo Data não pode ser vázio')   
+    if (date.length === 0) {
+      Alert.alert('Campo Data não pode ser vázio')
     }
-    else if(liter.length === 0){
+    else if (liter.length === 0) {
       Alert.alert('Campo Litro não pode ser vázio')
     }
-    else if(price.length === 0){
+    else if (price.length === 0) {
       Alert.alert('Campo Preço não pode ser vázio')
     }
-    else if(kilometer.length === 0){
+    else if (kilometer.length === 0) {
       Alert.alert('Campo Kilometragem não pode ser vázio')
-    }else{
+    } else {
       createSupply(date, liter, price, kilometer)
     }
     setIsLoading(false)
   }
 
   const createSupply = async (date, liter, price, kilometer) => {
-    let newDate =  date.split('/').reverse().join('-')
-    let newPrice =  price.split('R$').splice(1, 1).toString()
-    let json = await Api.createSupply(newDate, liter, newPrice, kilometer)   
-    if(json.id){
+    let newDate = date.split('/').reverse().join('-')
+    let newPrice = price.split('R$').splice(1, 1).toString()
+    console.log('SUPPLY PAGE ', newDate, liter, newPrice, kilometer)
+    let json = await Api.createSupply(newDate, liter, newPrice, kilometer)
+    if (json.id) {
       navigation.navigate('Supply')
-    }else{
+    } else {
       Alert.alert('Ops! Algo errado aconteceu, tente mais tarde', `Error ${json}`)
     }
   }
@@ -63,44 +64,44 @@ const AddSupply = ({navigation}) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
+      {isLoading &&
+        <LoadingIcon size='large' color="#54Af89" />
+      }
       <ScrollView>
         <Text style={styles.headerTitle}>Entre com dados de abastecimento</Text>
         {/* Date */}
-        <TabOneLine 
-        title='Data:'
-        subTitle={date ? date : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalDate} 
+        <TabOneLine
+          title='Data:'
+          subTitle={date ? date : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalDate}
         />
         {/* Liter */}
-        <TabOneLine 
-        title='Litros:'
-        subTitle={liter ? liter : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalLiter} 
+        <TabOneLine
+          title='Litros:'
+          subTitle={liter ? liter : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalLiter}
         />
         {/* Price */}
-        <TabOneLine 
-        title='Preço:'
-        subTitle={price ? price : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalPrice} 
+        <TabOneLine
+          title='Preço:'
+          subTitle={price ? price : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalPrice}
         />
         {/* kilometer */}
-        <TabOneLine 
-        title='Kilometragem:' 
-        subTitle={kilometer ? kilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" /> } 
-        onPress={handleModalKilometer} />
+        <TabOneLine
+          title='Km Atual:'
+          subTitle={kilometer ? kilometer : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+          onPress={handleModalKilometer} />
 
         {/* Modal Date */}
         <Modal isVisible={isModalVisibleDate} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               mask="99/99/9999"
               placeholder="DD/MM/YYYY"
               keyboardType="numeric"
-              onChangeText={(text, rawText) => setDate(text, rawText) }
+              onChangeText={(text, rawText) => setDate(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -109,7 +110,7 @@ const AddSupply = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleDate(false)}>
@@ -122,15 +123,15 @@ const AddSupply = ({navigation}) => {
         <Modal isVisible={isModalVisibleLiter} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
+              maxLength={5}
               keyboardType="numeric"
               options={{
                 decimalSeparator: '.',
-                groupSeparator: ',',
                 precision: 1,
               }}
-              onChangeText={(text, rawText) => setLiter(text, rawText) }
+              onChangeText={(text, rawText) => setLiter(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -139,7 +140,7 @@ const AddSupply = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleLiter(false)}>
@@ -152,16 +153,16 @@ const AddSupply = ({navigation}) => {
         <Modal isVisible={isModalVisiblePrice} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-              style={{ height: 40, borderWidth:0.5, borderRadius:10, paddingLeft:10}}
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
               type="currency"
               keyboardType="numeric"
+              maxLength={10}
               options={{
-                prefix: 'R$',
+                prefix: 'R$ ',
                 decimalSeparator: '.',
-                groupSeparator: ',',
                 precision: 2,
               }}
-              onChangeText={(text, rawText) => setPrice(text, rawText) }
+              onChangeText={(text, rawText) => setPrice(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -170,7 +171,7 @@ const AddSupply = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisiblePrice(false)}>
@@ -182,13 +183,16 @@ const AddSupply = ({navigation}) => {
         {/* Kilometer */}
         <Modal isVisible={isModalVisibleKilometer} style={styles.modal}>
           <View style={styles.modalContainer}>
-            <TextInput
-              style={{ height: 40, }}
-              mode='outlined'
-              keyboardType='numeric'
-              placeholder={kilometer ? kilometer : 'Digite Kilometragem'}
-              value={kilometer}
-              onChangeText={text => setKilometer(text)}
+            <MaskedTextInput
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+              type="currency"
+              keyboardType="numeric"
+              maxLength={7}
+              options={{
+                decimalSeparator: '.',
+                precision: 3,
+              }}
+              onChangeText={(text, rawText) => setKilometer(text, rawText)}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -197,7 +201,7 @@ const AddSupply = ({navigation}) => {
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
               </TouchableOpacity>
-             
+
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setIsModalVisibleKilometer(false)}>
@@ -209,11 +213,11 @@ const AddSupply = ({navigation}) => {
 
       </ScrollView>
 
-       {/* Save Button */}
+      {/* Save Button */}
       <View style={styles.areaButton}>
-        <TouchableOpacity 
-        style={styles.button}
-        onPress={()=>handleSaveClick(date, liter, price, kilometer)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleSaveClick(date, liter, price, kilometer)}>
           <Text style={styles.textButton}>Salvar</Text>
         </TouchableOpacity>
       </View>
@@ -224,18 +228,19 @@ const AddSupply = ({navigation}) => {
 export default AddSupply
 
 const styles = StyleSheet.create({
-  headerTitle:{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 16, fontWeight: '500' },
-  areaButton:{ justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
-  button: {width: '94%', backgroundColor: '#54Af89',
-  marginRight: 10, marginLeft: 10, 
-  marginTop: 10, marginBottom: 20, 
-  justifyContent: 'center', 
-  alignItems: 'center', 
-  padding: 10, 
-  borderRadius: 10, 
-  borderWidth: 0.5 
-},
-  textButton:{ fontSize: 18, fontWeight: '500', color: '#FFF' },
+  headerTitle: { marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 16, fontWeight: '500' },
+  areaButton: { justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  button: {
+    width: '94%', backgroundColor: '#54Af89',
+    marginRight: 10, marginLeft: 10,
+    marginTop: 10, marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 0.5
+  },
+  textButton: { fontSize: 18, fontWeight: '500', color: '#FFF' },
   modal: { justifyContent: 'center', alignItems: 'center' },
   modalContainer: { justifyContent: 'center', padding: 10, backgroundColor: '#FFF', height: 180, width: '94%', borderRadius: 10 },
   modaTextInput: { height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 14, fontSize: 16, backgroundColor: '#F2F2F2' },

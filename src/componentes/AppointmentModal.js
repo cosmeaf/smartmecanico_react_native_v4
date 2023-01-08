@@ -28,7 +28,6 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   const [address, setAddress] = useState([]);
 
   useEffect(() => {
-
     if (selectedDay > 0) {
       let d = new Date(selectedYear, selectedMonth, selectedDay);
       let year = d.getFullYear();
@@ -40,7 +39,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
       // Create new format date 'YYYY-MM-DD'
       let selDate = `${year}-${month}-${day}`;
       //
-      let array1 = hourMarked.filter(({ day, hour }) => day == selDate).map(({ hour }) => hour)
+      const array1 = hourMarked.filter(({ day, hour }) => day == selDate).map(({ hour }) => hour)
       let array2 = hourService.map(({ hour }) => hour)
       setListHours(array2.filter(item => !array1.includes(item)))
     }
@@ -78,7 +77,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     setSelectedHour(0);
     setSelectedHour('');
 
-  }, [selectedMonth, selectedYear])
+  }, [selectedMonth, selectedYear, setHourMarked])
 
   useEffect(() => {
     let today = new Date();
@@ -107,6 +106,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   }
 
   const getHourAvailibility = async () => {
+    setHourMarked([])
     let data = await Api.getHourAvailibility();
     setHourMarked(data);
   }
@@ -118,16 +118,18 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         setVehicle(item)
       ));
     } else {
-      console.warn('Ops! Estamos com problema para acessar suas informação. Pro Favor Tente mais tarde', `Error ${res.status}`)
+      console.warn('Ops! GET VEÍCULOS', `Error ${res.status}`)
     }
   }
 
   const getHourService = async () => {
+    setHourService([])
     let data = await Api.getHourService();
     setHourService(data);
   }
 
   const getAddress = async () => {
+    setAddress([])
     let res = await Api.getAddress();
     if (res) {
       res.map((item, key) => (
@@ -140,19 +142,30 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   }
 
   const handleSaveClick = async () => {
-    let day = selectedYear + '-' + selectedMonth + 1 + '-' + selectedDay;
-    if (!day || !address.id || !vehicle.id || !serviceId || !selectedHour) {
-      Alert.alert('Ops', 'Verifique se suas informações foram preenchidas corretamente');
-      return;
+    let year = selectedYear;
+    let month = selectedMonth + 1;
+    let day = selectedDay
+    const date = `${year}-${month}-${day}`
+    if (date.length === 0) {
+      Alert.alert('Atenção', 'Ops, Error ao carregar dados da data')
+    } else if (address.id.length === 0) {
+      Alert.alert('Atenção', 'Ops, Error ao carregar dados do endereço')
+    } else if (vehicle.id.length === 0 || !vehicle.id) {
+      Alert.alert('Atenção', 'Ops, Error ao carregar dados do veículo')
+    } else if (serviceId.length === 0 || !serviceId) {
+      Alert.alert('Atenção', 'Ops, Error ao carregar dados do serviço')
+    } else if (!selectedHour || selectedHour.length === 0) {
+      Alert.alert('Atenção', 'Por Favor, selecione um Horário')
     } else {
-      let res = await Api.createSchedule(day, address.id, vehicle.id, serviceId, selectedHour);
-      if (res != '') {
+      let res = await Api.createSchedule(date, address.id, vehicle.id, serviceId, selectedHour);
+      if (res.id) {
+        Alert.alert('Successo', 'Seu Agendamento foi \nRealizado com Sucesso')
         navigation.navigate('Schedule')
       } else {
-        Alert.alert('Ops', 'Desculpe o transtorno, tente mais tarde');
+        Alert.alert('Falha', `${res ? res : ''}`)
       }
-    }
 
+    }
   }
 
 

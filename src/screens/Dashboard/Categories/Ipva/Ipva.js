@@ -9,9 +9,9 @@ import Api from '../../../../service/Api';
 
 const Ipva = ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
-  const [ipvas, setIpva] = useState([]);
+  const [ipvas, setIpvas] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+
 
   if (!authentication) {
     signout();
@@ -23,22 +23,26 @@ const Ipva = ({ navigation }) => {
 
   useEffect(() => {
     getIpva();
-  }, [authentication])
+    navigation.addListener('focus', () => {
+      setIpvas([]);
+      setRefreshing(true);
+      wait(2000).then(() => setRefreshing(false));
+      getIpva();
+    });
+  }, [authentication, navigation])
 
   const getIpva = async () => {
-    setIsLoading(true);
-    setIpva([]);
+    setRefreshing(true);
+    setIpvas([]);
     let res = await Api.getIpva();
     if (res) {
-      setIpva(res)
-    } else {
-      signout();
+      setIpvas(res)
     }
-    setIsLoading(false);
+    setRefreshing(false);
   }
 
   const onRefresh = React.useCallback(() => {
-    setIpva([]);
+    setIpvas([]);
     setRefreshing(true);
     wait(800).then(() => setRefreshing(false));
     getIpva();
@@ -47,9 +51,6 @@ const Ipva = ({ navigation }) => {
   if (ipvas.length === 0) {
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {isLoading &&
-          <LoadingIcon size='large' color="#54Af89" />
-        }
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 22 }}>Você não possui</Text>
           <Text style={{ fontSize: 22 }}>Itens Cadastrado</Text>
@@ -60,11 +61,7 @@ const Ipva = ({ navigation }) => {
     return (
       <SafeAreaView >
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          {ipvas.length === 0 && isLoading &&
-            <LoadingIcon size='large' color="#54Af89" />
-          }
           {ipvas.map((item, index) => (
-
             <TouchableOpacity key={index}
               style={styles.TouchableOpacityRender}
               onPress={() => navigation.navigate('IpvaDetails', item)}
