@@ -120,7 +120,7 @@ const AppStack = ({ navigation }) => {
       <Stack.Screen name='SupplyDetails' component={SupplyDetails} options={{ title: 'Detalhes de Abastecimento', headerShown: true }} />
       {/* Maintenance Page */}
       <Stack.Screen name='Maintenance' component={Maintenance} options={({ navigation, route }) => ({
-        title: 'Combustível',
+        title: 'Minhas Revisões',
         headerShown: true,
         headerRight: () => (
           <Button

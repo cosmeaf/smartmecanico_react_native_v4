@@ -13,7 +13,6 @@ export default ({ navigation, route }) => {
         {
           text: "Sim",
           onPress: () => {
-            console.log(id)
             Api.deleteVehicle(id);
             navigation.navigate('Profile');
           }

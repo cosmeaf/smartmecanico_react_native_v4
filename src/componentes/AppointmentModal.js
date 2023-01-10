@@ -168,67 +168,127 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     }
   }
 
-
-  return (
-    <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
-      {/* Modal header */}
-      <TouchableOpacity onPress={onPress} style={styles.modalButtomClose}>
-        <Ionicons name="chevron-down" size={30} color="green" />
-        <Text>Fechar</Text>
-      </TouchableOpacity>
-      {/* Modal Body */}
-      <View style={{ flex: 0.6, marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
-        <TabOneLine title='Serviço:' subTitle={serviceTitle} />
-        <TabOneLine title='Veículo:' subTitle={vehicle.plate} />
-        <View style={{ flexDirection: 'row', height: 40, backgroundColor: '#FFF', justifyContent: 'space-between', alignItems: 'center' }}>
-          <TouchableOpacity style={{ marginLeft: 40 }} onPress={handleLeftClick}>
-            <Ionicons name="ios-chevron-back-circle" size={30} color="green" />
-          </TouchableOpacity>
-
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{month[selectedMonth]}</Text>
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{selectedYear}</Text>
-
-          <TouchableOpacity style={{ marginRight: 40 }} onPress={handleRightClick}>
-            <Ionicons name="ios-chevron-forward-circle" size={30} color="green" />
-          </TouchableOpacity>
-
-        </View>
-      </View>
-      <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {listDays.map((item, index) => (
-            <TouchableOpacity key={index}
-              onPress={() => item.number ? setSelectedDay(item.number) : null}
-              style={{ height: 50, width: 45, justifyContent: 'center', alignItems: 'center', marginLeft: 3, marginRight: 3, borderRadius: 10, backgroundColor: item.number === selectedDay ? 'green' : 'white' }}>
-              <Text style={{ color: item.number === selectedDay ? '#FFF' : '#000' }}>{item.weekday}</Text>
-              <Text style={{ color: item.number === selectedDay ? '#FFF' : '#000' }}>{item.number}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      {/* Modal ScrollView Hour */}
-      <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {listHours.map((item, index) => (
-            <TouchableOpacity key={index}
-              onPress={() => item ? setSelectedHour(item) : null}
-              style={{ height: 50, width: 45, justifyContent: 'center', alignItems: 'center', marginLeft: 3, marginRight: 3, borderRadius: 10, backgroundColor: item === selectedHour ? 'green' : 'white' }}>
-              <Text style={{ color: item === selectedHour ? '#FFF' : '#000' }}>{item}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      {/* Modal Button End Appointment */}
-      <View style={{ flex: 0.9, justifyContent: 'flex-end', marginBottom: 30 }}>
-        <TouchableOpacity
-          onPress={() => handleSaveClick()}
-          style={{ padding: 10, backgroundColor: 'green', marginLeft: 14, marginRight: 14, borderRadius: 10 }}
-        >
-          <Text style={{ fontSize: 18, color: '#FFF', textAlign: 'center' }}>Finalizar Agendamento</Text>
+  if (vehicle.length === 0) {
+    return (
+      <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
+        <TouchableOpacity onPress={onPress} style={styles.modalButtomClose}>
+          <Ionicons name="chevron-down" size={30} color="green" />
+          <Text>Fechar</Text>
         </TouchableOpacity>
-      </View>
-    </Modal>
-  )
+        <View style={{ flex: 0.8, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Atenção</Text>
+          </View>
+          <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+            <Text style={{ fontSize: 18, letterSpacing: 1, marginBottom: 10 }}>
+              Estamos muito felizes em saber que gostária de realizar um agendamento com a Smart Mecânico.
+            </Text>
+            <Text style={{ fontSize: 18, letterSpacing: 1 }}>
+              Idendificamos que você ainda não cadastrou um veículo em nosso sistema. Para realizar um agendamento, é necesário cadastrar um Veículo.
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPressOut={onPress}
+            onPress={() => navigation.navigate('AddVehicle')}
+            style={{ padding: 10, backgroundColor: 'green', marginLeft: 14, marginRight: 14, borderRadius: 10 }}
+          >
+            <Text style={{ fontSize: 18, color: '#FFF', textAlign: 'center' }}>Cadastrar Veículo</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  } else if (address.length === 0) {
+    return (
+      <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
+        <TouchableOpacity onPress={onPress} style={styles.modalButtomClose}>
+          <Ionicons name="chevron-down" size={30} color="green" />
+          <Text>Fechar</Text>
+        </TouchableOpacity>
+        <View style={{ flex: 0.8, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Atenção</Text>
+          </View>
+          <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+            <Text style={{ fontSize: 18, letterSpacing: 1, marginBottom: 10 }}>
+              Estamos muito felizes em saber que gostária de realizar um agendamento com a Smart Mecânico.
+            </Text>
+            <Text style={{ fontSize: 18, letterSpacing: 1 }}>
+              Idendificamos que você ainda não cadastrou um Endereço em nosso sistema. Para realizar um agendamento, é necesário cadastrar um Endereço.
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPressOut={onPress}
+            onPress={() => navigation.navigate('Address')}
+            style={{ padding: 10, backgroundColor: 'green', marginLeft: 14, marginRight: 14, borderRadius: 10 }}
+          >
+            <Text style={{ fontSize: 18, color: '#FFF', textAlign: 'center' }}>Cadastrar Endereço</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  } else {
+    return (
+      <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
+        {/* Modal header */}
+        <TouchableOpacity onPress={onPress} style={styles.modalButtomClose}>
+          <Ionicons name="chevron-down" size={30} color="green" />
+          <Text>Fechar</Text>
+        </TouchableOpacity>
+        {/* Modal Body */}
+        <View style={{ flex: 0.6, marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+          <TabOneLine title='Serviço:' subTitle={serviceTitle} />
+          <TabOneLine title='Veículo:' subTitle={vehicle.plate} />
+          <View style={{ flexDirection: 'row', height: 40, backgroundColor: '#FFF', justifyContent: 'space-between', alignItems: 'center' }}>
+            <TouchableOpacity style={{ marginLeft: 40 }} onPress={handleLeftClick}>
+              <Ionicons name="ios-chevron-back-circle" size={30} color="green" />
+            </TouchableOpacity>
+
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{month[selectedMonth]}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{selectedYear}</Text>
+
+            <TouchableOpacity style={{ marginRight: 40 }} onPress={handleRightClick}>
+              <Ionicons name="ios-chevron-forward-circle" size={30} color="green" />
+            </TouchableOpacity>
+
+          </View>
+        </View>
+        <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {listDays.map((item, index) => (
+              <TouchableOpacity key={index}
+                onPress={() => item.number ? setSelectedDay(item.number) : null}
+                style={{ height: 50, width: 45, justifyContent: 'center', alignItems: 'center', marginLeft: 3, marginRight: 3, borderRadius: 10, backgroundColor: item.number === selectedDay ? 'green' : 'white' }}>
+                <Text style={{ color: item.number === selectedDay ? '#FFF' : '#000' }}>{item.weekday}</Text>
+                <Text style={{ color: item.number === selectedDay ? '#FFF' : '#000' }}>{item.number}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        {/* Modal ScrollView Hour */}
+        <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {listHours.map((item, index) => (
+              <TouchableOpacity key={index}
+                onPress={() => item ? setSelectedHour(item) : null}
+                style={{ height: 50, width: 45, justifyContent: 'center', alignItems: 'center', marginLeft: 3, marginRight: 3, borderRadius: 10, backgroundColor: item === selectedHour ? 'green' : 'white' }}>
+                <Text style={{ color: item === selectedHour ? '#FFF' : '#000' }}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        {/* Modal Button End Appointment */}
+        <View style={{ flex: 0.9, justifyContent: 'flex-end', marginBottom: 30 }}>
+          <TouchableOpacity
+            onPress={() => handleSaveClick()}
+            style={{ padding: 10, backgroundColor: 'green', marginLeft: 14, marginRight: 14, borderRadius: 10 }}
+          >
+            <Text style={{ fontSize: 18, color: '#FFF', textAlign: 'center' }}>Finalizar Agendamento</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  }
+
 }
 
 const styles = StyleSheet.create({

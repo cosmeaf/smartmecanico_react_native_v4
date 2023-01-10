@@ -27,8 +27,6 @@ export default ({ navigation }) => {
         setProfile(item)
       ));
       setIsLoading(false)
-    } else {
-      signout();
     }
   }
 
@@ -39,9 +37,6 @@ export default ({ navigation }) => {
         setUser(item)
       ));
       setIsLoading(false)
-    } else {
-      console.warn('Ops! Estamos com problema para acessar suas informação. Pro Favor Tente mais tarde', `Error ${res.status}`)
-      signout();
     }
   }
 

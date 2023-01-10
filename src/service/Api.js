@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//const BASE_API = 'http://10.0.0.162/api'
+///const BASE_API = 'http://10.0.0.162/api'
 // const BASE_API = 'http://127.0.0.1/api'
 const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
 
@@ -123,6 +123,7 @@ export default {
   updateUser: async (id, first_name, last_name) => {
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
+    const data = { id, first_name, last_name }
     try {
       const response = await fetch(`${BASE_API}/user/${id}/`, {
         method: 'PATCH',
@@ -131,13 +132,14 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ id, first_name, last_name })
+        body: JSON.stringify(data)
       });
       if (response.status === 200) {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -194,6 +196,7 @@ export default {
   updateProfile: async (id, birthday, phone_number) => {
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
+    const data = { id, birthday, phone_number }
     try {
       const response = await fetch(`${BASE_API}/profile/${id}/`, {
         method: 'PATCH',
@@ -202,20 +205,21 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ id, birthday, phone_number })
+        body: JSON.stringify(data)
       });
       if (response.status === 200) {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
     }
   },
   //-------------------------------------------------------------------------
-  // API ADDRESS
+  // API VIA CEP
   //-------------------------------------------------------------------------
   getCep: async (cep) => {
     try {
@@ -228,7 +232,8 @@ export default {
         let json = await response.json();
         return json;
       } else {
-        return response.status
+        let json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error
@@ -257,6 +262,7 @@ export default {
     }
   },
   createAddress: async (cep, logradouro, complemento, bairro, localidade, uf) => {
+    const data = { cep, logradouro, complemento, bairro, localidade, uf }
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -267,13 +273,14 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ cep, logradouro, complemento, bairro, localidade, uf })
+        body: JSON.stringify(data)
       });
       if (response.status === 201) {
         const json = await response.json();
         return json;
       } else {
-        throw new Error(`${response.status}`);
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -367,7 +374,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -543,7 +551,6 @@ export default {
     }
   },
   createSupply: async (date, liter, price, kilometer) => {
-    console.log('API SUPPLY ', date, liter, price, kilometer)
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
     try {
@@ -561,7 +568,6 @@ export default {
         return json;
       } else {
         const json = await response.json();
-        console.log(response.status, json)
         return { "code": response.status, "message": json };
       }
     } catch (error) {
@@ -848,7 +854,6 @@ export default {
         return json;
       } else {
         const json = await response.json();
-        console.log(response.status, json)
         return { "code": response.status, "message": json }
       }
     } catch (error) {
@@ -921,8 +926,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        console.log(json)
-        return response.status;
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;

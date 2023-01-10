@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { ScrollView, View, TextInput, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TextInputMask } from 'react-native-masked-text'
+import { TextInputMask } from 'react-native-masked-text';
+import { MaskedTextInput } from 'react-native-mask-text';
 import Modal from "react-native-modal";
 import Moment, { utc } from 'moment';
 import moment from 'moment';
@@ -12,6 +13,7 @@ import Api from '../../../service/Api';
 
 
 export default ({ navigation }) => {
+  const [refreshing, setRefreshing] = useState(false);
   const { authentication, isLoading, signout } = useContext(GlobalContext);
   const [profile, setProfile] = useState([]);
   const [user, setUser] = useState([]);
@@ -35,67 +37,138 @@ export default ({ navigation }) => {
     signout();
   }
 
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
   useEffect(() => {
     getProfile();
     getUser();
-  }, [authentication]);
+  }, [authentication, navigation]);
 
   const getProfile = async () => {
+    setRefreshing(true);
     let res = await Api.getProfile();
+    console.log(res)
     if (res.ok != false) {
       res.map((item, key) => (
         setProfile(item)
       ));
-    } else {
-      signout();
     }
+    setRefreshing(false);
   }
 
   const getUser = async () => {
+    setRefreshing(true);
     let res = await Api.getUser();
     if (res.ok != false) {
       res.map((item, key) => (
         setUser(item)
       ));
-    } else {
-      signout();
     }
+    setRefreshing(false);
   }
 
-  const updateUser = async (id, firstName, lastName) => {
-    if (id !== '' && firstName !== '' && lastName !== '') {
-      Api.updateUser(id, firstName, lastName)
+  // Validation by First Name
+  const firstNmaeValidation = async (id, firstName,) => {
+    setRefreshing(true);
+    if (firstName.length === 0 && user.first_name.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Nome')
+      setRefreshing(false);
+    } else if (firstName.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Nome')
+      setRefreshing(false);
+    } else {
+      setRefreshing(true);
+      let json = await Api.updateUser(id, firstName, lastName);
+      Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
       getUser();
-      getProfile();
-      setIsModalVisibleFirstName(false);
-      setIsModalVisibleLastName(false);
-    } else {
-      Alert.alert('Ops! Favor preencher campo');
+      setRefreshing(false);
+      if (json.code) {
+        Alert.alert(`Atenção`, `${json.message.detail}, Código: ${json.code}`)
+      }
     }
+    setRefreshing(false);
   }
-
-  const updateProfile = async (id, birthday, phoneNumber) => {
-    const date = moment(birthday, 'DD-MM-YYYY')
-    const newBirthday = moment(date).utc().format("YYYY-MM-DD")
-
-    if (id !== '' && newBirthday !== '' || phoneNumber) {
-      Api.updateProfile(id, newBirthday, phoneNumber)
-      getProfile();
+  // Validation by Last Name
+  const lastNmaeValidation = async (id, lastName) => {
+    setRefreshing(true);
+    if (lastName.length === 0 && user.last_name.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Sobrenome')
+      setRefreshing(false);
+    } else if (lastName.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Sobrenome')
+      setRefreshing(false);
+    } else {
+      setRefreshing(true);
+      let json = await Api.updateUser(id, user.first_name, lastName);
+      Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
       getUser();
-      setIsModalVisibleBirthday(false);
-      setIsModalVisiblePhone(false);
-    } else {
-      Alert.alert('Ops! Favor preencher campo');
+      setRefreshing(false);
+      if (json.code) {
+        Alert.alert(`Atenção`, `${json.message.detail}, Código: ${json.code}`)
+      }
     }
+    setRefreshing(false);
   }
 
+  // Validation BirthDay
+  const birthdayValidation = async (id, birthday) => {
+    setRefreshing(true);
+    if (birthday.length === 0 && profile.birthday === null) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Aniversário')
+      setRefreshing(false);
+    } else if (birthday.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Aniversário')
+      setRefreshing(false);
+    } else if (birthday.length <= 8) {
+      Alert.alert('Atenção', 'Campo data deve ser no formato: \nDIA/MÊS/ANO ou 01/01/1921')
+    } else {
+      const date = birthday.split('/').reverse().join('-')
+      setRefreshing(true);
+      let json = await Api.updateProfile(id, date);
+      Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
+      getProfile();
+      setRefreshing(false);
+      if (json.code) {
+        Alert.alert(`Atenção`, `${json.message.detail}, Código: ${json.code}`)
+      }
+    }
+    setRefreshing(false);
+  }
+  // Validation Phone number
+  const phoneNumberValidation = async (id, phoneNumber) => {
+    setRefreshing(true);
+    if (phoneNumber.length === 0 && profile.phone_number === null) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Contato')
+      setRefreshing(false);
+    } else if (phoneNumber.length === 0) {
+      Alert.alert('Atenção', 'Por Favor Preencher campo Contato')
+      setRefreshing(false);
+    } else {
+      setRefreshing(true);
+      let phone_number = phoneNumber.replace(/\D/g, '');
+      let json = await Api.updateProfile(id, profile.birthday, phone_number);
+      Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
+      getProfile();
+      setRefreshing(false);
+      if (json.code) {
+        Alert.alert(`Atenção`, `${json.message.detail}, Código: ${json.code}`)
+      }
+    }
+    setRefreshing(false);
+  }
+
+  // Exclude User Profile
   const deleteUser = async (id) => {
-    if (id !== '') {
+    if (id.length !== 0) {
       Alert.alert('EXCLUIR CONTA', 'Tem certeza que deseja excluir usuário do sistema?', [
         {
           text: "Sim",
-          onPress: () => {
-            Api.deleteUser(id);
+          onPress: async () => {
+            setRefreshing(true);
+            await Api.deleteUser(id);
+            setRefreshing(false);
             signout();
           }
         },
@@ -108,21 +181,30 @@ export default ({ navigation }) => {
     }
   }
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+    getUser();
+    getProfile();
+  }, []);
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {/* System Information */}
         <View>
           <Text style={{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 14, fontWeight: '500' }}>Sistema</Text>
           {/* Username */}
-          <TabOneLine title='Usuário:' subTitle={user.username} />
+          <TabOneLine title='CPF:' subTitle={user.username ? user.username : ''} />
           {/* E-mail */}
-          <TabOneLine title='E-mail:' subTitle={user.email} />
+          <TabOneLine title='E-mail:' subTitle={user.email ? user.email : ''} />
           {/* First Name */}
-          <TabOneLine title='Nome:' subTitle={user.first_name ? user.first_name : ''} onPress={() => handleModalFirstName()} />
+          <TabOneLine title='Nome:'
+            subTitle={user.first_name ? user.first_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />} onPress={() => handleModalFirstName()} />
           {/* Last Name */}
-          <TabOneLine title='Sobrenome:' subTitle={user.last_name ? user.last_name : ''} onPress={() => handleModalLastName()} />
+          <TabOneLine title='Sobrenome:'
+            subTitle={user.last_name ? user.last_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />} onPress={() => handleModalLastName()} />
         </View>
 
         {/* Profile Information */}
@@ -130,12 +212,12 @@ export default ({ navigation }) => {
           <Text style={{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 14, fontWeight: '500' }}>Perfil</Text>
           {/* Birthday */}
           <TabOneLine title='Aniversário:'
-            subTitle={profile.birthday ? Moment(profile.birthday).format('DD/MM/YYYY') : ''}
+            subTitle={profile.birthday ? profile.birthday.split('-').reverse().join('/') : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
             onPress={() => handleModalBrithday()}
           />
           {/* Mobile number */}
           <TabOneLine title='Contato:'
-            subTitle={profile.phone_number ? profile.phone_number : ''}
+            subTitle={profile.phone_number ? profile.phone_number : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
             onPress={() => handleModalPhone()} />
         </View>
 
@@ -148,20 +230,20 @@ export default ({ navigation }) => {
       {/* MODAL PART BITHDAY */}
       <Modal isVisible={isModalVisibleBrithday} style={styles.modal}>
         <View style={styles.modalContainer}>
-          <TextInputMask
-            style={styles.modaTextInput}
-            type={'datetime'}
-            options={{
-              format: 'DD/MM/YYYY'
-            }}
-            onChangeText={text => setBirthday(text)}
-            value={birthday}
+          <MaskedTextInput
+            style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
+            mask="99/99/9999"
+            placeholder={birthday ? birthday : 'Formato da Data 01/01/2023'}
+            placeholderTextColor='#54Af89'
+            keyboardType="numeric"
+            onChangeText={(text, rawText) => setBirthday(text)}
           />
-          <TextInput />
+
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => updateProfile(profile.id, birthday, profile.phone_number)}>
+              onPressOut={() => setIsModalVisibleBirthday()}
+              onPress={() => birthdayValidation(profile.id, birthday)}>
               <Text style={styles.modalButtonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -175,17 +257,19 @@ export default ({ navigation }) => {
       {/* MODAL PART PHONE NNUMBER */}
       <Modal isVisible={isModalVisiblePhone} style={styles.modal}>
         <View style={styles.modalContainer}>
-          <TextInput
-            style={styles.modaTextInput}
-            placeholder={profile.phone_number}
-            onChangeText={text => setPhoneNumber(text)}
-            value={phoneNumber}
+          <MaskedTextInput
+            style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
+            mask="+99-99-99999-9999"
+            placeholder={phoneNumber ? phoneNumber : '+55-31-98123-6745'}
+            placeholderTextColor='#54Af89'
+            onChangeText={(text, rawText) => setPhoneNumber(text)}
+            keyboardType="numeric"
           />
-          <TextInput />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => updateProfile(profile.id, profile.birthday, phoneNumber)}>
+              onPressOut={() => setIsModalVisiblePhone()}
+              onPress={() => phoneNumberValidation(profile.id, phoneNumber)}>
               <Text style={styles.modalButtonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -200,16 +284,18 @@ export default ({ navigation }) => {
       <Modal isVisible={isModalVisibleFirstName} style={styles.modal}>
         <View style={styles.modalContainer}>
           <TextInput
-            style={styles.modaTextInput}
-            placeholder={user.first_name}
+            style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
+            placeholder={user.first_name ? user.first_name : 'Digite seu Primeiro Nome'}
+            placeholderTextColor='#54Af89'
             onChangeText={text => setFirstName(text)}
             value={firstName}
           />
-          <TextInput />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => updateUser(user.id, firstName, user.lastName)}>
+              onPressOut={() => setIsModalVisibleFirstName()}
+              onPress={() => firstNmaeValidation(user.id, firstName)}
+            >
               <Text style={styles.modalButtonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -224,16 +310,17 @@ export default ({ navigation }) => {
       <Modal isVisible={isModalVisibleLastName} style={styles.modal}>
         <View style={styles.modalContainer}>
           <TextInput
-            style={styles.modaTextInput}
-            placeholder={user.last_name}
+            style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
+            placeholder={user.last_name ? user.last_name : 'Digite seu Sobrenome'}
             onChangeText={text => setLastName(text)}
             value={lastName}
           />
-          <TextInput />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => updateUser(user.id, user.firstName, lastName)}>
+              onPressOut={() => setIsModalVisibleLastName(false)}
+              onPress={() => lastNmaeValidation(user.id, lastName)}
+            >
               <Text style={styles.modalButtonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -253,6 +340,6 @@ const styles = StyleSheet.create({
   modal: { justifyContent: 'center', alignItems: 'center' },
   modalContainer: { justifyContent: 'center', padding: 10, backgroundColor: '#FFF', height: 180, width: '94%', borderRadius: 10 },
   modaTextInput: { height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 14, fontSize: 16, backgroundColor: '#F2F2F2', borderRadius: 10 },
-  modalButton: { width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F16529', padding: 5, borderRadius: 10 },
+  modalButton: { width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89', padding: 5, borderRadius: 10 },
   modalButtonText: { fontSize: 18, color: '#FFF' }
 });

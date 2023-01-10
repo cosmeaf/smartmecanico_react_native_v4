@@ -41,8 +41,8 @@ export default () => {
 
   function Login() {
     const { signin } = useContext(GlobalContext);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('demo');
+    const [password, setPassword] = useState('qweasd32');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
 
@@ -136,10 +136,10 @@ export default () => {
     const { signup } = useContext(GlobalContext);
     const [showRegisterPassword, setShowRegisterPassword] = useState(false);
     const [showRegisterPassword2, setShowRegisterPassword2] = useState(false);
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
+    const [username, setUsername] = useState('demo');
+    const [email, setEmail] = useState('demo@gmail.com');
+    const [password, setPassword] = useState('qweasd32');
+    const [password2, setPassword2] = useState('qweasd32');
     const [isLoading, setIsLoading] = useState(false)
 
 

@@ -1,11 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalContext from '../../../Contexts/Context';
-import SearcheArea from '../../../componentes/SearcheArea';
-import ServicesTypes from '../../../componentes/ServicesTypes';
-import CategoryTypes from '../../../componentes/CategoryTypes';
+import MainHeader from '../../../componentes/MainHeader';
+import ScreenHeader from '../../../componentes/ScreenHeader';
+import TopServicesCarousel from '../../../componentes/TopServicesCarousel';
+import OtherCategory from '../../../componentes/OtherCategory';
+import slideData from '../../../model/data/slide'
+import otherCategoryData from '../../../model/data/categoryData';
 
 
 export default ({ navigation, route }) => {
@@ -22,12 +25,14 @@ export default ({ navigation, route }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
       <StatusBar style="auto" />
-      <ScrollView>
-        <SearcheArea />
-        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Serviços</Text>
-        <ServicesTypes onPress={handleClick} />
-        <Text style={{ marginTop: 20, marginLeft: 14, fontSize: 22, fontWeight: 'bold' }}>Categoria</Text>
-        <CategoryTypes onPress={handleClick} />
+      <MainHeader title="Smart Mecânico" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <ScreenHeader mainTitle="Principais" secondTitle="Serviços" />
+        <TopServicesCarousel list={slideData} onPress={handleClick} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 14, marginTop: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Outros Recursos</Text>
+        </View>
+        <OtherCategory list={otherCategoryData} onPress={handleClick} />
       </ScrollView>
     </SafeAreaView>
   )
