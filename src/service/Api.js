@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-///const BASE_API = 'http://10.0.0.162/api'
+const BASE_API = 'http://10.0.0.162/api'
 // const BASE_API = 'http://127.0.0.1/api'
-const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
+//const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
 
 
 // Authentication
@@ -24,10 +24,11 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        throw new Error(`${response.status}`);
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return { "message": error };
     }
   },
   tokenkRefresh: async (refresh) => {
@@ -44,10 +45,11 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        throw new Error(`${response.status}`);
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return { "message": error };
     }
   },
   // SIGN-IN
@@ -63,13 +65,13 @@ export default {
       });
       if (response.status === 200) {
         const json = await response.json();
-        return json;
+        return json
       } else if (response.status !== 200) {
         const json = await response.json();
-        return { "code": response.status, "message": json.detail };
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return { "message": error };
     }
   },
   // SIGN-UP
@@ -92,7 +94,7 @@ export default {
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return { "message": error };
     }
   },
   //-------------------------------------------------------------------------
@@ -114,7 +116,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
       return error;
@@ -187,7 +190,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -328,7 +332,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -337,6 +342,7 @@ export default {
   createVehicle: async (brand, model, fuell, year, odomitter, plate) => {
     const value = await AsyncStorage.getItem('accessToken');
     const token = JSON.parse(value)
+    const data = { brand, model, fuell, year, odomitter, plate }
     try {
       const response = await fetch(`${BASE_API}/vehicle/`, {
         method: 'POST',
@@ -345,13 +351,14 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ brand, model, fuell, year, odomitter, plate })
+        body: JSON.stringify(data)
       });
       if (response.status === 201) {
         const json = await response.json();
         return json;
       } else {
-        throw new Error(`${response.status}`);
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -400,7 +407,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status;
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;
@@ -425,7 +433,8 @@ export default {
         const json = await response.json();
         return json;
       } else {
-        return response.status;
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
       return error;

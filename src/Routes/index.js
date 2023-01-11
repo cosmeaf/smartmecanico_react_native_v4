@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, ActivityIndicator } from "react-native";
 import GlobalContext from '../Contexts/Context';
+import LoadingIcon from '../componentes/LoadingIcon';
 
 import AppStack from './AppStack.route';
 import AuthStack from './AuthStack.route';
@@ -12,10 +13,10 @@ const Route = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89' }}>
-        <ActivityIndicator size='large' color="#FFF" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='#54Af89' />
       </View>
-    );
+    )
   }
   return authentication ? <AppStack /> : <AuthStack />
 }

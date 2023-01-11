@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, StyleSheet, Text, View, TouchableOpacity, TextInput } from "react-native";
 import Modal from "react-native-modal";
 
-export default function TabOneLine({ title, subTitle, onPress = null }) {
+export default function TabOneLine({ title, subTitle, onPress = null, style }) {
 
   return (
     <View style={styles.container}>
@@ -26,13 +26,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabOneView: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF', marginBottom: 5
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF', marginBottom: 5, borderRadius: 10, height: 50
   },
   tabOneViewText: {
     fontSize: 14, fontWeight: '500',
   },
   tabTitle: {
-    paddingLeft: 10, paddingTop: 10, paddingBottom: 10, fontSize: 18, fontWeight: '500',
+    paddingLeft: 10, paddingTop: 10, paddingBottom: 10, fontSize: 16, fontWeight: '400',
   },
   tabOneSubTitle: {
     paddingRight: 10, paddingTop: 10, paddingBottom: 10, fontSize: 16, textAlign: "right"

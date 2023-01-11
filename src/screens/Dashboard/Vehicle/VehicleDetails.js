@@ -1,11 +1,12 @@
-import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TabOneLine from '../../../componentes/TabOneLine';
 import Api from '../../../service/Api';
 
 export default ({ navigation, route }) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const deleteVehicle = (id) => {
     if (id) {
@@ -13,8 +14,12 @@ export default ({ navigation, route }) => {
         {
           text: "Sim",
           onPress: () => {
-            Api.deleteVehicle(id);
-            navigation.navigate('Profile');
+            setIsLoading(true)
+            setTimeout(() => {
+              Api.deleteVehicle(id);
+              navigation.navigate('Vehicle')
+              setIsLoading(false)
+            }, 1000)
           }
         },
         {
@@ -26,6 +31,13 @@ export default ({ navigation, route }) => {
     }
   }
 
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='green' />
+      </View>
+    )
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>

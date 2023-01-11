@@ -42,31 +42,56 @@ export default ({ navigation }) => {
   }
 
   useEffect(() => {
-    getProfile();
-    getUser();
+    getProfile()
+    getUser()
   }, [authentication, navigation]);
 
   const getProfile = async () => {
-    setRefreshing(true);
+    setProfile('')
     let res = await Api.getProfile();
-    console.log(res)
-    if (res.ok != false) {
-      res.map((item, key) => (
-        setProfile(item)
-      ));
+
+    if (res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+
+      }
     }
-    setRefreshing(false);
+    res.map((item) => {
+      setProfile(item)
+    });
   }
 
   const getUser = async () => {
-    setRefreshing(true);
+    setUser('')
     let res = await Api.getUser();
-    if (res.ok != false) {
-      res.map((item, key) => (
-        setUser(item)
-      ));
+    if (res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+
+      }
     }
-    setRefreshing(false);
+    res.map((item) => {
+      setUser(item)
+    });
+
   }
 
   // Validation by First Name
@@ -196,7 +221,7 @@ export default ({ navigation }) => {
         <View>
           <Text style={{ marginLeft: 14, marginRight: 14, marginBottom: 20, fontSize: 14, fontWeight: '500' }}>Sistema</Text>
           {/* Username */}
-          <TabOneLine title='CPF:' subTitle={user.username ? user.username : ''} />
+          <TabOneLine title='Username:' subTitle={user.username ? user.username : ''} />
           {/* E-mail */}
           <TabOneLine title='E-mail:' subTitle={user.email ? user.email : ''} />
           {/* First Name */}

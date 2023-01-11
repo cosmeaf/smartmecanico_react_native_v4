@@ -1,37 +1,35 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import Modal from "react-native-modal";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { TextInput, RadioButton } from "react-native-paper";
+import { MaskedTextInput } from 'react-native-mask-text';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Dropdown } from 'react-native-element-dropdown';
-import Modal from "react-native-modal";
 import TabOneLine from '../../../componentes/TabOneLine';
 import GlobalContext from '../../../Contexts/Context';
-import styles from './styles';
 import Api from '../../../service/Api';
 
 
 //https://parallelum.com.br/fipe/api/v2/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}
 //http://parallelum.com.br/fipe/api/v2/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}
 //https://parallelum.com.br/fipe/api/v2/cars/brands/25/models/4010/years/2007-1
-
-//const FIPE_API = 'http://parallelum.com.br/fipe/api/v2'
 const FIPE_API = 'https://parallelum.com.br/fipe/api/v2'
 
-const data = [
-  { label: 'item data ...', value: '1' },
-  { label: 'item data ...', value: '2' },
-];
 
-
-const AddVehicle = ({ navigation }) => {
-  const { isLogged, signout } = useContext(GlobalContext);
+const AddVehiche = ({ navigation }) => {
+  const { authentication, signout } = useContext(GlobalContext)
+  const [isLoading, setIsLoading] = useState(false);
+  const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-  // useState API FIPE
+  const [Focus, setFocus] = useState(false);
   const [vehicleType, setVehicleType] = useState(null);
   const [brandId, setBrandId] = useState(null);
   const [modelId, setModelId] = useState(null);
   const [yearId, setYearId] = useState(null);
+  const [yearCode, setYearCode] = useState(null);
   // useState ArrayData
   const [brandsData, setBrandsData] = useState([]);
   const [modelsData, setModelsData] = useState([]);
@@ -41,6 +39,7 @@ const AddVehicle = ({ navigation }) => {
   const [model, setModel] = useState('');
   const [year, setYear] = useState('');
   const [fuel, setFuel] = useState('');
+  const [price, setPrice] = useState('');
   const [odomitter, setOdomitter] = useState('');
   const [plate, setPlate] = useState('');
   const [isModalVisibleOdomiter, setIsModalVisibleOdomiter] = useState(false);
@@ -49,130 +48,178 @@ const AddVehicle = ({ navigation }) => {
   const handleModalOdomiter = () => setIsModalVisibleOdomiter(() => !isModalVisibleOdomiter);
   const handleModalPlate = () => setIsModalVisiblePlate(() => !isModalVisiblePlate);
 
+  useEffect(() => {
+    setIsLoading(true)
+    setTimeout(() => {
+      handleBrandId(vehicleType)
+      setIsLoading(false)
+    }, 1000)
+  }, [vehicleType])
 
   useEffect(() => {
-    handleBrandId(vehicleType)
     handleModelId(vehicleType, brandId);
-    handleFuel(vehicleType, brandId, modelId);
-  }, [vehicleType, brandId, modelId]);
+  }, [brandId]);
 
-  // Gent Vehicle Brands 
+  useEffect(() => {
+    handleFuel(vehicleType, brandId, modelId);
+  }, [modelId]);
+
+  useEffect(() => {
+    handleGetPrice(vehicleType, brandId, modelId, yearCode);
+  }, [yearCode]);
+
+
   const handleBrandId = async (vehicleType) => {
-    let brandsArray = [];
-    if (vehicleType == null || vehicleType == undefined || vehicleType == '') {
-      brandsArray.length == 0;
-      return null;
-    } else {
-      try {
-        brandsArray.length == 0;
+    try {
+      if (vehicleType === 'cars' || vehicleType !== null) {
         let response = await fetch(`${FIPE_API}/${vehicleType}/brands`);
-        if (!response.ok) {
-          Alert.alert('Error',
-            'Ops! Identificamos erro de comunicação em nossa plataforma. \
-             Verifique se seu dispositivo esta com acesso a Internet', [
-            {
-              text: 'SAIR'
-            }
-          ])
+        if (response.ok) {
+          let json = await response.json();
+          let data = json.map(({ code, name }) => ({ code, name }))
+          setBrandsData(data)
         }
-        let json = await response.json();
-        brandsArray.length == 0;
-        let obj = Object.keys(json).length;
-        for (let i = 0; i < obj; i++) {
-          brandsArray.push({
-            value: json[i].code,
-            label: json[i].name
-          });
-          setBrandsData(brandsArray)
-        }
-      } catch (error) {
-        return null;
       }
+    } catch (error) {
+      return null;
     }
   }
 
   // Gent Vehicle Models 
   const handleModelId = async (vehicleType, brandId) => {
-    let modelsArray = [];
-    if (vehicleType == null || vehicleType == undefined || vehicleType == '' && brandId == null || brandId == undefined || brandId == '') {
-      modelsArray.length == 0;
-      return null;
-    } else {
-      try {
-        modelsArray.length == 0;
+    try {
+      if (vehicleType === 'cars' || vehicleType !== null && brandId !== '' || brandId !== null) {
         let response = await fetch(`${FIPE_API}/${vehicleType}/brands/${brandId}/models`);
-        let json = await response.json();
-        let obj = Object.keys(json).length;
-        for (let i = 0; i < obj; i++) {
-          modelsArray.push({
-            value: json[i].code,
-            label: json[i].name
-          });
-          setModelsData(modelsArray)
+        if (response.ok) {
+          let json = await response.json();
+          let model = json.map(({ code, name }) => ({ code, name }))
+          setModelsData(model)
         }
-      } catch (error) {
-        return null;
       }
+    } catch (error) {
+      return null;
     }
   }
 
   // Gent Vehicle Fuel
   const handleFuel = async (vehicleType, brandId, yearId) => {
-    let yearsArray = [];
-    if (vehicleType == null || vehicleType == undefined || vehicleType == '' && brandId == null || brandId == undefined || brandId == '' && modelId == null || modelId == undefined || modelId == '') {
-      yearsArray.length == 0;
-      return null;
-    } else {
-      try {
-        yearsArray.length == 0;
+    try {
+      if (vehicleType === 'cars' || vehicleType !== null && brandId !== '' || brandId !== null && yearId !== '' || yearId !== null) {
         let response = await fetch(`${FIPE_API}/${vehicleType}/brands/${brandId}/models/${modelId}/years`);
-        let json = await response.json();
-        let obj = Object.keys(json).length;
-        for (let i = 0; i < obj; i++) {
-          yearsArray.push({
-            value: json[i].code,
-            label: json[i].name
-          });
-          setYearData(yearsArray)
+        if (response.ok) {
+          let json = await response.json();
+          let year = json.map(({ code, name }) => ({ code, name }))
+          setYearData(year)
         }
-      } catch (error) {
-        return null;
       }
+    } catch (error) {
+      return null;
+    }
+
+  }
+
+  //Get Price Vehicle
+  //https://parallelum.com.br/fipe/api/v2/cars/brands/25/models/4010/years/2007-1
+  const handleGetPrice = async (vehicleType, brandId, modelId, yearCode) => {
+    try {
+      if (vehicleType === 'cars') {
+        let response = await fetch(`${FIPE_API}/${vehicleType}/brands/${brandId}/models/${modelId}/years/${yearCode}`);
+        if (response.ok) {
+          let json = await response.json();
+          setPrice(json.price)
+        }
+        return null
+      }
+    } catch (error) {
+      return null;
     }
   }
 
-  const handlecreateVehicle = async (brand, model, fuell, year, odomitter, plate) => {
-    if (brand == '' || model == '' || fuell == '' || year == '' || odomitter == '' || plate == '') {
-      Alert.alert('Ops! Favor Preencher todos os campos')
-    } else {
-      await Api.createVehicle(brand, model, fuell, year, odomitter, plate)
-      navigation.navigate('Vehicle');
+  // Save Data
+  const handlecreateVehicle = async (brand, model, fuel, year, odomitter, plate) => {
+
+    try {
+      if (brand === '') {
+        Alert.alert('Atenção', '\nCampo Marca não pode ser vázio')
+      } else if (model === '') {
+        Alert.alert('Atenção', '\nCampo Modelo não pode ser vázio')
+      } else if (fuel === '') {
+        Alert.alert('Atenção', '\nCampo Combustível não pode ser vázio')
+      } else if (year === '') {
+        Alert.alert('Atenção', '\nCampo Ano não pode ser vázio')
+      } else if (odomitter === '') {
+        Alert.alert('Atenção', '\nCampo K.M não pode ser vázio')
+      } else if (plate === '') {
+        Alert.alert('Atenção', '\nCampo Placa não pode ser vázio')
+      } else {
+        let json = await Api.createVehicle(brand, model, fuel, year, odomitter, plate)
+        if (json.id) {
+          Alert.alert('Created Successfuly', 'Veículo Cadastrado com Sucesso', [
+            {
+              text: "Novo Cadastro",
+              onPress: async () => {
+                navigation.navigate('AddVehicle');
+              }
+            },
+            {
+              text: "Sair",
+              onPress: async () => {
+                navigation.navigate('Vehicle');
+              }
+            }
+          ])
+
+        } else {
+          Alert.alert('Atenção', `${json.message.plate}`)
+        }
+      }
+    } catch (error) {
+
     }
   }
 
+  //================================================================================================================
+  // Begin Render
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='green' />
+      </View>
+    )
+  }
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
-        <RadioButton.Group onValueChange={newValue => setVehicleType(newValue)} value={vehicleType}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 20 }}>
-            <View style={{ flexDirection: 'row', }}>
-              <RadioButton value="cars" />
-              <FontAwesome name="car" size={30} color="#525252" status='unchecked' />
+        {/* Start Area for Radio Buttom */}
+        <View>
+          <RadioButton.Group onValueChange={value => setVehicleType(value)} value={vehicleType}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 10, alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ borderWidth: 0.5, borderRadius: 20, marginRight: 10 }}>
+                  <RadioButton value="cars" status='unchecked' />
+                </View>
+                <FontAwesome name="car" size={30} color="#525252" />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ borderWidth: 0.5, borderRadius: 20, marginRight: 10 }}>
+                  <RadioButton value="trucks" status='unchecked' />
+                </View>
+                <FontAwesome name="truck" size={30} color="#525252" />
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ borderWidth: 0.5, borderRadius: 20, marginRight: 10 }}>
+                  <RadioButton value="motorcycles" status='unchecked' />
+                </View>
+                <FontAwesome name="motorcycle" size={30} color="#525252" />
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', }}>
-              <RadioButton value="trucks" status='unchecked' />
-              <FontAwesome name="truck" size={30} color="#525252" />
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <RadioButton value="motorcycles" status='unchecked' />
-              <FontAwesome name="motorcycle" size={30} color="#525252" />
-            </View>
-          </View>
-        </RadioButton.Group>
-        {/* Brand / marca */}
-        <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+          </RadioButton.Group>
+        </View>
+        {/* Start Area DropDown */}
+        <View style={styles.container}>
+          {/* BRANDS VEHICLE */}
           <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: '#CCC' }]}
+            style={[styles.dropdown, isFocus && { borderColor: 'green' }]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
@@ -180,24 +227,30 @@ const AddVehicle = ({ navigation }) => {
             data={brandsData}
             search
             maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? 'Selecione Marca' : brands.toString()}
-            searchPlaceholder="Digite aqui para Procurar sua marca"
+            labelField="name"
+            valueField="code"
+            placeholder={!isFocus ? 'Selecione Marca' : `${brands.name ? brands.name : '...'}`}
+            searchPlaceholder="Buscar por Marca..."
             value={brands}
-            onFocus={() => setIsFocus(false)}
-            onBlur={() => setIsFocus(true)}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
             onChange={item => {
+              setBrandId(item.code)
+              setBrands(item.name)
               setIsFocus(false);
-              setBrandId(item.value)
-              setBrands(item.label)
             }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={isFocus ? 'green' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
           />
-        </View>
-        {/* Model / Modelo */}
-        <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+          {/* MODEL VEHICLE */}
           <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: '#CCC' }]}
+            style={[styles.dropdown, isFocus && { borderColor: 'green' }]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
@@ -205,24 +258,30 @@ const AddVehicle = ({ navigation }) => {
             data={modelsData}
             search
             maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? 'Selecione Modelo' : model}
-            searchPlaceholder="Digite aqui para Procurar sua modelo"
+            labelField="name"
+            valueField="code"
+            placeholder={!isFocus ? 'Selecione um Modelo' : `${model.name ? model.name : '...'}`}
+            searchPlaceholder="Buscar Modelo..."
             value={model}
-            onFocus={() => setIsFocus(false)}
-            onBlur={() => setIsFocus(true)}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
             onChange={item => {
+              setModelId(item.code);
+              setModel(item.name);
               setIsFocus(false);
-              setModelId(item.value)
-              setModel(item.label)
             }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={isFocus ? 'green' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
           />
-        </View>
-        {/* Year / Ano */}
-        <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+          {/*  YEAR DATE */}
           <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: '#CCC' }]}
+            style={[styles.dropdown, isFocus && { borderColor: 'green' }]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             inputSearchStyle={styles.inputSearchStyle}
@@ -230,34 +289,50 @@ const AddVehicle = ({ navigation }) => {
             data={yearData}
             search
             maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus ? 'Selecione Ano de Fabricação' : year}
-            searchPlaceholder="Digite aqui para procurar ano"
-            value={year.split(0, 5)}
-            onFocus={() => setIsFocus(false)}
-            onBlur={() => setIsFocus(true)}
+            labelField="name"
+            valueField="code"
+            placeholder={!isFocus ? 'Selecione um Ano' : `${year.name ? year.name : '...'}`}
+            searchPlaceholder="Buscar Ano..."
+            value={year}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
             onChange={item => {
-              setIsFocus(false);
-              setYearId(item.value)
-              setYear(item.label.slice(0, 5).toString())
-              setFuel(item.label.slice(5, 20))
+              setYearId(item.name)
+              setYear(item.code.slice(0, 4))
+              setFuel(item.name.slice(5, 20))
+              setYearCode(item.code)
             }}
+            renderLeftIcon={() => (
+              <AntDesign
+                style={styles.icon}
+                color={isFocus ? 'green' : 'black'}
+                name="Safety"
+                size={20}
+              />
+            )}
           />
         </View>
-        <TabOneLine title='Combustivel:' subTitle={fuel ? fuel : '...'} />
-        <TabOneLine title='Kilometragem:' subTitle={odomitter ? odomitter : '...'} onPress={handleModalOdomiter} />
-        <TabOneLine title='Placa:' subTitle={plate ? plate : '...'} onPress={handleModalPlate} />
+        {/* FUEL KILOMETER PLATE ID*/}
+        <View style={{ flex: 1, marginLeft: 14, marginRight: 14 }}>
+          <TabOneLine title='Combustivel:' subTitle={fuel ? fuel : '...'} />
+          <TabOneLine title='Ano:' subTitle={year ? year : '...'} />
+          <TabOneLine title='Km:'
+            subTitle={odomitter ? odomitter : <Ionicons name="ios-add-circle-outline" size={24} color="black" />} onPress={handleModalOdomiter} />
+          <TabOneLine title='Placa:'
+            subTitle={plate ? plate : <Ionicons name="ios-add-circle-outline" size={24} color="black" />} onPress={handleModalPlate} />
+          <TabOneLine title='Preço:'
+            subTitle={price ? price : ''} onPress={handleModalPlate} />
+        </View>
         {/* MODAL SET ODOMITER  */}
         <Modal isVisible={isModalVisibleOdomiter} style={styles.modal}>
           <View style={styles.modalContainer}>
-            <TextInput
-              style={{ height: 40, }}
-              mode='outlined'
-              keyboardType='numeric'
+            <MaskedTextInput
+              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
+              mask="999.999"
               placeholder={odomitter ? odomitter : 'Digite sua Kilometragem'}
-              value={odomitter}
-              onChangeText={text => setOdomitter(text)}
+              placeholderTextColor='#54Af89'
+              onChangeText={(text, rawText) => setOdomitter(text)}
+              keyboardType="numeric"
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -278,12 +353,14 @@ const AddVehicle = ({ navigation }) => {
         <Modal isVisible={isModalVisiblePlate} style={styles.modal}>
           <View style={styles.modalContainer}>
             <TextInput
-              style={{ height: 40, }}
               mode='outlined'
-              autoCapitalize='characters'
-              placeholder={plate ? plate : 'Digite numero da Placa'}
+              placeholder={plate ? plate : 'Digite sua Placa'}
+              placeholderTextColor='#54Af89'
               value={plate}
-              onChangeText={text => setPlate(text)}
+              onChangeText={(plate) => setPlate(plate)}
+              keyboardType="default"
+              maxLength={8}
+              autoCapitalize='characters'
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
@@ -301,13 +378,70 @@ const AddVehicle = ({ navigation }) => {
           </View>
         </Modal>
       </ScrollView>
+      {/* SAVE DATA BUTTOM */}
       <TouchableOpacity style={styles.button} onPress={() => handlecreateVehicle(brands, model, fuel, year, odomitter, plate)}>
         <Text style={styles.buttonText}>Cadastrar Veículo</Text>
       </TouchableOpacity>
     </SafeAreaView>
-
   );
-};
+}
 
-export default AddVehicle;
+export default AddVehiche;
 
+const styles = StyleSheet.create({
+  RadioButtonBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderColor: 'green',
+    borderWidth: 1,
+    borderRadius: 20,
+  },
+  container: {
+    marginLeft: 14, marginRight: 14
+  },
+  dropdown: {
+    height: 50,
+    backgroundColor: '#FFF',
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    marginBottom: 5
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    color: 'green'
+  },
+  button: { marginRight: 10, marginLeft: 10, marginTop: 10, marginBottom: 20, justifyContent: 'center', alignItems: 'center', padding: 10, borderRadius: 10, borderWidth: 0.5, backgroundColor: '#54Af89' },
+  buttonText: { fontSize: 18, fontWeight: 'bold', color: '#FFF' },
+  modal: { justifyContent: 'center', alignItems: 'center' },
+  modalContainer: { justifyContent: 'center', padding: 10, backgroundColor: '#FFF', height: 180, width: '94%', borderRadius: 10 },
+  modaTextInput: { height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 14, fontSize: 16, backgroundColor: '#F2F2F2' },
+  modalButton: { width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89', padding: 5, borderRadius: 10 },
+  modalButtonText: { fontSize: 18, color: '#FFF' },
+  excludeButton: { justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
+  excludeButtonText: { fontSize: 18, fontWeight: '500', color: 'red' },
+});

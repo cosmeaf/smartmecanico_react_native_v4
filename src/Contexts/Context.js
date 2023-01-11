@@ -2,10 +2,12 @@ import React, { createContext, useState, useEffect, useReducer } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Api from '../service/Api';
 import { Alert } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const GlobalContext = createContext({});
 
 export const GlobalProvider = ({ children }) => {
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [authentication, setAuthentication] = useState(false);
   const [accessToken, setAccessToken] = useState('');
@@ -13,38 +15,52 @@ export const GlobalProvider = ({ children }) => {
   const [user, setUser] = useState([]);
 
   useEffect(() => {
-    tokenVerify();
+    tokenVerify()
   }, []);
 
   // Sign-In
   const signin = async (username, password) => {
-    let json = await Api.signIn(username, password)
-    if (json.access && json.refresh) {
-      await AsyncStorage.setItem("accessToken", JSON.stringify(json.access));
-      await AsyncStorage.setItem("refreshToken", JSON.stringify(json.refresh));
-      setAuthentication(true)
-    } else if (json.code !== 200) {
-      Alert.alert(`Authentication Error: ${json.code}`, `${json.message}`)
-      setAuthentication(false);
-      setIsLoading(false);
-      return false;
-    }
     setIsLoading(false)
+    try {
+      setIsLoading(true)
+      let data = await Api.signIn(username, password)
+      if (data.access && data.refresh) {
+        await AsyncStorage.setItem("accessToken", JSON.stringify(data.access));
+        await AsyncStorage.setItem("refreshToken", JSON.stringify(data.refresh));
+        setAuthentication(true)
+        setIsLoading(false)
+      } else if (data.code !== 200) {
+        Alert.alert(`Atenção: \nFalha ao acessar Sistema \nTente mais tarde`)
+        setAuthentication(false)
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.warn(error)
+    }
   }
   // Sign-Up
   const signup = async (username, email, password, password2) => {
-    let json = await Api.signUp(username, email, password, password2)
-
-    if (json.id) {
-      setAuthentication(false)
-      return true;
-    } else if (json.code !== 201) {
-      Alert.alert(`Authentication Error: ${json.code}`,
-        `${json.message.email ? json.message.email : ''} \n\n 
-        ${json.message.password ? json.message.password : ''}`)
-      setAuthentication(false)
-      return false;
+    setIsLoading(false)
+    try {
+      let data = await Api.signUp(username, email, password, password2)
+      if (data.id) {
+        Alert.alert('Created Succesfully', '\nUsuário criado com sucesso', [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              navigation.navigate('LoginScreen');
+            }
+          },
+        ])
+      } else if (data.code !== 200) {
+        const email = data.message.email;
+        const username = data.message.username
+        Alert.alert('Atenção', `\n${email} \ne/ou \n${username}`)
+      }
+    } catch (error) {
+      console.warn(error)
     }
+    setIsLoading(false)
   }
 
   //Sign-Out
@@ -63,19 +79,24 @@ export const GlobalProvider = ({ children }) => {
     if (Object.keys(verify).length == 0) {
       setAuthentication(true)
     } else {
-      const value = await AsyncStorage.getItem('refreshToken');
-      const refresh = JSON.parse(value)
-      let json = await Api.tokenkRefresh(refresh)
-      // console.log('RENEW REFRESH ===========> ' + json.refresh)
-      // console.log('RENEW ACCESS ===========> ' + json.access)
-      if (json.access && json.refresh) {
-        await AsyncStorage.setItem("accessToken", JSON.stringify(json.access));
-        await AsyncStorage.setItem("refreshToken", JSON.stringify(json.refresh));
-        setAuthentication(true)
-      } else {
-        console.log('SIGN-OUT SUCCESSFULY MOBILE')
-        setAuthentication(false);
-        setIsLoading(false)
+      try {
+        const value = await AsyncStorage.getItem('refreshToken');
+        const refresh = JSON.parse(value)
+        let data = await Api.tokenkRefresh(refresh)
+        // console.log('RENEW REFRESH ===========> ' + json.refresh)
+        // console.log('RENEW ACCESS ===========> ' + json.access)
+        if (data.access && data.refresh) {
+          await AsyncStorage.setItem("accessToken", JSON.stringify(data.access));
+          await AsyncStorage.setItem("refreshToken", JSON.stringify(data.refresh));
+          setAuthentication(true)
+        } else {
+          signout();
+          console.log('TOKEN VERIFY ', data)
+          setAuthentication(false);
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.warn(error)
       }
     }
     setIsLoading(false)

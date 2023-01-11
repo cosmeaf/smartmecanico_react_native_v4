@@ -7,12 +7,12 @@ import Api from '../../../service/Api';
 
 export default ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
-  const [profile, setProfile] = useState('');
+  const [profile, setProfile] = useState({});
   const [user, setUser] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   if (!authentication) {
-    signout();
+    navigation.navigate('LoginScreen')
   }
 
   useEffect(() => {
@@ -21,23 +21,51 @@ export default ({ navigation }) => {
   }, [authentication])
 
   const getProfile = async () => {
+    setProfile('')
     let res = await Api.getProfile();
-    if (res.ok != false) {
-      res.map((item, key) => (
-        setProfile(item)
-      ));
-      setIsLoading(false)
+
+    if (res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+
+      }
     }
+    res.map((item) => {
+      setProfile(item)
+    });
   }
 
   const getUser = async () => {
+    setUser('')
     let res = await Api.getUser();
-    if (res.ok != false) {
-      res.map((item, key) => (
-        setUser(item)
-      ));
-      setIsLoading(false)
+    if (res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+
+      }
     }
+    res.map((item) => {
+      setUser(item)
+    });
+
   }
 
   return (
@@ -179,7 +207,6 @@ export default ({ navigation }) => {
           <Text style={{ fontSize: 18, fontWeight: '500' }}>Sair</Text>
         </TouchableOpacity>
       </View>
-
     </SafeAreaView>
   )
 }

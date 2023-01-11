@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,13 +9,22 @@ import TopServicesCarousel from '../../../componentes/TopServicesCarousel';
 import OtherCategory from '../../../componentes/OtherCategory';
 import slideData from '../../../model/data/slide'
 import otherCategoryData from '../../../model/data/categoryData';
+import Api from '../../../service/Api';
 
 
 export default ({ navigation, route }) => {
   const { authentication, signout } = useContext(GlobalContext);
 
   if (!authentication) {
-    signout();
+
+  }
+
+  useEffect(() => {
+
+  }, [authentication])
+
+  const getProfile = async () => {
+    let res = await Api.getProfile();
   }
 
   function handleClick(data) {

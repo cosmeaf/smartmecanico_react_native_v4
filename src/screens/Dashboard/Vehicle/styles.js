@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   modal: { justifyContent: 'center', alignItems: 'center' },
   modalContainer: { justifyContent: 'center', padding: 10, backgroundColor: '#FFF', height: 180, width: '94%', borderRadius: 10 },
   modaTextInput: { height: 40, borderColor: 'gray', borderWidth: 1, paddingLeft: 14, fontSize: 16, backgroundColor: '#F2F2F2' },
-  modalButton: { width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F16529', padding: 5, borderRadius: 10 },
+  modalButton: { width: 100, justifyContent: 'center', alignItems: 'center', backgroundColor: '#54Af89', padding: 5, borderRadius: 10 },
   modalButtonText: { fontSize: 18, color: '#FFF' },
   excludeButton: { justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
   excludeButtonText: { fontSize: 18, fontWeight: '500', color: 'red' },

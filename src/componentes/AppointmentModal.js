@@ -168,6 +168,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     }
   }
 
+  console.log(vehicle)
   if (vehicle.length === 0) {
     return (
       <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
@@ -237,7 +238,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         {/* Modal Body */}
         <View style={{ flex: 0.6, marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
           <TabOneLine title='Serviço:' subTitle={serviceTitle} />
-          <TabOneLine title='Veículo:' subTitle={vehicle.plate} />
+          <TabOneLine title='Veículo:' subTitle={vehicle.plate} onPress={() => { }} />
           <View style={{ flexDirection: 'row', height: 40, backgroundColor: '#FFF', justifyContent: 'space-between', alignItems: 'center' }}>
             <TouchableOpacity style={{ marginLeft: 40 }} onPress={handleLeftClick}>
               <Ionicons name="ios-chevron-back-circle" size={30} color="green" />
