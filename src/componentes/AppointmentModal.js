@@ -168,7 +168,6 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     }
   }
 
-  console.log(vehicle)
   if (vehicle.length === 0) {
     return (
       <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
