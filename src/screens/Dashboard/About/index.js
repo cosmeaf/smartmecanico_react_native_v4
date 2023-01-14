@@ -6,13 +6,14 @@ import GlobalContext from '../../../Contexts/Context';
 export default ({ navigation }) => {
 
   const { authentication, isLoading, signout } = useContext(GlobalContext);
-  if (!authentication) {
-    signout();
-  }
 
   useEffect(() => {
 
   }, [authentication])
+
+  if (!authentication) {
+    signout();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, marginLeft: 14, marginRight: 14 }}>

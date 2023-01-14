@@ -12,11 +12,6 @@ const FineTraffic = ({ navigation }) => {
   const [fineTraffic, setFineTraffic] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-
-  if (!authentication) {
-    signout();
-  }
-
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -30,6 +25,10 @@ const FineTraffic = ({ navigation }) => {
       getFineTraffic();
     });
   }, [authentication, navigation])
+
+  if (!authentication) {
+    signout();
+  }
 
   const getFineTraffic = async () => {
     setRefreshing(true);

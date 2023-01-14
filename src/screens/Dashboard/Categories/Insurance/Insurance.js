@@ -12,10 +12,6 @@ const Insurance = ({ navigation }) => {
   const [insurance, setInsurance] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  if (!authentication) {
-    signout();
-  }
-
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -29,6 +25,10 @@ const Insurance = ({ navigation }) => {
       getInsurance();
     });
   }, [authentication, navigation])
+
+  if (!authentication) {
+    signout();
+  }
 
   const getInsurance = async () => {
     setRefreshing(true);

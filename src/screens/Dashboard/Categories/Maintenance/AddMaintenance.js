@@ -40,7 +40,6 @@ const AddMaintenance = ({ navigation }) => {
 
 
   const handleSaveClick = (date, name, startKilometer, endKilometer) => {
-    console.debug('Save Maintenace ', date, name, startKilometer, endKilometer)
     setRefreshing(true)
     if (date.length === 0) {
       Alert.alert('Campo Data não pode ser vázio')

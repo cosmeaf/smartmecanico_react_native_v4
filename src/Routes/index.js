@@ -10,15 +10,19 @@ import AppTabStack from './TabSatck.route';
 
 const Route = () => {
   const { authentication, isLoading } = useContext(GlobalContext);
+  console.log(authentication, isLoading)
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' color='#54Af89' />
-      </View>
-    )
-  }
-  return authentication ? <AppStack /> : <AuthStack />
+
+
+  return isLoading ?
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size='large' color='#54Af89' />
+    </View>
+    :
+    authentication ? <AppStack /> : <AuthStack />
+
+
+
 }
 
 export default Route;

@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <Background>
       <Logo />
-      <Header>Bem Vindo.</Header>
+      <Header>Bem-vindo de volta.</Header>
       <TextInput
         label="E-mail"
         returnKeyType="next"
@@ -45,8 +45,9 @@ export default function LoginScreen({ navigation }) {
         keyboardType="email-address"
       />
       <TextInput
-        label="Password"
+        label="Senha"
         returnKeyType="done"
+        autoCapitalize="none"
         value={password.value}
         onChangeText={(text) => setPassword({ value: text, error: '' })}
         error={!!password.error}
@@ -67,7 +68,7 @@ export default function LoginScreen({ navigation }) {
       </TouchableOpacity>
 
       <View style={styles.row}>
-        <Text>Ainda não tem uma Conta? </Text>
+        <Text style={{ fontWeight: '500', marginRight: 10 }}>Ainda não tem uma Conta? </Text>
         <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
           <Text style={styles.link}>Registre-se</Text>
         </TouchableOpacity>
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
   forgot: {
     fontSize: 13,
     color: theme.colors.secondary,
+    fontWeight: '500'
   },
   link: {
     fontWeight: 'bold',

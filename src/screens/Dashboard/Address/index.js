@@ -21,10 +21,6 @@ export default ({ navigation }) => {
   const [isModalVisibleComplemento, setIsModalVisibleComplemento] = useState(false)
   const [refreshing, setRefreshing] = useState(false);
 
-  if (!authentication) {
-    signout();
-  }
-
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -40,6 +36,10 @@ export default ({ navigation }) => {
       getAddress();
     });
   }, [authentication, navigation])
+
+  if (!authentication) {
+    signout();
+  }
 
   const viaCepApi = async (cep) => {
     let res = await Api.getCep(cep);

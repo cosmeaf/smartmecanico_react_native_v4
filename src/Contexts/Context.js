@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useReducer } from "react";
+import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Api from '../service/Api';
 import { Alert } from "react-native";
@@ -11,36 +12,40 @@ export const GlobalProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [authentication, setAuthentication] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [profile, setProfile] = useState([]);
-  const [user, setUser] = useState([]);
+  const [refreshToken, setRefreshToken] = useState('');
 
   useEffect(() => {
-    tokenVerify()
-  }, []);
+    tokenVerify();
+    getToken();
+    getRefreshToken();
+  }, [accessToken, refreshToken]);
 
   // Sign-In
   const signin = async (username, password) => {
-    setIsLoading(false)
     try {
-      setIsLoading(true)
-      let data = await Api.signIn(username, password)
-      if (data.access && data.refresh) {
-        await AsyncStorage.setItem("accessToken", JSON.stringify(data.access));
-        await AsyncStorage.setItem("refreshToken", JSON.stringify(data.refresh));
+      const response = await Api.signIn(username, password)
+      if (response.access && response.refresh) {
+        await AsyncStorage.setItem("@accessToken", JSON.stringify(response.access));
+        await AsyncStorage.setItem("@refreshToken", JSON.stringify(response.refresh));
         setAuthentication(true)
         setIsLoading(false)
-      } else if (data.code !== 200) {
-        Alert.alert(`Atenção: \nFalha ao acessar Sistema \nTente mais tarde`)
-        setAuthentication(false)
+      } else if (response.message.detail) {
+        Alert.alert('Atenção', `${response.message.detail}`)
+        setIsLoading(false)
+      } else {
+        Alert.alert('Atenção', `${response}`)
         setIsLoading(false)
       }
     } catch (error) {
-      console.warn(error)
+      if (error.name) {
+        Alert.alert('Atenção', 'Falha de conexão ao sistema')
+        setIsLoading(false)
+      }
     }
+
   }
   // Sign-Up
   const signup = async (username, email, password, password2) => {
-    setIsLoading(false)
     try {
       let data = await Api.signUp(username, email, password, password2)
       if (data.id) {
@@ -48,61 +53,95 @@ export const GlobalProvider = ({ children }) => {
           {
             text: "Continnuar",
             onPress: () => {
+              setIsLoading(true)
               navigation.navigate('LoginScreen');
+              setIsLoading(false)
             }
           },
         ])
       } else if (data.code !== 200) {
         const email = data.message.email;
         const username = data.message.username
-        Alert.alert('Atenção', `\n${email} \ne/ou \n${username}`)
+        if (email) {
+          Alert.alert('Atenção', `${email}`)
+          setIsLoading(false)
+        } else if (username) {
+          Alert.alert('Atenção', `${username}`)
+          setIsLoading(false)
+        }
       }
     } catch (error) {
-      console.warn(error)
+      if (error.name) {
+        setIsLoading(false)
+        Alert.alert('Atenção', 'Falha de conexão ao sistema')
+        setIsLoading(true)
+      }
     }
-    setIsLoading(false)
   }
 
   //Sign-Out
-  const signout = () => {
-    AsyncStorage.removeItem("accessToken");
-    AsyncStorage.clear();
+  const signout = async () => {
+    try {
+      setIsLoading(true)
+      await AsyncStorage.removeItem('@accessToken')
+      await AsyncStorage.removeItem('@refreshToken')
+      await AsyncStorage.clear();
+      setAuthentication(false)
+    } catch (e) {
+      return null
+    }
+    setAuthentication(false)
     setIsLoading(false)
-    setAuthentication(false);
+  }
+
+
+  const getRefreshToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@refreshToken')
+      const refresh = JSON.parse(value);
+      setRefreshToken(refresh)
+    } catch (e) {
+      return null
+    }
+  }
+
+  const getToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@accessToken')
+      const token = JSON.parse(value);
+      setAccessToken(token)
+    } catch (e) {
+      return null
+    }
   }
 
   // Data Persiste, Validation Token and Refresh new Token 
-  const tokenVerify = async (token_verify, token_refresh) => {
-    const value = await AsyncStorage.getItem('accessToken');
-    const token = JSON.parse(value)
-    let verify = await Api.tokenkVerify(token)
-    if (Object.keys(verify).length == 0) {
-      setAuthentication(true)
-    } else {
-      try {
-        const value = await AsyncStorage.getItem('refreshToken');
-        const refresh = JSON.parse(value)
-        let data = await Api.tokenkRefresh(refresh)
-        // console.log('RENEW REFRESH ===========> ' + json.refresh)
-        // console.log('RENEW ACCESS ===========> ' + json.access)
-        if (data.access && data.refresh) {
-          await AsyncStorage.setItem("accessToken", JSON.stringify(data.access));
-          await AsyncStorage.setItem("refreshToken", JSON.stringify(data.refresh));
-          setAuthentication(true)
+  const tokenVerify = async () => {
+    try {
+      setIsLoading(true)
+      // Verify if Token and RefreshToken stored on useState
+      if (!accessToken && !refreshToken) {
+        setAuthentication(false)
+      } else {
+        const tokenValidate = await Api.tokenkVerify(accessToken)
+        // Verify Token Is Not Valide and to Refresh Token
+        if (tokenValidate.code === 401 && tokenValidate.message.code == "token_not_valid") {
+          const refresh = await Api.tokenkRefresh(refreshToken)
+          // Verify if RefreshToken is not Valid
+          if (refresh.code === 401 && refresh.message.code === "token_not_valid") {
+            setAuthentication(false)
+          }
         } else {
-          signout();
-          console.log('TOKEN VERIFY ', data)
-          setAuthentication(false);
+          setAuthentication(true)
           setIsLoading(false)
         }
-      } catch (error) {
-        console.warn(error)
       }
+    } catch (error) {
+      setIsLoading(false)
+      return null
     }
     setIsLoading(false)
   }
-
-
 
 
   return (

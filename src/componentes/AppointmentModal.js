@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image, contentContainerStyle, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import TabOneLine from './TabOneLine';
+import GlobalContext from '../Contexts/Context';
 import Api from '../service/Api';
 
 
@@ -15,6 +16,7 @@ const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
 
 const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
+  const { signout, authentication } = useContext(GlobalContext);
   const navigation = useNavigation();
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(0);
@@ -88,7 +90,11 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     getHourService();
     getVehicle();
     getAddress();
-  }, [])
+  }, [authentication])
+
+  if (!authentication) {
+    signout();
+  }
 
   const handleRightClick = () => {
     let mountDate = new Date(selectedYear, selectedMonth, 1);
@@ -118,7 +124,8 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         setVehicle(item)
       ));
     } else {
-      console.warn('Ops! GET VEÍCULOS', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde \n código ${res.status}`)
+      signout();
     }
   }
 
@@ -136,7 +143,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         setAddress(item)
       ));
     } else {
-      console.log('Ops! Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde \n código ${res.status}`)
       signout();
     }
   }

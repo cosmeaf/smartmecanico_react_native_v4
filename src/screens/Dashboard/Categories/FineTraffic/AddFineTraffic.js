@@ -35,7 +35,6 @@ const AddFineTraffic = ({ navigation }) => {
 
 
   const handleSaveClick = (date, price, number, point, description) => {
-    console.debug('Save MULTA ', date, price, number, point, description)
     setIsLoading(true)
     if (date.length === 0) {
       Alert.alert('Campo Data não pode ser vázio')
@@ -59,7 +58,6 @@ const AddFineTraffic = ({ navigation }) => {
   const createFineTraffic = async (date, price, number, point, description) => {
     let newDate = date.split('/').reverse().join('-')
     let newPrice = price.split('R$').splice(1, 1).toString()
-    console.debug('Save MULTA ', newDate, newPrice, number, point, description)
     let json = await Api.createFineTraffic(newDate, newPrice, number, point, description)
     if (json.id) {
       navigation.navigate('FineTraffic')

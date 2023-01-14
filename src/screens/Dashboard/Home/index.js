@@ -15,16 +15,12 @@ import Api from '../../../service/Api';
 export default ({ navigation, route }) => {
   const { authentication, signout } = useContext(GlobalContext);
 
-  if (!authentication) {
-
-  }
-
   useEffect(() => {
 
   }, [authentication])
 
-  const getProfile = async () => {
-    let res = await Api.getProfile();
+  if (!authentication) {
+    signout();
   }
 
   function handleClick(data) {

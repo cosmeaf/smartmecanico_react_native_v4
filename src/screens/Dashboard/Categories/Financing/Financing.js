@@ -12,11 +12,6 @@ const Financing = ({ navigation }) => {
   const [financing, setFinancing] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-
-  if (!authentication) {
-    signout();
-  }
-
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -30,6 +25,10 @@ const Financing = ({ navigation }) => {
       getFinancing();
     });
   }, [authentication, navigation])
+
+  if (!authentication) {
+    signout();
+  }
 
   const getFinancing = async () => {
     setRefreshing(true);

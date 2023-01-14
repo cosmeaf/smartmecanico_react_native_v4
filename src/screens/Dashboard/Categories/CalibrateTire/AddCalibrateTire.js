@@ -26,7 +26,6 @@ const AddCalibrateTire = ({ navigation }) => {
 
 
   const handleSaveClick = (date, libra) => {
-    console.debug('Save Calibragem Page ', date, libra)
     setIsLoading(true)
     if (date.length === 0) {
       Alert.alert('Campo Data não pode ser vázio')

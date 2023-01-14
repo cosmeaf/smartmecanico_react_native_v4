@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, FlatList, RefreshControl, ActivityIndicator, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -11,10 +11,6 @@ export default ({ navigation }) => {
   const { authentication, isLoading, signout } = useContext(GlobalContext);
   const [refreshing, setRefreshing] = useState(true);
   const [schedules, setSchedule] = useState([]);
-
-  if (!authentication) {
-    signout();
-  }
 
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -30,11 +26,17 @@ export default ({ navigation }) => {
     });
   }, [authentication, navigation])
 
+  if (!authentication) {
+    signout();
+  }
+
   const getSchedule = async () => {
     let res = await Api.getSchedule();
     if (res) {
       setRefreshing(false)
       setSchedule(res)
+    } else {
+      Alert.alert('Atenção', `Estamos com problema para carregar as informações do sistema \nCódigo: ${res.status}`)
     }
   }
 

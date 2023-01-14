@@ -51,7 +51,6 @@ const AddSupply = ({ navigation }) => {
   const createSupply = async (date, liter, price, kilometer) => {
     let newDate = date.split('/').reverse().join('-')
     let newPrice = price.split('R$').splice(1, 1).toString()
-    console.log('SUPPLY PAGE ', newDate, liter, newPrice, kilometer)
     let json = await Api.createSupply(newDate, liter, newPrice, kilometer)
     if (json.id) {
       navigation.navigate('Supply')

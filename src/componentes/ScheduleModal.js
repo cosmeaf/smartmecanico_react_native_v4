@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
+import GlobalContext from '../Contexts/Context';
 import Api from '../service/Api';
 
 
@@ -11,6 +12,7 @@ const month = ['janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julh
 const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
 const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
+  const { signout, authentication } = useContext(GlobalContext);
   const [service, setService] = useState('');
   const [address, setAddress] = useState({});
   const [vehicle, setVehicle] = useState('');
@@ -31,7 +33,6 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
   // UseEffect get Data Calendar
   useEffect(() => {
     let daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-    //console.log(`Total de dias no mês ${month[selectedMonth]} = ${daysInMonth}`)
     const newListDays = [];
 
     for (let i = 1; i < daysInMonth + 1; i++) {
@@ -71,7 +72,11 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
     getAddress();
     getVehicle();
     getHourAvailibility();
-  }, [])
+  }, [authentication])
+
+  if (!authentication) {
+    signout();
+  }
 
   const handleLeftDateClick = () => {
     let mountDate = new Date(selectedYear, selectedMonth, 1);
@@ -98,7 +103,7 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
       ));
 
     } else {
-      console.log('Ops! Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde', Error ${res.status}`)
       signout();
     }
   }
@@ -110,7 +115,8 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
         setVehicle(item)
       ));
     } else {
-      console.warn('Ops! Estamos com problema para acessar suas informação. Pro Favor Tente mais tarde', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para acessar suas informação. Por Favor Tente mais tarde', \nCódigo ${res.status}`)
+      signout();
     }
   }
 
@@ -120,7 +126,7 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
     if (res) {
       setServiceHour(res)
     } else {
-      console.log('Ops! Erro ao Carregar Hora Disponível', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para acessar suas informação. Por Favor Tente mais tarde', \nCódigo ${res.status}`)
       signout();
     }
   }
@@ -131,7 +137,7 @@ const ScheduleModal = ({ navigation, route, isVisible, onPress, image }) => {
     if (res) {
       setAvailabilityHour(res)
     } else {
-      console.log('Ops! Erro ao Carregar Hora Disponível', `Error ${res.status}`)
+      Alert.alert('Atenção', `Estamos com problema para acessar suas informação. Por Favor Tente mais tarde', \nCódigo ${res.status}`)
     }
   }
 

@@ -13,10 +13,6 @@ const CalibrateTire = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false);
 
-  if (!authentication) {
-    signout();
-  }
-
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -30,6 +26,10 @@ const CalibrateTire = ({ navigation }) => {
       getCalibrateTire();
     });
   }, [authentication, navigation])
+
+  if (!authentication) {
+    signout();
+  }
 
   const getCalibrateTire = async () => {
     setRefreshing(true);

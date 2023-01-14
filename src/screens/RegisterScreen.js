@@ -16,8 +16,8 @@ import LoadingIcon from '../componentes/LoadingIcon'
 
 export default function RegisterScreen({ navigation }) {
   const { signup, isLoading } = useContext(GlobalContext);
-  const [name, setName] = useState({ value: 'fulano', error: '' })
-  const [email, setEmail] = useState({ value: 'fulano@gmail.com', error: '' })
+  const [name, setName] = useState({ value: 'demo', error: '' })
+  const [email, setEmail] = useState({ value: 'demo@gmail.com', error: '' })
   const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
 
   const onSignUpPressed = () => {
@@ -33,21 +33,28 @@ export default function RegisterScreen({ navigation }) {
     signup(name.value, email.value, password.value, password.value)
   }
 
-  {
-    return (<LoadingIcon /> &&
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='#54Af89' />
+      </View>
+    )
+  } else {
+    return (
       <Background>
         <Logo />
         <Header>Criar uma Conta</Header>
         <TextInput
-          label="Name"
+          label="Usuário"
           returnKeyType="next"
+          autoCapitalize="none"
           value={name.value}
           onChangeText={(text) => setName({ value: text, error: '' })}
           error={!!name.error}
           errorText={name.error}
         />
         <TextInput
-          label="Email"
+          label="E-mail"
           returnKeyType="next"
           value={email.value}
           onChangeText={(text) => setEmail({ value: text, error: '' })}
@@ -59,8 +66,9 @@ export default function RegisterScreen({ navigation }) {
           keyboardType="email-address"
         />
         <TextInput
-          label="Password"
+          label="Senha"
           returnKeyType="done"
+          autoCapitalize="none"
           value={password.value}
           onChangeText={(text) => setPassword({ value: text, error: '' })}
           error={!!password.error}
@@ -73,14 +81,16 @@ export default function RegisterScreen({ navigation }) {
           <Text style={{ color: '#FFF', fontSize: 22 }}>Cadastrar</Text>
         </TouchableOpacity>
         <View style={styles.row}>
-          <Text>Already have an account? </Text>
+          <Text>Já tem uma conta? </Text>
           <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
-            <Text style={styles.link}>Login</Text>
+            <Text style={styles.link}>Entrar</Text>
           </TouchableOpacity>
         </View>
       </Background>
     )
   }
+
+
 
 }
 

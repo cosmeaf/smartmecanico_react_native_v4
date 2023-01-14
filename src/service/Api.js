@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const BASE_API = 'http://10.0.0.162/api'
+const BASE_API = 'http://10.0.0.162/api'
 // const BASE_API = 'http://127.0.0.1/api'
-const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
+// const BASE_API = 'http://173.224.117.181:8001/api'
+//const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
 
 
 // Authentication
@@ -23,12 +24,12 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return { "message": error };
+      return null
     }
   },
   tokenkRefresh: async (refresh) => {
@@ -44,16 +45,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return { "message": error };
+      return null
     }
   },
   // SIGN-IN
   signIn: async (username, password) => {
+    const data = { username, password }
     try {
       const response = await fetch(`${BASE_API}/login/`, {
         method: 'POST',
@@ -61,18 +63,19 @@ export default {
           Accept: "application/json",
           "Content-type": "application/json;charset=UTF-8"
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify(data)
       });
       if (response.status === 200) {
         const json = await response.json();
-        return json
+        return json;
       } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return { "message": error };
+      return null
     }
+
   },
   // SIGN-UP
   signUp: async (username, email, password, password2, first_name, last_name) => {
@@ -94,14 +97,14 @@ export default {
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return { "message": error };
+      return null
     }
   },
   //-------------------------------------------------------------------------
   // API ACCESS USER
   //-------------------------------------------------------------------------
   getUser: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/user/`, {
@@ -115,16 +118,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   updateUser: async (id, first_name, last_name) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     const data = { id, first_name, last_name }
     try {
@@ -140,16 +143,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteUser: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/user/${id}/`, {
@@ -164,18 +167,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API ACCESS PROFILE
   //-------------------------------------------------------------------------
   getProfile: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/profile/`, {
@@ -194,11 +198,11 @@ export default {
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   updateProfile: async (id, birthday, phone_number) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     const data = { id, birthday, phone_number }
     try {
@@ -214,12 +218,12 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
@@ -233,18 +237,18 @@ export default {
         cache: 'default'
       });
       if (response.status === 200) {
-        let json = await response.json();
+        const json = await response.json();
         return json;
-      } else {
-        let json = await response.json();
+      } else if (response.status !== 200) {
+        const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error
+      return error.TypeError
     }
   },
   getAddress: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/address/`, {
@@ -258,16 +262,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createAddress: async (cep, logradouro, complemento, bairro, localidade, uf) => {
     const data = { cep, logradouro, complemento, bairro, localidade, uf }
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/address/`, {
@@ -282,16 +287,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 201) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteAddress: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/address/${id}/`, {
@@ -306,18 +311,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API VEHICLE
   //-------------------------------------------------------------------------
   getVehicle: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/vehicle/`, {
@@ -331,16 +337,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createVehicle: async (brand, model, fuell, year, odomitter, plate) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     const data = { brand, model, fuell, year, odomitter, plate }
     try {
@@ -356,16 +362,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response !== 201) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteVehicle: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/vehicle/${id}/`, {
@@ -385,14 +391,14 @@ export default {
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API GET SERVICES
   //-------------------------------------------------------------------------
   getServices: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/service/`, {
@@ -406,19 +412,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API GET HOUR SERVICE
   //-------------------------------------------------------------------------
   getHourService: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/hour-service/`, {
@@ -432,12 +438,12 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
@@ -455,19 +461,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API SET SCHEDULE
   //-------------------------------------------------------------------------
   getSchedule: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/schedule/`, {
@@ -481,15 +487,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createSchedule: async (day, address, vehicle, service, hour) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/schedule/`, {
@@ -504,15 +511,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
-        throw new Error(`${response.status}`);
+      } else if (response !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteSchedule: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/schedule/${id}/`, {
@@ -527,18 +535,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API SUPPLY SECTION
   //-------------------------------------------------------------------------
   getSupply: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/supply/`, {
@@ -552,15 +561,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createSupply: async (date, liter, price, kilometer) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/supply/`, {
@@ -575,16 +585,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 201) {
         const json = await response.json();
         return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteSupply: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/supply/${id}/`, {
@@ -599,18 +609,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API MAINTENANCE
   //-------------------------------------------------------------------------
   getMaintenance: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/maintenance/`, {
@@ -624,15 +635,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createMaintenance: async (date, name, end_kilometer, start_kilometer) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/maintenance/`, {
@@ -647,15 +659,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteMaintenance: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/maintenance/${id}/`, {
@@ -670,18 +683,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // API IPVA
   //-------------------------------------------------------------------------
   getIpva: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/ipva/`, {
@@ -695,15 +709,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createIpva: async (date, price) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/ipva/`, {
@@ -718,15 +733,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteIpva: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/ipva/${id}/`, {
@@ -741,18 +757,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // FINANCING IPVA
   //-------------------------------------------------------------------------
   getFinancing: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/financing/`, {
@@ -766,15 +783,16 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status != 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createFinancing: async (name, price) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/financing/`, {
@@ -789,15 +807,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteFinancinga: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/financing/${id}/`, {
@@ -812,18 +831,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // END POINT API SMART MECANICO | INSURANCE
   //-------------------------------------------------------------------------
   getInsurance: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/insurance/`, {
@@ -837,16 +857,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createInsurance: async (name, price, due_date, policy, broker_name, agent_name, phone_number, email, url) => {
     const data = { name, price, due_date, policy, broker_name, agent_name, phone_number, email, url }
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/insurance/`, {
@@ -861,16 +882,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 201) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteInsurance: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/insurance/${id}/`, {
@@ -885,18 +906,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // END POINT API SMART MECANICO FINE TRAFFIC
   //-------------------------------------------------------------------------
   getFineTraffic: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/fine-traffic/`, {
@@ -910,16 +932,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createFineTraffic: async (date, price, number, point, description) => {
     const data = { date, price, number, point, description }
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/fine-traffic/`, {
@@ -934,16 +957,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 201) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteFineTraffic: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/fine-traffic/${id}/`, {
@@ -958,18 +981,19 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   //-------------------------------------------------------------------------
   // END POINT API SMART MECANICO CALIBRATE TIRE | PNEU
   //-------------------------------------------------------------------------
   getCalibrateTire: async () => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/calibrate-tire/`, {
@@ -983,16 +1007,17 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   createCalibrateTire: async (date, libra) => {
     const data = { date, libra }
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/calibrate-tire/`, {
@@ -1007,15 +1032,16 @@ export default {
       if (response.status === 201) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
   deleteCalibrateTire: async (id) => {
-    const value = await AsyncStorage.getItem('accessToken');
+    const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/calibrate-tire/${id}/`, {
@@ -1030,11 +1056,12 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
-        return response.status
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
       }
     } catch (error) {
-      return error;
+      return error.TypeError
     }
   },
 };
