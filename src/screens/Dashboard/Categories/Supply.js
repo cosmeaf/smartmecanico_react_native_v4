@@ -74,7 +74,7 @@ const Supply = ({ navigation }) => {
                   <Text style={{ fontSize: 14 }}>{item.date.split('-').reverse().join('/')}</Text>
                 </View>
                 <View>
-                  <Text style={{ fontSize: 14 }}> Libras</Text>
+                  <Text style={{ fontSize: 14 }}>Litros</Text>
                   <Text style={{ fontSize: 14 }}>{item.liter}</Text>
                 </View>
                 <Ionicons name='chevron-forward' size={30} />

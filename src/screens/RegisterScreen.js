@@ -17,8 +17,8 @@ import LoadingIcon from '../componentes/LoadingIcon'
 export default function RegisterScreen({ navigation }) {
   const { signup, isLoading } = useContext(GlobalContext);
   const [name, setName] = useState({ value: 'demo', error: '' })
-  const [email, setEmail] = useState({ value: 'demo@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' })
+  const [password, setPassword] = useState({ value: '', error: '' })
 
   const onSignUpPressed = () => {
     const nameError = nameValidator(name.value)

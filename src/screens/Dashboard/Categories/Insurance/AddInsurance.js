@@ -336,10 +336,10 @@ const AddInsurance = ({ navigation }) => {
             <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
               <MaskedTextInput
                 style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                mask="+55(21)9-999-9999"
+                mask="+9999999999999"
                 type="number"
                 keyboardType="numeric"
-                maxLength={17}
+                maxLength={14}
                 onChangeText={(text, rawText) => setPhone_number(text, rawText)}
               />
             </View>

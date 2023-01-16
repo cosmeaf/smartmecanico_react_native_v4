@@ -10,9 +10,6 @@ import AppTabStack from './TabSatck.route';
 
 const Route = () => {
   const { authentication, isLoading } = useContext(GlobalContext);
-  console.log(authentication, isLoading)
-
-
 
   return isLoading ?
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

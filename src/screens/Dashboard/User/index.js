@@ -284,7 +284,7 @@ export default ({ navigation }) => {
         <View style={styles.modalContainer}>
           <MaskedTextInput
             style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10, marginBottom: 20 }}
-            mask="+99-99-99999-9999"
+            mask="+9999999999999"
             placeholder={phoneNumber ? phoneNumber : '+55-31-98123-6745'}
             placeholderTextColor='#54Af89'
             onChangeText={(text, rawText) => setPhoneNumber(text)}

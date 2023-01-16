@@ -14,8 +14,8 @@ import GlobalContext from '../Contexts/Context'
 
 export default function LoginScreen({ navigation }) {
   const { signin } = useContext(GlobalContext);
-  const [email, setEmail] = useState({ value: 'demo@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' })
+  const [password, setPassword] = useState({ value: '', error: '' })
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
