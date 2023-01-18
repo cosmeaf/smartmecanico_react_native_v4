@@ -35,7 +35,7 @@ export default ({ navigation, route }) => {
         <ScreenHeader mainTitle="Principais" secondTitle="Serviços" />
         <TopServicesCarousel list={slideData} onPress={handleClick} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 14, marginTop: 20 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Outros Recursos</Text>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Agenda Carro</Text>
         </View>
         <OtherCategory list={otherCategoryData} onPress={handleClick} />
       </ScrollView>

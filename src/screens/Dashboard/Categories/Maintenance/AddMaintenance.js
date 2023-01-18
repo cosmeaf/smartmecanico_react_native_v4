@@ -11,14 +11,19 @@ import TabOneLine from '../../../../componentes/TabOneLine';
 
 
 const data = [
-  { label: 'ÓLEO DE MOTOR', value: '1' },
-  { label: 'FILTRO DE ÓLEO', value: '2' },
-  { label: 'FILTRO ÓLEO COMBUSTÍVEL', value: '3' },
-  { label: 'FILTRO AR CONDICIONADO', value: '4' },
+  { label: 'Troca de Óleo', value: '1' },
+  { label: 'Filtro de Óleo', value: '2' },
+  { label: 'Filtro de Combustível', value: '3' },
+  { label: 'Filtro de Ar', value: '4' },
+  { label: 'Filtro Ar Condicionado', value: '5' },
+  { label: 'Disco de Freio', value: '6' },
+  { label: 'Pastilhas de Freios', value: '7' },
+  { label: 'Outros', value: '8' },
 ];
 
 
 const AddMaintenance = ({ navigation }) => {
+
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [date, setDate] = useState('');
@@ -26,7 +31,7 @@ const AddMaintenance = ({ navigation }) => {
   const [startKilometer, setStartKilometer] = useState('');
   const [endKilometer, setEndKilometer] = useState(false)
   const [refreshing, setRefreshing] = useState(false);
-
+  const [hasDateError, setHasDateError] = useState(false);
 
   const [isModalVisibleDate, setIsModalVisibleDate] = useState(false);
   const [isModalVisibleName, setIsModalVisibleName] = useState(false);
@@ -38,39 +43,50 @@ const AddMaintenance = ({ navigation }) => {
   const handleModalStartKilometer = () => setIsModalVisibleStartKilometer(() => !isModalVisibleStartKilometer);
   const handleModalEndKilometer = () => setIsModalVisibleEndKilometer(() => !isModalVisibleEndKilometer);
 
-
   const handleSaveClick = (date, name, startKilometer, endKilometer) => {
     setRefreshing(true)
     if (date.length === 0) {
       Alert.alert('Campo Data não pode ser vázio')
+      return
+    }
+    else if (date.length === 8 || date.length < 9) {
+      Alert.alert('Atenção', 'Data deve conter ano completo \n\nDIA/MÊS/ANO(2023)')
+      return
     }
     else if (name.length === 0) {
-      Alert.alert('Campo Serviço não pode ser vázio')
+      Alert.alert('Atenção', 'Campo Serviço não pode ser vázio')
+      return
     }
     else if (startKilometer.length === 0) {
-      Alert.alert('Campo KM Início não pode ser vázio')
+      Alert.alert('Atenção', 'Campo KM Início não pode ser vázio')
+      return
     }
     else if (endKilometer.length === 0) {
-      Alert.alert('Campo KM Final não pode ser vázio')
+      Alert.alert('Atenção', 'Campo KM Final não pode ser vázio')
+      return
     } else {
       createMaintenance(date, name, startKilometer, endKilometer)
     }
     setRefreshing(false)
   }
 
-
   const createMaintenance = async (date, name, startKilometer, endKilometer) => {
     let newDate = date.split('/').reverse().join('-')
     let json = await Api.createMaintenance(newDate, name, startKilometer, endKilometer)
     if (json.id) {
       navigation.navigate('Maintenance')
+    } else if (json.code !== 200) {
+      Alert.alert('Atenção', `${json.message.date ? json.message.date : 'Verifique se todos os camps foram preenchidos Corretamente'}`)
     } else {
-      Alert.alert('Ops! Algo errado aconteceu, tente mais tarde', `Error ${json}`)
+      Alert.alert('Atenção', 'Verifique se todos os camps foram preenchidos Corretamente')
     }
   }
 
-
-
+  useEffect(() => {
+    console.log('VALUE ', name)
+    setValue(null)
+    console.log('VALUE ', name)
+  }, [isModalVisibleName])
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -105,15 +121,24 @@ const AddMaintenance = ({ navigation }) => {
         <Modal isVisible={isModalVisibleDate} style={styles.modal}>
           <View style={styles.modalContainer}>
             <MaskedTextInput
-              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+              style={{ height: 40, borderWidth: 1, borderRadius: 8, paddingLeft: 10, borderColor: isFocus ? 'red' : 'green' }}
               mask="99/99/9999"
-              placeholder="DD/MM/YYYY"
+              placeholder={`Ano deve Conter 4 Dígitos ${new Date().getFullYear()}`}
+              placeholderTextColor="green"
               keyboardType="numeric"
-              onChangeText={(text, rawText) => setDate(text, rawText)}
+              error={!!hasDateError}
+              errorText={hasDateError}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChangeText={(text, rawText) => {
+                setDate(text, rawText)
+                setIsFocus(false)
+              }}
             />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity
                 style={styles.modalButton}
+                onPressOut={() => setIsModalVisibleDate(false)}
                 onPress={() => setIsModalVisibleDate(false)}
               >
                 <Text style={styles.modalButtonText}>Adicionar</Text>
@@ -121,6 +146,7 @@ const AddMaintenance = ({ navigation }) => {
 
               <TouchableOpacity
                 style={styles.modalButton}
+                onPressOut={() => setIsModalVisibleDate(false)}
                 onPress={() => setIsModalVisibleDate(false)}>
                 <Text style={styles.modalButtonText}>Fechar</Text>
               </TouchableOpacity>
@@ -131,31 +157,48 @@ const AddMaintenance = ({ navigation }) => {
         <Modal isVisible={isModalVisibleName} style={styles.modal}>
           <View style={styles.modalContainer}>
             <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={data}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select item' : name}
-                searchPlaceholder="Search..."
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setValue(item.value);
-                  setIsFocus(false);
-                  setName(item.label);
-                }}
-                renderLeftIcon={() => (
-                  <Ionicons name="ios-search" size={20} color={isFocus ? '#54Af89' : 'black'} />
-                )}
-              />
+              {value < 7 ?
+                <Dropdown
+                  style={[styles.dropdown, isFocus && { borderColor: '#54Af89' }]}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={data}
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!isFocus ? 'Selecione um Serviço' : ''}
+                  searchPlaceholder="Buscar..."
+                  value={value}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={item => {
+                    setValue(item.value);
+                    setIsFocus(false);
+                    setName(item.label);
+                  }}
+                  renderLeftIcon={() => (
+                    <Ionicons name="ios-search" size={20} color={isFocus ? '#54Af89' : 'black'} />
+                  )}
+                />
+                :
+                <View>
+                  <TextInput
+                    style={{ borderWidth: 1, marginTop: 20, height: 50, paddingLeft: 10, borderRadius: 10 }}
+                    placeholder={!isFocus ? 'Campo Editável' : 'Campo Editável'}
+                    placeholderTextColor='#54Af89'
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    value={name}
+                    onChangeText={(text) => {
+                      setName(text)
+                      setIsFocus(false)
+                    }}
+                  />
+                </View>
+              }
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
               <TouchableOpacity

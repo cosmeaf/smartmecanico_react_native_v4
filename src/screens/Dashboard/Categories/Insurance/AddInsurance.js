@@ -8,6 +8,7 @@ import { MaskedTextInput } from 'react-native-mask-text';
 import LoadingIcon from '../../../../componentes/LoadingIcon';
 import Api from '../../../../service/Api';
 import TabOneLine from '../../../../componentes/TabOneLine';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 const AddInsurance = ({ navigation }) => {
@@ -48,353 +49,387 @@ const AddInsurance = ({ navigation }) => {
   const handleSaveClick = (name, price, due_date = '', policy = '', broker_name = '', agent_name = '', phone_number = '', email = '', url = '') => {
     setIsLoading(true)
     if (name.length === 0) {
-      Alert.alert('Campo Nome Seguradora não pode ser vázio')
+      Alert.alert('Atenção', 'Campo Nome Seguradora não pode ser vázio')
     }
     else if (price.length === 0) {
-      Alert.alert('Campo Preço não pode ser vázio')
-    } else {
+      Alert.alert('Atenção', 'Campo Preço não pode ser vázio')
+    } else if (due_date.length < 8) {
+      Alert.alert('Atenção', 'Campo deve conter format DIA/MÊS/ANO (2023)')
+    }
+    else if (due_date.length < 8) {
+      Alert.alert('Atenção', 'Campo DATA não pode ser vázio')
+    }
+    else {
       createInsurance(name, price, due_date, policy, broker_name, agent_name, phone_number, email, url)
     }
     setIsLoading(false)
   }
 
 
-  const createInsurance = async (name, price, due_date, policy, broker_name, agent_name, phone_number, email, url) => {
+  const createInsurance = async (name, price, due_date, policy, broker_name, agent_name, phone_number, email) => {
+
     let newDate = due_date.split('/').reverse().join('-')
     let newPrice = price.split('R$').splice(1, 1).toString()
-    let json = await Api.createInsurance(name, newPrice, newDate, policy, broker_name, agent_name, phone_number, email, url)
+    let json = await Api.createInsurance(name, newPrice, newDate, policy, broker_name, agent_name, phone_number, email)
     if (json.id) {
-      navigation.navigate('Insurance')
-    } else {
-      Alert.alert('Ops! Algo errado aconteceu, tente mais tarde', `Error ${json}`)
+      Alert.alert('Parabéns!!!', 'Seguradora Cadastrada com sucesso', [
+        {
+          text: 'Nova Segurdora',
+          onPress: () => {
+            onPress: () => {
+              setIsLoading(true)
+              setTimeout(() => {
+                navigation.navigate('AddInsurance')
+                setIsLoading(false)
+              }, 1000)
+            }
+          }
+        },
+        {
+          text: 'Sair',
+          onPress: () => {
+            setIsLoading(true)
+            setTimeout(() => {
+              navigation.navigate('Insurance')
+              setIsLoading(false)
+            }, 1000)
+          }
+        }
+      ])
+
+    } else if (json.code === 400) {
+      Alert.alert('Atenção', 'Por favor, verifique se todos os campos \nforam preenchidos corretamente')
     }
   }
 
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {isLoading &&
-        <LoadingIcon size='large' color="#54Af89" />
-      }
-      <ScrollView>
-        <Text style={styles.headerTitle}>Entre com dados de Seguradora</Text>
-        {/* name */}
-        <TabOneLine
-          title='Seguradora:'
-          subTitle={name ? name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalName}
-        />
-        {/* Price */}
-        <TabOneLine
-          title='Preço:'
-          subTitle={price ? price : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalPrice}
-        />
-        {/* Due Date */}
-        <TabOneLine
-          title='Data Expiração:'
-          subTitle={due_date ? due_date : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalDueDate}
-        />
-        {/* Policy Number */}
-        <TabOneLine
-          title='Numero Apólice:'
-          subTitle={policy ? policy : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalPolicy}
-        />
-        {/* Broker Name */}
-        <TabOneLine
-          title='Nome Corretora:'
-          subTitle={broker_name ? broker_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalBrokerName}
-        />
-        {/* Agent Name */}
-        <TabOneLine
-          title='Nome Agente:'
-          subTitle={agent_name ? agent_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalAgentName}
-        />
-        {/* Phone Number */}
-        <TabOneLine
-          title='Contato:'
-          subTitle={phone_number ? phone_number : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalPhoneNumber}
-        />
-        {/* E-mail */}
-        <TabOneLine
-          title='E-mail:'
-          subTitle={email ? email : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
-          onPress={handleModalEmail}
-        />
-        {/* Url */}
+  return isLoading ?
+    (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='#54Af89' />
+      </View>
+    )
+    :
+    (
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView>
+          <Text style={styles.headerTitle}>Entre com dados de Seguradora</Text>
+          {/* name */}
+          <TabOneLine
+            title='Seguradora:'
+            subTitle={name ? name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalName}
+          />
+          {/* Price */}
+          <TabOneLine
+            title='Preço:'
+            subTitle={price ? price : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalPrice}
+          />
+          {/* Due Date */}
+          <TabOneLine
+            title='Data Expiração:'
+            subTitle={due_date ? due_date : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalDueDate}
+          />
+          {/* Policy Number */}
+          <TabOneLine
+            title='Numero Apólice:'
+            subTitle={policy ? policy : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalPolicy}
+          />
+          {/* Broker Name */}
+          <TabOneLine
+            title='Nome Corretora:'
+            subTitle={broker_name ? broker_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalBrokerName}
+          />
+          {/* Agent Name */}
+          <TabOneLine
+            title='Nome Agente:'
+            subTitle={agent_name ? agent_name : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalAgentName}
+          />
+          {/* Phone Number */}
+          <TabOneLine
+            title='Contato:'
+            subTitle={phone_number ? phone_number : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalPhoneNumber}
+          />
+          {/* E-mail */}
+          <TabOneLine
+            title='E-mail:'
+            subTitle={email ? email : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
+            onPress={handleModalEmail}
+          />
+          {/* Url
         <TabOneLine
           title='Site:'
           subTitle={url ? url : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
           onPress={handleModalUrl}
-        />
+        /> */}
 
 
 
-        {/* Modal Name */}
-        <Modal isVisible={isModalVisibleName} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <TextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                placeholder={name ? name : 'Nome da Seguradora'}
-                placeholderTextColor='#54Af89'
-                keyboardType='default'
-                textContentType='name'
-                autoCapitalize='none'
-                returnKeyType='next'
-                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
-                placeholder={name ? name : 'Nome da Seguradora'}
-                value={name}
-                onChangeText={text => setName(text)}
-              />
+          {/* Modal Name */}
+          <Modal isVisible={isModalVisibleName} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <TextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  placeholder={name ? name : 'Nome da Seguradora'}
+                  placeholderTextColor='#54Af89'
+                  keyboardType='default'
+                  textContentType='name'
+                  autoCapitalize='characters'
+                  returnKeyType='next'
+                  autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
+                  placeholder={name ? name : 'Nome da Seguradora'}
+                  value={name}
+                  onChangeText={text => setName(text)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleName(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleName(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleName(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleName(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-        {/* Modal Price */}
-        <Modal isVisible={isModalVisiblePrice} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <MaskedTextInput
-              style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-              type="currency"
-              keyboardType="numeric"
-              maxLength={11}
-              options={{
-                prefix: 'R$ ',
-                decimalSeparator: '.',
-                precision: 2,
-              }}
-              onChangeText={(text, rawText) => setPrice(text, rawText)}
-            />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePrice(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePrice(false)}>
-                <Text style={styles.modalButtonText}>Fechar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-        {/* Modal Date Due */}
-        <Modal isVisible={isModalVisibleDueDate} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+          </Modal>
+          {/* Modal Price */}
+          <Modal isVisible={isModalVisiblePrice} style={styles.modal}>
+            <View style={styles.modalContainer}>
               <MaskedTextInput
                 style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                mask="99/99/9999"
-                placeholder="DD/MM/YYYY"
+                type="currency"
                 keyboardType="numeric"
-                onChangeText={(text, rawText) => setDue_date(text, rawText)}
+                maxLength={11}
+                options={{
+                  prefix: 'R$ ',
+                  decimalSeparator: '.',
+                  precision: 2,
+                }}
+                onChangeText={(text, rawText) => setPrice(text, rawText)}
               />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleDueDate(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePrice(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleDueDate(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePrice(false)}>
+                  <Text style={styles.modalButtonText}>Fechar</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal Police Number */}
-        <Modal isVisible={isModalVisiblePolicy} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <TextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                placeholderTextColor='#54Af89'
-                keyboardType='numeric'
-                textContentType='none'
-                autoCapitalize='none'
-                returnKeyType='next'
-                maxLength={20}
-                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
-                placeholder={policy ? policy : 'Numero Apólice'}
-                value={policy}
-                onChangeText={text => setPolicy(text)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePolicy(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+          </Modal>
+          {/* Modal Date Due */}
+          <Modal isVisible={isModalVisibleDueDate} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <MaskedTextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  mask="99/99/9999"
+                  placeholder="DD/MM/YYYY"
+                  keyboardType="numeric"
+                  onChangeText={(text, rawText) => setDue_date(text, rawText)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleDueDate(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePolicy(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleDueDate(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal Broker Name */}
-        <Modal isVisible={isModalVisibleBrokerName} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <TextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                placeholderTextColor='#54Af89'
-                keyboardType='default'
-                textContentType='name'
-                autoCapitalize='none'
-                returnKeyType='next'
-                maxLength={30}
-                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
-                placeholder={broker_name ? broker_name : 'Nome da Corretora'}
-                value={broker_name}
-                onChangeText={text => setBroker_name(text)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleBrokerName(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+          </Modal>
+          {/* Modal Police Number */}
+          <Modal isVisible={isModalVisiblePolicy} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <TextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  placeholderTextColor='#54Af89'
+                  keyboardType='numeric'
+                  textContentType='none'
+                  autoCapitalize='none'
+                  returnKeyType='next'
+                  maxLength={20}
+                  autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
+                  placeholder={policy ? policy : 'Numero Apólice'}
+                  value={policy}
+                  onChangeText={text => setPolicy(text)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePolicy(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleBrokerName(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePolicy(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal Agent Name */}
-        <Modal isVisible={isModalVisibleAgentName} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <TextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                placeholderTextColor='#54Af89'
-                keyboardType='default'
-                textContentType='name'
-                autoCapitalize='none'
-                returnKeyType='next'
-                maxLength={30}
-                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
-                placeholder={agent_name ? agent_name : 'Nome Agente Corretor'}
-                value={agent_name}
-                onChangeText={text => setAgent_name(text)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleAgentName(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+          </Modal>
+          {/* Modal Broker Name */}
+          <Modal isVisible={isModalVisibleBrokerName} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <TextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  placeholderTextColor='#54Af89'
+                  keyboardType='default'
+                  textContentType='name'
+                  autoCapitalize='characters'
+                  returnKeyType='next'
+                  maxLength={30}
+                  autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
+                  placeholder={broker_name ? broker_name : 'Nome da Corretora'}
+                  value={broker_name}
+                  onChangeText={text => setBroker_name(text)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleBrokerName(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleAgentName(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleBrokerName(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal Phone Number */}
-        <Modal isVisible={isModalVisiblePhoneNumber} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <MaskedTextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                mask="+9999999999999"
-                type="number"
-                keyboardType="numeric"
-                maxLength={14}
-                onChangeText={(text, rawText) => setPhone_number(text, rawText)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePhoneNumber(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+          </Modal>
+          {/* Modal Agent Name */}
+          <Modal isVisible={isModalVisibleAgentName} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <TextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  placeholderTextColor='#54Af89'
+                  keyboardType='default'
+                  textContentType='name'
+                  autoCapitalize='characters'
+                  returnKeyType='next'
+                  maxLength={30}
+                  autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
+                  placeholder={agent_name ? agent_name : 'Nome Agente Corretor'}
+                  value={agent_name}
+                  onChangeText={text => setAgent_name(text)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleAgentName(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisiblePhoneNumber(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleAgentName(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal E-mail */}
-        <Modal isVisible={isModalVisibleEmail} style={styles.modal}>
-          <View style={styles.modalContainer}>
-            <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
-              <TextInput
-                style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
-                placeholderTextColor='#54Af89'
-                keyboardType='email-address'
-                textContentType='emailAddress'
-                autoCapitalize='none'
-                returnKeyType='next'
-                maxLength={100}
-                autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
-                placeholder={email ? email : 'E-mail Agente Corretor'}
-                value={email}
-                onChangeText={text => setEmail(text)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleEmail(false)}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
+          </Modal>
+          {/* Modal Phone Number */}
+          <Modal isVisible={isModalVisiblePhoneNumber} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <MaskedTextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  mask="+9999999999999"
+                  type="number"
+                  keyboardType="numeric"
+                  maxLength={14}
+                  onChangeText={(text, rawText) => setPhone_number(text, rawText)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePhoneNumber(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => setIsModalVisibleEmail(false)}>
-                <Text style={styles.modalButtonText}>Sair</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisiblePhoneNumber(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        {/* Modal Url */}
-        <Modal isVisible={isModalVisibleUrl} style={styles.modal}>
+          </Modal>
+          {/* Modal E-mail */}
+          <Modal isVisible={isModalVisibleEmail} style={styles.modal}>
+            <View style={styles.modalContainer}>
+              <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
+                <TextInput
+                  style={{ height: 40, borderWidth: 0.5, borderRadius: 10, paddingLeft: 10 }}
+                  placeholderTextColor='#54Af89'
+                  keyboardType='email-address'
+                  textContentType='emailAddress'
+                  autoCapitalize='none'
+                  returnKeyType='next'
+                  maxLength={100}
+                  autoComplete={Platform.OS === 'web' ? 'none' : 'off'}
+                  placeholder={email ? email : 'E-mail Agente Corretor'}
+                  value={email}
+                  onChangeText={text => setEmail(text)}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleEmail(false)}
+                >
+                  <Text style={styles.modalButtonText}>Adicionar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsModalVisibleEmail(false)}>
+                  <Text style={styles.modalButtonText}>Sair</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          {/* Modal Url */}
+          {/* <Modal isVisible={isModalVisibleUrl} style={styles.modal}>
           <View style={styles.modalContainer}>
             <View style={{ paddingLeft: 10, paddingRight: 10, paddingTop: 10, backgroundColor: '#FFF', marginBottom: 5 }}>
               <TextInput
@@ -426,20 +461,21 @@ const AddInsurance = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
 
-      </ScrollView>
+        </ScrollView>
 
-      {/* Save Button */}
-      <View style={styles.areaButton}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleSaveClick(name, price, due_date, policy, broker_name, agent_name, phone_number, email, url)}>
-          <Text style={styles.textButton}>Salvar</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  )
+        {/* Save Button */}
+        <View style={styles.areaButton}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleSaveClick(name, price, due_date, policy, broker_name, agent_name, phone_number, email, url)}>
+            <Text style={styles.textButton}>Salvar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    )
+
 }
 
 export default AddInsurance;
