@@ -77,7 +77,7 @@ const RevisaoBasica = ({ navigation, route }) => {
       <AppointmentModal
         isVisible={isModalVisible}
         // image={icon}
-        serviceId="76a2d2f4-c76c-4f52-9ff7-1a49fb44fa93"
+        serviceId="c5a50d89-c4cd-4b5f-bf62-6dcf9d35a780"
         serviceTitle="Revisão Básica"
         onPress={() => setIsModalVisible(false)}
       />

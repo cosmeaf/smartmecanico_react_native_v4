@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//const BASE_API = 'http://10.0.0.162/api'
+const BASE_API = 'http://10.0.0.162/api'
 // const BASE_API = 'http://127.0.0.1/api'
 // const BASE_API = 'http://173.224.117.181:8001/api'
-const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
+//const BASE_API = 'http://smartmecanico.duckdns.org:8001/api'
 
 
 // Authentication
@@ -125,7 +125,6 @@ export default {
   },
   // CODE VERIFY
   codeVerify: async (code) => {
-    console.log('CODE VERIFY API', code)
     const data = { code }
     try {
       const response = await fetch(`${BASE_API}/opt-code-verify/`, {
@@ -148,7 +147,6 @@ export default {
     }
   },
   changePassword: async (password, code, token) => {
-    console.log('CHANGE PASSWORD API ', password, code, token)
     const data = { password }
     try {
       const response = await fetch(`${BASE_API}/reset-password/${code}/${token}/`, {
@@ -1115,6 +1113,81 @@ export default {
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/calibrate-tire/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  //-------------------------------------------------------------------------
+  // END POINT API SMART MECANICO EXPENSE TRACKER | BUDGET
+  //-------------------------------------------------------------------------
+  getBudget: async () => {
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/expense-tracker/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  createBudget: async (name, amount) => {
+    const data = { name, amount }
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/expense-tracker/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  deleteBudget: async (id) => {
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/expense-tracker/${id}/`, {
         method: 'DELETE',
         headers: {
           Accept: "application/json",

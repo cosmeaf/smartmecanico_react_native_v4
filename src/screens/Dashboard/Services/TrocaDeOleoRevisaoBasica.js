@@ -78,7 +78,7 @@ const TrocaDeOleoRevisaoBasica = ({ navigation, route }) => {
       <AppointmentModal
         isVisible={isModalVisible}
         // image={icon}
-        serviceId="4134fa71-5c47-4c80-b507-ba64f5150984"
+        serviceId="cf594a51-d238-4bcc-974a-1c951efa7298"
         serviceTitle="Troca de Óleo + Revisão Básica"
         onPress={() => setIsModalVisible(false)}
       />

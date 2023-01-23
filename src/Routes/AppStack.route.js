@@ -14,6 +14,7 @@ import Profile from '../screens/Dashboard/Profile';
 import Settings from '../screens/Dashboard/Settings';
 import User from '../screens/Dashboard/User';
 import Address from '../screens/Dashboard/Address';
+
 // Pages Services SmartMecanico
 import Freios from '../screens/Dashboard/Services/Freios';
 import OutrosServicos from '../screens/Dashboard/Services/OutrosServicos';
@@ -49,7 +50,7 @@ import FineTrafficDetails from '../screens/Dashboard/Categories/FineTraffic/Fine
 import CalibrateTire from '../screens/Dashboard/Categories/CalibrateTire/CalibrateTire';
 import AddCalibrateTire from '../screens/Dashboard/Categories/CalibrateTire/AddCalibrateTire';
 import CalibrateTireDetails from '../screens/Dashboard/Categories/CalibrateTire/CalibrateTireDetails';
-import Budget from '../screens/Dashboard/Categories/Budget/Budget';
+import Budget from '../screens/Dashboard/Categories/Budget';
 import AddBudget from '../screens/Dashboard/Categories/Budget/AddBudget';
 import BudgetDetails from '../screens/Dashboard/Categories/Budget/BudgetDetails';
 import GeoLocation from '../screens/Dashboard/Categories/GeoLocation/GeoLocation';
@@ -210,18 +211,7 @@ const AppStack = ({ navigation }) => {
       <Stack.Screen name='AddCalibrateTire' component={AddCalibrateTire} options={{ title: 'Cadastrar Calibragem', headerShown: true }} />
       <Stack.Screen name='CalibrateTireDetails' component={CalibrateTireDetails} options={{ title: 'Detalhes de Calibragem', headerShown: true }} />
       {/* Budget | Expense Tracker */}
-      <Stack.Screen name='Budget' component={Budget} options={({ navigation, route }) => ({
-        title: 'Controle de Gastos',
-        headerShown: true,
-        headerRight: () => (
-          <Button
-            onPress={() => navigation.navigate('AddBudget')}
-            type='clear'
-            title="Novo"
-          />
-        ),
-      }
-      )} />
+      <Stack.Screen name='Budget' component={Budget} options={{ title: 'Registrar Gastos', headerShown: false }} />
       <Stack.Screen name='AddBudget' component={AddBudget} options={{ title: 'Registrar Gastos', headerShown: true }} />
       <Stack.Screen name='BudgetDetails' component={BudgetDetails} options={{ title: 'Detalhes de Gastos', headerShown: true }} />
       {/* GeoLocation | GPS Tracker */}

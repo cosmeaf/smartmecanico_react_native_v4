@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, ActivityIndicator } from 'react-native'
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -14,8 +15,10 @@ import GlobalContext from '../Contexts/Context'
 
 export default function LoginScreen({ navigation }) {
   const { signin } = useContext(GlobalContext);
-  const [email, setEmail] = useState({ value: 'demo@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState({ value: '', error: '' })
+  const [password, setPassword] = useState({ value: '', error: '' })
+  const [isVisible, setIsVisible] = useState(false);
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
@@ -25,56 +28,66 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    signin(email.value, password.value)
+    setIsLoading(true)
+    setTimeout(() => {
+      signin(email.value, password.value)
+      setIsLoading(false)
+    }, 2000)
+
   }
 
-  return (
-    <Background>
-      <Logo />
-      <Header>Bem-vindo de volta.</Header>
-      <TextInput
-        label="E-mail"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
-      />
-      <TextInput
-        label="Senha"
-        returnKeyType="done"
-        autoCapitalize="none"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
-        secureTextEntry
-      />
-      <View style={styles.forgotPassword}>
+  return isLoading ?
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size='large' color='green' />
+    </View>
+    :
+    (
+      <Background>
+        <Logo />
+        <Header>Bem-vindo de volta.</Header>
+        <TextInput
+          label="E-mail"
+          returnKeyType="next"
+          value={email.value}
+          onChangeText={(text) => setEmail({ value: text, error: '' })}
+          error={!!email.error}
+          errorText={email.error}
+          autoCapitalize="none"
+          autoCompleteType="email"
+          textContentType="emailAddress"
+          keyboardType="email-address"
+        />
+        <TextInput
+          label="Senha"
+          returnKeyType="done"
+          autoCapitalize="none"
+          value={password.value}
+          onChangeText={(text) => setPassword({ value: text, error: '' })}
+          error={!!password.error}
+          errorText={password.error}
+          secureTextEntry
+        />
+        <View style={styles.forgotPassword}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ResetPasswordScreen')}
+          >
+            <Text style={styles.forgot}>Esqueceu sua Senha?</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('ResetPasswordScreen')}
-        >
-          <Text style={styles.forgot}>Esqueceu sua Senha?</Text>
+          style={{ justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: theme.colors.primary, height: 50, borderRadius: 20, marginBottom: 20 }}
+          onPress={onLoginPressed}>
+          <Text style={{ color: '#FFF', fontSize: 22 }}>Entrar</Text>
         </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={{ justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: theme.colors.primary, height: 50, borderRadius: 20, marginBottom: 20 }}
-        onPress={onLoginPressed}>
-        <Text style={{ color: '#FFF', fontSize: 22 }}>Entrar</Text>
-      </TouchableOpacity>
 
-      <View style={styles.row}>
-        <Text style={{ fontWeight: '500', marginRight: 10 }}>Ainda não tem uma Conta? </Text>
-        <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-          <Text style={styles.link}>Registre-se</Text>
-        </TouchableOpacity>
-      </View>
-    </Background>
-  )
+        <View style={styles.row}>
+          <Text style={{ fontWeight: '500', marginRight: 10 }}>Ainda não tem uma Conta? </Text>
+          <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
+            <Text style={styles.link}>Registre-se</Text>
+          </TouchableOpacity>
+        </View>
+      </Background>
+    )
 }
 
 const styles = StyleSheet.create({

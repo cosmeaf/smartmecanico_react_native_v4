@@ -74,7 +74,7 @@ const Freios = ({ navigation, route }) => {
       <AppointmentModal
         isVisible={isModalVisible}
         // image={icon}
-        serviceId='cd521d40-e0b0-4092-8ae6-75f844da36de'
+        serviceId='94073af7-0e49-45fe-b341-02ee8c17384e'
         serviceTitle="Serviço de Freio"
         onPress={() => setIsModalVisible(false)}
       />

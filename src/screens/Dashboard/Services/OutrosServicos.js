@@ -72,7 +72,7 @@ const OutrosServicos = ({ navigation, route }) => {
       <AppointmentModal
         isVisible={isModalVisible}
         // image={icon}
-        serviceId="d4221a49-cb4e-462d-9d0a-850cd9529925"
+        serviceId="7676dd15-0cd9-4458-b960-53ff93e79105"
         serviceTitle="Outros serviços / Orçamento"
         onPress={() => setIsModalVisible(false)}
       />

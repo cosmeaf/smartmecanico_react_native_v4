@@ -29,6 +29,10 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   const [vehicle, setVehicle] = useState([]);
   const [address, setAddress] = useState([]);
 
+  if (!authentication) {
+    signout();
+  }
+
   useEffect(() => {
     if (selectedDay > 0) {
       let d = new Date(selectedYear, selectedMonth, selectedDay);
@@ -43,7 +47,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
       //
       const array1 = hourMarked.filter(({ day, hour }) => day == selDate).map(({ hour }) => hour)
       let array2 = hourService.map(({ hour }) => hour)
-      setListHours(array2.filter(item => !array1.includes(item)))
+      setListHours(array2.filter(item => !array1.includes(item)).sort())
     }
 
   }, [selectedDay, selectedHour])
@@ -91,10 +95,6 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     getVehicle();
     getAddress();
   }, [authentication])
-
-  if (!authentication) {
-    signout();
-  }
 
   const handleRightClick = () => {
     let mountDate = new Date(selectedYear, selectedMonth, 1);

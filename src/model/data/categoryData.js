@@ -41,12 +41,12 @@ export default [
     subtitle: 'CalibrateTire',
     image: require('../../assets/icons/pneu.png'),
   },
-  // {
-  //   id: 8,
-  //   title: 'Controle de Gastos',
-  //   subtitle: 'Budget',
-  //   image: require('../../assets/icons/budget-management.png'),
-  // },
+  {
+    id: 8,
+    title: 'Controle de Gastos',
+    subtitle: 'Budget',
+    image: require('../../assets/icons/budget-management.png'),
+  },
   // {
   //   id: 9,
   //   title: 'Rastramento \nVeícular',

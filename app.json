@@ -2,7 +2,7 @@
   "expo": {
     "name": "smartmecanico",
     "slug": "smartmecanico",
-    "version": "6.2.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,15 +26,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.smartmecanico.smartmecanico"
+      "package": "br.com.smartmecanico",
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "8a8612ec-f1e1-4e65-b07b-48b45c0ebcb4"
+        "projectId": "96db8274-f9a2-427a-96e7-85205e860f2e"
       }
-    }
+    },
+    "owner": "smartmecanico"
   }
 }

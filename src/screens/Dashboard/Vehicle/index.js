@@ -36,6 +36,7 @@ const Vehicle = ({ navigation }) => {
     setRefreshing(true);
     setVehicles([]);
     let res = await Api.getVehicle();
+    console.log(res)
     if (res) {
       setVehicles(res)
     }
