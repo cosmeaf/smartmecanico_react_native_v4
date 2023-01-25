@@ -241,7 +241,7 @@ export default ({ navigation }) => {
             onPress={() => handleModalBrithday()}
           />
           {/* Mobile number */}
-          <TabOneLine title='Contato:'
+          <TabOneLine title='Telefone:'
             subTitle={profile.phone_number ? profile.phone_number : <Ionicons name="ios-add-circle-outline" size={24} color="black" />}
             onPress={() => handleModalPhone()} />
         </View>

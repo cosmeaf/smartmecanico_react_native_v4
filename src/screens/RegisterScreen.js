@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react'
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
@@ -11,14 +11,40 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
-import GlobalContext from '../Contexts/Context'
 import LoadingIcon from '../componentes/LoadingIcon'
+import Api from '../service/Api'
+
+
 
 export default function RegisterScreen({ navigation }) {
-  const { signup, isLoading } = useContext(GlobalContext);
-  const [name, setName] = useState({ value: '', error: '' })
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState({ value: 'fulano', error: '' })
+  const [email, setEmail] = useState({ value: 'fulano@gmail.com', error: '' })
+  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+
+  const handleSignUp = async (username, email, password, password2) => {
+    const response = await Api.signUp(username, email, password, password2)
+    if (response.id) {
+      Alert.alert('Sucesso', 'Sua conta foi criada com sucesso \nAgora Falta pouco para seu acesso', [
+        {
+          text: "Continuar",
+          onPress: () => {
+            setIsLoading(true)
+            setTimeout(() => {
+              navigation.replace('LoginScreen')
+              setIsLoading(false)
+            }, 1000)
+          }
+        },
+      ])
+    } else if (response.code === 400) {
+      Alert.alert('Desculpe', `${response.message.email} \nOu \n${response.message.username}`)
+      return
+    } else {
+      Alert.alert('Ooops', 'Identificamos que seu dispositivo está sem acesso a internet para realizar esse procedimento.')
+      return
+    }
+  }
 
   const onSignUpPressed = () => {
     const nameError = nameValidator(name.value)
@@ -30,20 +56,19 @@ export default function RegisterScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    signup(name.value, email.value, password.value, password.value)
+    handleSignUp(name.value, email.value, password.value, password.value)
+    return
   }
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' color='#54Af89' />
-      </View>
-    )
-  } else {
-    return (
+  return isLoading ? (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size='large' color='#green' />
+    </View>
+  )
+    : (
       <Background>
         <Logo />
-        <Header>Criar uma Conta</Header>
+        <Header> Criar uma Conta</Header>
         <TextInput
           label="Usuário"
           returnKeyType="next"
@@ -88,7 +113,7 @@ export default function RegisterScreen({ navigation }) {
         </View>
       </Background>
     )
-  }
+
 
 
 

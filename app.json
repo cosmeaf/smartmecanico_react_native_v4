@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "smartmecanico",
+    "name": "Smart Mecânico",
     "slug": "smartmecanico",
-    "version": "1.0.0",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.smartmecanico.smartmecanico"
+      "bundleIdentifier": "com.smartmecanico",
+      "buildNumber": "3.0.0"
     },
     "android": {
       "adaptiveIcon": {

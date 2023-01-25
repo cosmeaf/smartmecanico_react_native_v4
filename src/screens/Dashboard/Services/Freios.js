@@ -14,6 +14,7 @@ const Freios = ({ navigation, route }) => {
   const handlefavorited = () => setFavorited(() => !favorited);
   const handleisModalVisible = () => setIsModalVisible(() => !isModalVisible);
 
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -74,7 +75,7 @@ const Freios = ({ navigation, route }) => {
       <AppointmentModal
         isVisible={isModalVisible}
         // image={icon}
-        serviceId='94073af7-0e49-45fe-b341-02ee8c17384e'
+        serviceId='15da47bb-fe22-4366-94cb-ce7deca518f5'
         serviceTitle="Serviço de Freio"
         onPress={() => setIsModalVisible(false)}
       />
