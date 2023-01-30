@@ -28,5 +28,6 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35
   },
+  addPhoto: { position: 'absolute', paddingLeft: 90, paddingTop: 80 }
 });
 export default styles;

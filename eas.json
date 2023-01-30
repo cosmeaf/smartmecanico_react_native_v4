@@ -17,6 +17,11 @@
   },
   "submit": {
     "production": {
+      "ios": {
+        "appleId": "cosme.alex@gmail.com",
+        "ascAppId": "1582824722",
+        "appleTeamId": "VF74R327HV"
+      }
     }
   }
 }

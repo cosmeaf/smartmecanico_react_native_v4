@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, Alert, ActivityIndicator, FlatList } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
+import styles from './styles';
 
 export default ({ navigation }) => {
   const { authentication, signout } = useContext(GlobalContext);
   const [profile, setProfile] = useState({});
   const [user, setUser] = useState('');
+  const [pickedImagePath, setPickedImagePath] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   if (!authentication) {
@@ -68,16 +71,82 @@ export default ({ navigation }) => {
 
   }
 
+  const showImagePicker = async () => {
+    // Ask the user for the permission to access the media library 
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Você se recusou a permitir que este aplicativo acesse suas fotos!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync();
+
+    if (result?.assets !== null) {
+      setPickedImagePath(result.assets[0].uri);
+      return
+    }
+
+  }
+
+  const openCamera = async () => {
+    // Ask the user for the permission to access the camera
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Você se recusou a permitir que este aplicativo acesse suas Câmera!");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync();
+
+    if (result?.assets !== null) {
+      setPickedImagePath(result.assets[0].uri);
+      return
+    }
+
+  }
+
+  const handleUpdateImage = async () => {
+    Alert.alert('Selecione',
+      'Como deseja pegar a foto?', [
+      {
+        text: 'Galeria',
+        onPress: () => showImagePicker(),
+        style: 'default'
+      },
+      {
+        text: 'Câmera',
+        onPress: () => openCamera(),
+        style: 'default'
+      },
+      {
+        cancelable: true,
+        onDisminn: () => console.log('Tratar depois Android')
+      }
+    ])
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, marginLeft: 14, marginRight: 14, backgroundColor: '#FFF' }}>
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         {
-          profile.image
-            ?
-            <Image source={{ uri: profile.image }} resizeMode='cover' style={{ width: 100, height: 100, overflow: 'hidden', borderRadius: 50 }} />
+          pickedImagePath ? <Image
+            source={{ uri: pickedImagePath }}
+            resizeMode='cover'
+            style={{ width: 100, height: 100, overflow: 'hidden', borderRadius: 50, borderWidth: 0.5, backgroundColor: '#DDD' }}
+          />
             :
-            <View style={{ backgroundColor: '#38A', width: 100, height: 100, borderRadius: 50 }}></View>
+            <Image
+              source={{ uri: profile.image }}
+              resizeMode='cover'
+              style={{ width: 100, height: 100, overflow: 'hidden', borderRadius: 50 }}
+            />
         }
+
+        <TouchableOpacity style={styles.addPhoto} onPress={() => handleUpdateImage()}>
+          <MaterialIcons name="add-a-photo" size={30} color="#888" />
+        </TouchableOpacity>
       </View>
       <Text style={{ textAlign: 'center', fontSize: 22, marginTop: 20 }}> {user.first_name} {user.last_name} </Text>
       <Text style={{ textAlign: 'center', fontSize: 14, marginBottom: 20, color: '#CCC' }}> {user.email} </Text>

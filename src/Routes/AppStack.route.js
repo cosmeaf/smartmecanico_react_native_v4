@@ -3,7 +3,6 @@ import { Button } from 'react-native-elements'
 import { TouchableOpacity, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-
 import AppTabStack from './TabSatck.route';
 import Vehicle from '../screens/Dashboard/Vehicle';
 import AddVehicle from '../screens/Dashboard/Vehicle/addVehiche';

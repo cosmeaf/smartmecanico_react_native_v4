@@ -18,9 +18,9 @@ import Api from '../service/Api'
 
 export default function RegisterScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState({ value: 'fulano', error: '' })
-  const [email, setEmail] = useState({ value: 'fulano@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [name, setName] = useState({ value: '', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' })
+  const [password, setPassword] = useState({ value: '', error: '' })
 
   const handleSignUp = async (username, email, password, password2) => {
     const response = await Api.signUp(username, email, password, password2)
@@ -37,13 +37,17 @@ export default function RegisterScreen({ navigation }) {
           }
         },
       ])
-    } else if (response.code === 400) {
-      Alert.alert('Desculpe', `${response.message.email} \nOu \n${response.message.username}`)
-      return
+    } else if (response.code === 400 && response.message.username && response.message.email) {
+      Alert.alert('Atenção',
+        `${response.message.username ? response.message.username : ''} \n& \n${response.message.email ? response.message.email : ''}`)
+    } else if (response.code === 400 && response.message.email) {
+      Alert.alert('Atenção', `${response.message.email ? response.message.email : ''}`)
+    } else if (response.code === 400 && response.message.username) {
+      Alert.alert('Atenção', `${response.message.username ? response.message.username : ''}`)
     } else {
-      Alert.alert('Ooops', 'Identificamos que seu dispositivo está sem acesso a internet para realizar esse procedimento.')
-      return
+      Alert.alert('Ops!', `Estamos com dificuldades para acessar nosso servidores \nPor Favor tente mais tarde`)
     }
+
   }
 
   const onSignUpPressed = () => {

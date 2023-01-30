@@ -2,7 +2,7 @@
   "expo": {
     "name": "Smart Mecânico",
     "slug": "smartmecanico",
-    "version": "3.0.0",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,15 +20,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.smartmecanico",
-      "buildNumber": "3.0.0"
+      "buildNumber": "2.1.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "br.com.smartmecanico",
-      "versionCode": 8
+      "package": "br.com.smartmecanico"
     },
     "web": {
       "favicon": "./assets/favicon.png"
