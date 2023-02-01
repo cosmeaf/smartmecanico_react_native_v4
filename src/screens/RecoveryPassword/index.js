@@ -20,7 +20,7 @@ const orientation = Dimensions.get('screen')
 const deviceWidth = Math.round(Dimensions.get('window').width);
 
 const RecoveryPassword = ({ navigation }) => {
-  const [email, setEmail] = useState({ value: 'cosme.alex@gmail.com', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' })
   const [isVisible, setIsVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

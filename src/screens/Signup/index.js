@@ -26,8 +26,8 @@ const SignUp = ({ navigation }) => {
 
   const { signup } = useContext(GlobalContext);
   const [username, setUsername] = useState({ value: '', error: '' })
-  const [email, setEmail] = useState({ value: 'cosme.alex@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' })
+  const [password, setPassword] = useState({ value: '', error: '' })
   const [isVisible, setIsVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

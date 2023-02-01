@@ -84,6 +84,10 @@ export default ({ navigation }) => {
 
     if (result?.assets !== null) {
       setPickedImagePath(result.assets[0].uri);
+      let json = await Api.updateProfile(id, profile.image);
+      if (json.id) {
+        Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
+      }
       return
     }
 
