@@ -1,13 +1,9 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, View, TouchableOpacity, Dimensions, Image } from 'react-native';
-import FavoriteButton from './FavoriteButton';
+import { Ionicons } from '@expo/vector-icons'
 
-export const windowWidth = Dimensions.get('window').width;
-export const windowHeight = Dimensions.get('window').height;
-
-const CARD_WIDTH = windowWidth - 80
-const CARD_HEIGHT = 150
-const CARD_WIDTH_SPACING = CARD_WIDTH + 14
+const orientation = Dimensions.get('screen')
+const deviceWidth = Math.round(Dimensions.get('window').width);
 
 const TopServicesCarousel = ({ list, data, onPress = null }) => {
   const [isFavorited, setIsFavorited] = React.useState(false);
@@ -16,7 +12,7 @@ const TopServicesCarousel = ({ list, data, onPress = null }) => {
   return (
     <FlatList
       horizontal
-      snapToInterval={CARD_WIDTH_SPACING}
+      snapToInterval={orientation.width}
       decelerationRate="fast"
       showsHorizontalScrollIndicator={false}
       keyExtractor={i => i.id.toString()}
@@ -24,18 +20,13 @@ const TopServicesCarousel = ({ list, data, onPress = null }) => {
       renderItem={({ item, index }) => {
         return (
           <TouchableOpacity
-            style={{ marginLeft: 14, marginRight: index === list.length - 1 ? 14 : 0 }} activeOpacity={0.8}
+            style={styles.cardContainer} activeOpacity={0.8}
             onPress={() => onPress(item.subtitle)}
-            key={index}
-          >
-            <View style={styles.card}>
-              <FavoriteButton style={styles.favorited} />
-              <View style={styles.imageBox}>
-                <Image source={item.image} style={styles.image} />
-              </View>
-              <View style={styles.titleBox}>
-                <Text style={styles.title}>{item.title}</Text>
-              </View>
+            key={index}>
+            <Image source={item.image} style={styles.image} resizeMode="stretch" />
+            <View style={styles.cardText}>
+              <Text style={styles.title}>{item.title}</Text>
+              <Ionicons name="ios-heart-outline" size={orientation.width > 400 ? 40 : 30} color="red" />
             </View>
           </TouchableOpacity>
         )
@@ -47,14 +38,30 @@ const TopServicesCarousel = ({ list, data, onPress = null }) => {
 export default TopServicesCarousel
 
 const styles = StyleSheet.create({
-  card: {
-    width: CARD_WIDTH, height: CARD_HEIGHT, marginVertical: 10,
-    shadowColor: '#202020', shadowOffset: { width: 0, height: 0 }, shadowRadius: 5, elevation: 5
+  cardContainer: {
+    marginHorizontal: 10,
+    width: orientation.width > 400 ? orientation.width / 2 : deviceWidth - 20,
+    backgroundColor: '#FFFFFD',
+    height: orientation.height / 3,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+
+    shadowColor: 'rgba(0,0,0,0.8)',
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 9
   },
-  imageBox: { maxWidth: CARD_WIDTH, maxHeight: CARD_HEIGHT, overflow: 'hidden', borderRadius: 20 },
-  image: { maxWidth: CARD_WIDTH, maxHeight: CARD_HEIGHT, resizeMode: 'cover', backgroundColor: ' rgba(0,0,0,0.9)', opacity: 0.9 },
-  titleBox: { position: 'absolute', height: 40, width: '100%', bottom: 0, backgroundColor: ' rgba(0,0,0,0.4)', borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
-  title: { textAlign: 'center', marginTop: 10, fontSize: 16, fontWeight: 'bold', color: '#FFF' },
-  subtitle: { fontSize: 16, color: '#FFF' },
-  favorited: { position: 'absolute', top: 14, right: 14, zIndex: 1 }
+  image: {
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    width: '100%',
+    height: '80%',
+    opacity: 0.8
+  },
+  cardText: { flexDirection: 'row', justifyContent: 'space-between', marginTop: orientation.width > 400 ? 20 : 10, marginHorizontal: 20 },
+  title: { fontSize: orientation.width > 400 ? 24 : 18, fontWeight: 'bold' }
 })

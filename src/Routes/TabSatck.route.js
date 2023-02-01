@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
-import Home from '../screens/Dashboard/Home';
+import Home from '../screens/Dashboard/Home/';
 import Profile from '../screens/Dashboard/Profile';
 import Schedule from '../screens/Dashboard/Schedule';
 
@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 const AppTabStack = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="Home"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;

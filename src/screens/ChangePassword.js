@@ -18,19 +18,19 @@ export default function ChangePassword({ navigation, route }) {
 
   const handleRecoveryPassword = async (password, repeatPassword) => {
     if (password === '') {
-      console.log('Campo Senha não pode ser vázio')
+      Alert.alert('Campo Senha não pode ser vázio')
     }
     if (password.length < 6) {
-      console.log('Senha deve ter no minimo 6 Caracteres')
+      Alert.alert('Senha deve ter no minimo 6 Caracteres')
     }
     if (repeatPassword === '') {
-      console.log('Campo Confirmar Senha não pode ser vázio')
+      Alert.alert('Campo Confirmar Senha não pode ser vázio')
     }
     if (repeatPassword.length < 6) {
-      console.log('Confirmar Senha deve ter no minimo 6 Caracteres')
+      Alert.alert('Confirmar Senha deve ter no minimo 6 Caracteres')
     }
     if (password !== repeatPassword) {
-      console.log('Senhas não conferem')
+      Alert.alert('Senhas não conferem')
     }
     const response = await Api.changePassword(password, route.params.code, route.params.token);
     if (response.code === 400) {

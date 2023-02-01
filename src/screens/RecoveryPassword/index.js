@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   StyleSheet,
   Text, View,
@@ -13,22 +13,40 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
 import { emailValidator } from '../../helpers/emailValidator'
-import { passwordValidator } from '../../helpers/passwordValidator'
-import GlobalContext from '../../Contexts/Context'
+import Api from '../../service/Api'
+
 
 const orientation = Dimensions.get('screen')
 const deviceWidth = Math.round(Dimensions.get('window').width);
 
-const SignIn = ({ navigation }) => {
-
-  const { signin } = useContext(GlobalContext);
+const RecoveryPassword = ({ navigation }) => {
   const [email, setEmail] = useState({ value: 'cosme.alex@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
   const [isVisible, setIsVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handledIsVisble = () => setIsVisible(() => !isVisible)
+
+  const handleRecoveryPassword = async (email) => {
+    const json = await Api.recoveryPassword(email)
+    if (json.code === 400) {
+      Alert.alert('Atenção', `${json.message.message}`)
+    }
+  }
+
+  const sendResetPasswordEmail = () => {
+    const emailError = emailValidator(email.value)
+    if (emailError) {
+      setEmail({ ...email, error: emailError })
+      return
+    }
+    setIsLoading(true)
+    setTimeout(() => {
+      handleRecoveryPassword(email.value)
+      navigation.navigate('OtpScreen', email)
+      setIsLoading(false)
+    }, 2000)
+  }
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
@@ -90,41 +108,20 @@ const SignIn = ({ navigation }) => {
                   errorText={email.error}
                   left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
                 />
-                <TextInput
-                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
-                  theme={theme}
-                  textColor={theme.colors.primary}
-                  placeholderTextColor={theme.colors.second}
-                  placeholder='Senha'
-                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
-                  autoCapitalize="none"
-                  returnKeyType="done"
-                  autoCorrect={false}
-                  value={password.value}
-                  onChangeText={(text) => setPassword({ value: text, error: '' })}
-                  error={!!password.error}
-                  errorText={password.error}
-                  secureTextEntry={isVisible ? false : true}
-                  left={<TextInput.Icon icon="lock-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
-                  right={<TextInput.Icon
-                    color={theme.colors.primary}
-                    size={orientation.width > 400 ? 30 : 20}
-                    icon={isVisible ? "eye-outline" : "eye-off-outline"}
-                    error={!!password.error}
-                    onPress={() => handledIsVisble()}
-                  />}
-                />
+
                 <View style={styles.textRegisterArea}>
-                  <Text style={styles.textRegister}>Ainda não tem Registro?</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                    <Text style={styles.textRegisterRigth}>Tenho Registro!</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={styles.textRegisterRigth}>Registrar</Text>
+                    <Text style={styles.textRegisterRigth}>Registrar -se?</Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
-                  onPress={() => onLoginPressed(email.value, password.value)}
+                  onPress={() => sendResetPasswordEmail(email.value)}
                   activeOpacity={0.8}
                   style={styles.buttomSign}>
-                  <Text style={styles.buttomTextSign}>Entrar</Text>
+                  <Text style={styles.buttomTextSign}>Enviar</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
@@ -139,7 +136,7 @@ const SignIn = ({ navigation }) => {
     )
 }
 
-export default SignIn
+export default RecoveryPassword
 
 const styles = StyleSheet.create({
   containerForm: { paddingHorizontal: orientation.width > 400 ? orientation.width / 5 : 30 },
@@ -154,7 +151,7 @@ const styles = StyleSheet.create({
   buttomTextSign: { color: '#FFF', fontSize: orientation.width > 400 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
   input: { marginBottom: 20 },
   inputTablet: { height: 70, backgroundColor: '#FFF', marginBottom: 20, borderWidth: 1, borderRadius: 10 },
-  textRegisterArea: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 20 },
+  textRegisterArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   textRegister: { fontSize: orientation.width > 400 ? 22 : 14, marginRight: 20 },
   textRegisterRigth: { fontSize: orientation.width > 400 ? 22 : 14, fontWeight: 'bold', color: 'green' },
   footer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }

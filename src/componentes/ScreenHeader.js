@@ -1,5 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Dimensions } from 'react-native'
+
+const orientation = Dimensions.get('screen')
+const deviceWidth = Math.round(Dimensions.get('window').width);
 
 const ScreenHeader = ({ mainTitle, secondTitle }) => {
   return (
@@ -14,6 +17,6 @@ export default ScreenHeader
 
 const styles = StyleSheet.create({
   constainer: { paddingHorizontal: 14, paddingVertical: 14 },
-  mainTitle: { fontSize: 24, fontWeight: 'bold' },
-  secondTitle: { fontSize: 20 }
+  mainTitle: { fontSize: orientation.width > 400 ? 44 : 24, fontWeight: 'bold' },
+  secondTitle: { fontSize: orientation.width > 400 ? 30 : 20 }
 })

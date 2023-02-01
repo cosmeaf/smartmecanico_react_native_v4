@@ -31,9 +31,7 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true)
     setTimeout(() => {
       signin(email.value, password.value)
-      setIsLoading(false)
     }, 2000)
-
   }
 
   return isLoading ?
@@ -56,9 +54,11 @@ export default function LoginScreen({ navigation }) {
           autoCompleteType="email"
           textContentType="emailAddress"
           keyboardType="email-address"
+
         />
         <TextInput
           label="Senha"
+          mode="outlined"
           returnKeyType="done"
           autoCapitalize="none"
           value={password.value}
@@ -75,7 +75,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          style={{ justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: theme.colors.primary, height: 50, borderRadius: 20, marginBottom: 20 }}
+          style={{ justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: theme.colors.primary, height: 50, borderRadius: 10, marginBottom: 20 }}
           onPress={onLoginPressed}>
           <Text style={{ color: '#FFF', fontSize: 22 }}>Entrar</Text>
         </TouchableOpacity>

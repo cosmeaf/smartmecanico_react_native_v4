@@ -47,7 +47,6 @@ export default function RegisterScreen({ navigation }) {
     } else {
       Alert.alert('Ops!', `Estamos com dificuldades para acessar nosso servidores \nPor Favor tente mais tarde`)
     }
-
   }
 
   const onSignUpPressed = () => {

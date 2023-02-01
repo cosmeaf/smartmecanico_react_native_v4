@@ -7,21 +7,25 @@ import {
   Platform,
   Keyboard,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback, Image, ActivityIndicator, Dimensions
+  TouchableWithoutFeedback, Image, ActivityIndicator, Dimensions, Alert
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
+import { nameValidator } from '../../helpers/nameValidator'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
 import GlobalContext from '../../Contexts/Context'
+import Api from '../../service/Api'
+
 
 const orientation = Dimensions.get('screen')
 const deviceWidth = Math.round(Dimensions.get('window').width);
 
-const SignIn = ({ navigation }) => {
+const SignUp = ({ navigation }) => {
 
-  const { signin } = useContext(GlobalContext);
+  const { signup } = useContext(GlobalContext);
+  const [username, setUsername] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: 'cosme.alex@gmail.com', error: '' })
   const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
   const [isVisible, setIsVisible] = useState(false);
@@ -30,17 +34,43 @@ const SignIn = ({ navigation }) => {
 
   const handledIsVisble = () => setIsVisible(() => !isVisible)
 
-  const onLoginPressed = () => {
+  const handleSignUp = async (username, email, password, password2) => {
+    const response = await Api.signUp(username, email, password, password2)
+    if (response.id) {
+      Alert.alert('Sucesso', 'Sua conta foi criada com sucesso \nAgora Falta pouco para seu acesso', [
+        {
+          text: "Continuar",
+          onPress: () => {
+            navigation.replace('SignIn')
+          }
+        },
+      ])
+    } else if (response.code === 400 && response.message.username && response.message.email) {
+      Alert.alert('Atenção',
+        `${response.message.username ? response.message.username : ''} \n& \n${response.message.email ? response.message.email : ''}`)
+    } else if (response.code === 400 && response.message.email) {
+      Alert.alert('Atenção', `${response.message.email ? response.message.email : ''}`)
+    } else if (response.code === 400 && response.message.username) {
+      Alert.alert('Atenção', `${response.message.username ? response.message.username : ''}`)
+    } else {
+      Alert.alert('Ops!', `Estamos com dificuldades para acessar nosso servidores \nPor Favor tente mais tarde`)
+    }
+  }
+
+  const onSignUpPressed = () => {
+    const nameError = nameValidator(username.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
+    if (emailError || passwordError || nameError) {
+      setUsername({ ...username, error: nameError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       return
     }
     setIsLoading(true)
-    signin(email.value, password.value)
+    handleSignUp(username.value, email.value, password.value, password.value)
     setTimeout(() => setIsLoading(false), 2000)
+    return
   }
 
   const theme = {
@@ -70,6 +100,28 @@ const SignIn = ({ navigation }) => {
                     resizeMode='cover'
                   />
                 </View>
+                <Text style={{ fontSize: 12, color: 'red' }}>{username.error}</Text>
+                <TextInput
+                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
+                  theme={theme}
+                  textColor={theme.colors.primary}
+                  placeholderTextColor={theme.colors.second}
+                  label="Usuário"
+                  returnKeyType="next"
+                  autoCompleteType="default"
+                  textContentType="name"
+                  keyboardType="default"
+                  placeholder='Usuário'
+                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  value={username.value}
+                  onChangeText={(text) => setUsername({ value: text, error: '' })}
+                  error={!!username.error}
+                  errorText={username.error}
+                  left={<TextInput.Icon icon="account-circle-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
+                />
+
                 <TextInput
                   style={orientation.width > 400 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -82,6 +134,7 @@ const SignIn = ({ navigation }) => {
                   keyboardType="email-address"
                   placeholder='E-mail'
                   mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  underlineColor='transparent'
                   autoCapitalize="none"
                   autoCorrect={false}
                   value={email.value}
@@ -115,13 +168,15 @@ const SignIn = ({ navigation }) => {
                   />}
                 />
                 <View style={styles.textRegisterArea}>
-                  <Text style={styles.textRegister}>Ainda não tem Registro?</Text>
-                  <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={styles.textRegisterRigth}>Registrar</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('RecoveryPassword')}>
+                    <Text style={styles.textRegisterRigth}>Recuperar Senha</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                    <Text style={styles.textRegisterRigth}>Entrar</Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
-                  onPress={() => onLoginPressed(email.value, password.value)}
+                  onPress={() => onSignUpPressed(username.value, email.value, password.value)}
                   activeOpacity={0.8}
                   style={styles.buttomSign}>
                   <Text style={styles.buttomTextSign}>Entrar</Text>
@@ -139,7 +194,7 @@ const SignIn = ({ navigation }) => {
     )
 }
 
-export default SignIn
+export default SignUp
 
 const styles = StyleSheet.create({
   containerForm: { paddingHorizontal: orientation.width > 400 ? orientation.width / 5 : 30 },
@@ -154,8 +209,8 @@ const styles = StyleSheet.create({
   buttomTextSign: { color: '#FFF', fontSize: orientation.width > 400 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
   input: { marginBottom: 20 },
   inputTablet: { height: 70, backgroundColor: '#FFF', marginBottom: 20, borderWidth: 1, borderRadius: 10 },
-  textRegisterArea: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 20 },
-  textRegister: { fontSize: orientation.width > 400 ? 22 : 14, marginRight: 20 },
+  textRegisterArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  textRegister: { fontSize: orientation.width > 400 ? 22 : 14 },
   textRegisterRigth: { fontSize: orientation.width > 400 ? 22 : 14, fontWeight: 'bold', color: 'green' },
   footer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }
 })

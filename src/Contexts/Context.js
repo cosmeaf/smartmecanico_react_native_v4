@@ -25,25 +25,29 @@ export const GlobalProvider = ({ children }) => {
     try {
       const response = await Api.signIn(username, password)
       if (response.access && response.refresh) {
+        setAuthentication(true)
         await AsyncStorage.setItem("@accessToken", JSON.stringify(response.access));
         await AsyncStorage.setItem("@refreshToken", JSON.stringify(response.refresh));
-        setAuthentication(true)
         setIsLoading(false)
+        return
       } else if (response.message.detail) {
         Alert.alert('Atenção', `${response.message.detail}`)
         setIsLoading(false)
+        return false
       } else {
         Alert.alert('Atenção', `${response}`)
         setIsLoading(false)
+        return false
       }
     } catch (error) {
       if (error.name) {
         Alert.alert('Atenção', 'Falha de conexão ao sistema')
         setIsLoading(false)
+        return false
       }
     }
-
   }
+
   // Sign-Up
   const signup = async (username, email, password, password2) => {
     try {

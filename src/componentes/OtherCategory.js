@@ -3,11 +3,8 @@ import React from 'react'
 import FavoriteButton from './FavoriteButton';
 
 
-export const windowWidth = Dimensions.get('window').width;
-export const windowHeight = Dimensions.get('window').height;
-
-const CARD_WIDTH = windowWidth / 2 - 28;
-const CARD_HEIGHT = 150;
+const orientation = Dimensions.get('screen')
+const deviceWidth = Math.round(Dimensions.get('window').width);
 
 const OtherCategory = ({ data, list, onPress }) => {
 
@@ -40,26 +37,23 @@ const OtherCategory = ({ data, list, onPress }) => {
 export default OtherCategory
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', flexWrap: 'wrap' },
+  container: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: orientation.width > 400 ? 20 : 10 },
   carContainer: {
-    paddingRight: 14,
-    paddingLeft: 14,
-    padding: 14,
-    elevation: 5,
-    opacity: 0.9,
+    paddingHorizontal: orientation.width > 400 ? 20 : 10,
+    marginBottom: orientation.width > 400 ? 30 : 10,
   },
   card: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
+    width: orientation.width > 400 ? orientation.width / 2 - 40 : orientation.width / 2 - 20,
+    height: orientation.height / 5,
     justifyContent: 'center', alignItems: 'center',
     borderRadius: 20,
-    backgroundColor: 'rgba(230,230,235,0.6)',
-    opacity: 0.9,
+    backgroundColor: 'rgba(250,250,250, 0.8)',
+    borderWidth: 1,
   },
   imageBox: {},
-  image: { width: 50, height: 50, resizeMode: 'cover' },
+  image: { width: orientation.width > 400 ? 100 : 60, height: orientation.width > 400 ? 100 : 60, resizeMode: 'cover', marginBottom: 30 },
   contentFooter: { position: 'absolute', bottom: 0, left: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20, backgroundColor: '#FFF', width: '100%' },
-  titleBox: { justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 0.3, borderBottomRightRadius: 15, borderBottomLeftRadius: 15, borderColor: 'grey' },
-  title: { textAlign: 'center', fontSize: 14, fontWeight: 'bold' },
+  titleBox: { justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 1, borderBottomRightRadius: 15, borderBottomLeftRadius: 15, borderColor: 'grey' },
+  title: { textAlign: 'center', fontSize: orientation.width > 400 ? 28 : 14, fontWeight: 'bold' },
   favorited: { marginRight: 5, zIndex: 1 }
 })

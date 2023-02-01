@@ -122,7 +122,7 @@ export default ({ navigation }) => {
       },
       {
         cancelable: true,
-        onDisminn: () => console.log('Tratar depois Android')
+        onDisminn: () => Alert.alert('Tratar depois Android')
       }
     ])
   }

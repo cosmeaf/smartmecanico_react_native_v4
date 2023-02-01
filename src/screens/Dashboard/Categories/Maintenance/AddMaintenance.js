@@ -83,9 +83,7 @@ const AddMaintenance = ({ navigation }) => {
   }
 
   useEffect(() => {
-    console.log('VALUE ', name)
     setValue(null)
-    console.log('VALUE ', name)
   }, [isModalVisibleName])
 
   return (

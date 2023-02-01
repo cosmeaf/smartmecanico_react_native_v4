@@ -1,15 +1,58 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, TouchableOpacity, Alert } from 'react-native'
+import {
+  StyleSheet, Text, View,
+  KeyboardAvoidingView, TouchableWithoutFeedback,
+  Keyboard, Platform, TouchableOpacity, Alert,
+  Dimensions
+} from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Octicons } from '@expo/vector-icons'
 import Api from '../service/Api'
 import OtpInputComponent from '../componentes/OtpInputComponent';
 
+const orientation = Dimensions.get('screen')
+const deviceWidth = Math.round(Dimensions.get('window').width);
+
 const OtpScreen = ({ navigation, route }) => {
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [customInterval, setCustomInterval] = useState(0);
   const [code, setCode] = useState('');
   const [pinReady, setPinReady] = useState(false);
   const MAX_CODE_LENGTH = 4
+
+  const startTimer = () => {
+    setCustomInterval(
+      setInterval(() => {
+        changeTime();
+      }, 1000)
+    );
+  };
+
+  const stopTimer = () => {
+    if (customInterval) {
+      clearInterval(customInterval);
+    }
+  };
+
+  const clear = () => {
+    stopTimer();
+    setSeconds(0);
+    setMinutes(0);
+  };
+
+  const changeTime = () => {
+    setSeconds((prevState) => {
+      if (prevState + 1 === 60) {
+        setMinutes(minutes + 1);
+        return 0;
+      }
+      return prevState + 1;
+    });
+  };
+
+
 
 
   const handleValidation = async (code) => {
@@ -22,7 +65,6 @@ const OtpScreen = ({ navigation, route }) => {
         merge: true,
       });
     } else {
-      console.log('OTP Screen ', response.message)
       Alert.alert('Atenção', `${response.message}`)
     }
   }
@@ -32,18 +74,18 @@ const OtpScreen = ({ navigation, route }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView behavior="padding">
           <View
-            style={{ alignItems: 'center', marginBottom: 10, marginTop: 50 }}>
+            style={styles.headerIcon}>
             <StatusBar style='dark' />
-            <Octicons name='lock' size={80} color='#60d3A4' />
+            <Octicons name='lock' size={orientation.width > 400 ? 100 : 80} color='#60d3A4' />
           </View>
           <View style={{ alignItems: 'center' }}>
-            <Text style={{ fontSize: 22, fontWeight: '500', marginBottom: 10 }}>Código de Verificação</Text>
-            <Text>Por Favor entre com 4 Digitos </Text>
-            <Text>enviado para o e-mail:</Text>
-            <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>{route.params.value ? route.params.value : ''}</Text>
+            <Text style={styles.headerTitle}>Código de Verificação</Text>
+            <Text style={styles.headerSubtitle}>Por Favor entre com 4 Digitos </Text>
+            <Text style={styles.headerSubtitle}>enviado para o e-mail:</Text>
+            <Text style={styles.headerEmail}>{route.params.value ? route.params.value : ''}</Text>
           </View>
 
-          <View style={{ marginHorizontal: 28 }}>
+          <View style={styles.inputNumber}>
             <OtpInputComponent
               setPinReady={setPinReady}
               code={code}
@@ -52,13 +94,24 @@ const OtpScreen = ({ navigation, route }) => {
             />
           </View>
 
-          <View style={{ marginHorizontal: 28 }}>
+          <View style={styles.buttumArea}>
             <TouchableOpacity
               activeOpacity={0.8}
               disabled={(pinReady) ? false : true}
               onPress={() => handleValidation(code)}
-              style={{ alignItems: 'center', backgroundColor: pinReady ? '#60d3A4' : '#66BBB0', padding: 10, marginTop: 10, borderRadius: 10 }}>
-              <Text style={{ fontSize: 22, color: '#FFF' }}>Verificar</Text>
+              style={{ height: orientation.width > 400 ? 70 : 50, alignItems: 'center', backgroundColor: pinReady ? '#60d3A4' : '#66BBB0', padding: 10, marginTop: 10, borderRadius: 10 }}>
+              <Text style={styles.buttumText}>Verificar</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 100 }}>
+            <TouchableOpacity
+              onPress={startTimer}
+              style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ fontSize: orientation.width > 400 ? 24 : 16, marginRight: 10 }}>Solicitar novo Código</Text>
+              <Text style={{ fontSize: orientation.width > 400 ? 24 : 16 }}>
+                {minutes < 10 ? "0" + minutes : minutes}:
+                {seconds < 10 ? "0" + seconds : seconds}
+              </Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -70,4 +123,12 @@ const OtpScreen = ({ navigation, route }) => {
 
 export default OtpScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  headerIcon: { justifyContent: orientation.width > 400 ? 'center' : null, alignItems: 'center', marginBottom: 10, marginTop: orientation.width > 400 ? 200 : 50 },
+  headerTitle: { fontSize: orientation.width > 400 ? 40 : 22, fontWeight: '500', marginBottom: 10 },
+  headerSubtitle: { fontSize: orientation.width > 400 ? 28 : 16 },
+  headerEmail: { fontSize: orientation.width > 400 ? 28 : 16, fontWeight: 'bold' },
+  buttumArea: { marginHorizontal: orientation.width > 400 ? orientation.width / 5 : 28 },
+  inputNumber: { marginHorizontal: orientation.width > 400 ? orientation.width * 0.3 : 20 },
+  buttumText: { fontSize: orientation.width > 400 ? 34 : 22, color: '#FFF', fontWeight: 'bold' },
+})
