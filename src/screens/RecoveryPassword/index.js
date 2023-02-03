@@ -7,7 +7,7 @@ import {
   Platform,
   Keyboard,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback, Image, ActivityIndicator, Dimensions
+  TouchableWithoutFeedback, Image, ActivityIndicator, Dimensions, Alert
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
@@ -29,23 +29,30 @@ const RecoveryPassword = ({ navigation }) => {
 
   const handleRecoveryPassword = async (email) => {
     const json = await Api.recoveryPassword(email)
-    if (json.code === 400) {
+    if (json.code === 500) {
       Alert.alert('Atenção', `${json.message.message}`)
+      return
     }
   }
 
-  const sendResetPasswordEmail = () => {
+  const sendResetPasswordEmail = async () => {
     const emailError = emailValidator(email.value)
     if (emailError) {
       setEmail({ ...email, error: emailError })
       return
     }
+    const json = await Api.recoveryPassword(email.value)
+    if (json.code === 500 && json.message.email) {
+      Alert.alert('Atenção', `${json.message.email}`)
+      return
+    }
+    if (json.code === 500 && json.message.message) {
+      Alert.alert('Atenção', `${json.message.message}`)
+      return
+    }
     setIsLoading(true)
-    setTimeout(() => {
-      handleRecoveryPassword(email.value)
-      navigation.navigate('OtpScreen', email)
-      setIsLoading(false)
-    }, 2000)
+    navigation.navigate('OtpScreen', email.value)
+    setTimeout(() => setIsLoading(false), 2000)
   }
 
   const onLoginPressed = () => {
@@ -88,8 +95,9 @@ const RecoveryPassword = ({ navigation }) => {
                     resizeMode='cover'
                   />
                 </View>
+                <Text style={{ color: '#AB2101' }}>{email.error}</Text>
                 <TextInput
-                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
+                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
                   textColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.second}
@@ -99,14 +107,14 @@ const RecoveryPassword = ({ navigation }) => {
                   textContentType="emailAddress"
                   keyboardType="email-address"
                   placeholder='E-mail'
-                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
                   autoCapitalize="none"
                   autoCorrect={false}
                   value={email.value}
                   onChangeText={(text) => setEmail({ value: text, error: '' })}
                   error={!!email.error}
                   errorText={email.error}
-                  left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
+                  left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
 
                 <View style={styles.textRegisterArea}>
@@ -139,20 +147,20 @@ const RecoveryPassword = ({ navigation }) => {
 export default RecoveryPassword
 
 const styles = StyleSheet.create({
-  containerForm: { paddingHorizontal: orientation.width > 400 ? orientation.width / 5 : 30 },
+  containerForm: { paddingHorizontal: orientation.width > 500 ? orientation.width / 5 : 30 },
   imageArea: {
     flex: 1,
-    height: orientation.width > 400 ? 200 : null,
+    height: orientation.width > 500 ? 200 : null,
     justifyContent: 'center', alignItems: 'center',
-    marginTop: orientation.width > 400 ? 100 : 50, marginBottom: orientation.width > 400 ? 100 : 30
+    marginTop: orientation.width > 500 ? 100 : 50, marginBottom: orientation.width > 500 ? 100 : 30
   },
-  image: { width: orientation.width > 400 ? 400 : 200, height: orientation.width > 400 ? 200 : 100 },
-  buttomSign: { height: orientation.width > 400 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 20, borderRadius: 5 },
-  buttomTextSign: { color: '#FFF', fontSize: orientation.width > 400 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
+  image: { width: orientation.width > 500 ? 500 : 200, height: orientation.width > 500 ? 200 : 100 },
+  buttomSign: { height: orientation.width > 500 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 20, borderRadius: 5 },
+  buttomTextSign: { color: '#FFF', fontSize: orientation.width > 500 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
   input: { marginBottom: 20 },
   inputTablet: { height: 70, backgroundColor: '#FFF', marginBottom: 20, borderWidth: 1, borderRadius: 10 },
   textRegisterArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  textRegister: { fontSize: orientation.width > 400 ? 22 : 14, marginRight: 20 },
-  textRegisterRigth: { fontSize: orientation.width > 400 ? 22 : 14, fontWeight: 'bold', color: 'green' },
+  textRegister: { fontSize: orientation.width > 500 ? 22 : 14, marginRight: 20 },
+  textRegisterRigth: { fontSize: orientation.width > 500 ? 22 : 14, fontWeight: 'bold', color: 'green' },
   footer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }
 })

@@ -60,12 +60,13 @@ const OtpScreen = ({ navigation, route }) => {
     const response = await Api.codeVerify(data)
     if (response.code && response.token) {
       navigation.navigate({
-        name: 'ChangePassword',
+        name: 'ResetPassword',
         params: { code: response.code, token: response.token },
         merge: true,
       });
     } else {
-      Alert.alert('Atenção', `${response.message}`)
+      console.log(response.message.message)
+      Alert.alert('Atenção', `${response.message.message}`)
     }
   }
 
@@ -76,7 +77,7 @@ const OtpScreen = ({ navigation, route }) => {
           <View
             style={styles.headerIcon}>
             <StatusBar style='dark' />
-            <Octicons name='lock' size={orientation.width > 400 ? 100 : 80} color='#60d3A4' />
+            <Octicons name='lock' size={orientation.width > 500 ? 100 : 80} color='#60d3A4' />
           </View>
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.headerTitle}>Código de Verificação</Text>
@@ -99,7 +100,7 @@ const OtpScreen = ({ navigation, route }) => {
               activeOpacity={0.8}
               disabled={(pinReady) ? false : true}
               onPress={() => handleValidation(code)}
-              style={{ height: orientation.width > 400 ? 70 : 50, alignItems: 'center', backgroundColor: pinReady ? '#60d3A4' : '#66BBB0', padding: 10, marginTop: 10, borderRadius: 10 }}>
+              style={{ height: orientation.width > 500 ? 70 : 50, alignItems: 'center', backgroundColor: pinReady ? '#60d3A4' : '#66BBB0', padding: 10, marginTop: 10, borderRadius: 10 }}>
               <Text style={styles.buttumText}>Verificar</Text>
             </TouchableOpacity>
           </View>
@@ -107,8 +108,8 @@ const OtpScreen = ({ navigation, route }) => {
             <TouchableOpacity
               onPress={startTimer}
               style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
-              <Text style={{ fontSize: orientation.width > 400 ? 24 : 16, marginRight: 10 }}>Solicitar novo Código</Text>
-              <Text style={{ fontSize: orientation.width > 400 ? 24 : 16 }}>
+              <Text style={{ fontSize: orientation.width > 500 ? 24 : 16, marginRight: 10 }}>Solicitar novo Código</Text>
+              <Text style={{ fontSize: orientation.width > 500 ? 24 : 16 }}>
                 {minutes < 10 ? "0" + minutes : minutes}:
                 {seconds < 10 ? "0" + seconds : seconds}
               </Text>
@@ -124,11 +125,11 @@ const OtpScreen = ({ navigation, route }) => {
 export default OtpScreen
 
 const styles = StyleSheet.create({
-  headerIcon: { justifyContent: orientation.width > 400 ? 'center' : null, alignItems: 'center', marginBottom: 10, marginTop: orientation.width > 400 ? 200 : 50 },
-  headerTitle: { fontSize: orientation.width > 400 ? 40 : 22, fontWeight: '500', marginBottom: 10 },
-  headerSubtitle: { fontSize: orientation.width > 400 ? 28 : 16 },
-  headerEmail: { fontSize: orientation.width > 400 ? 28 : 16, fontWeight: 'bold' },
-  buttumArea: { marginHorizontal: orientation.width > 400 ? orientation.width / 5 : 28 },
-  inputNumber: { marginHorizontal: orientation.width > 400 ? orientation.width * 0.3 : 20 },
-  buttumText: { fontSize: orientation.width > 400 ? 34 : 22, color: '#FFF', fontWeight: 'bold' },
+  headerIcon: { justifyContent: orientation.width > 500 ? 'center' : null, alignItems: 'center', marginBottom: 10, marginTop: orientation.width > 500 ? 200 : 50 },
+  headerTitle: { fontSize: orientation.width > 500 ? 40 : 22, fontWeight: '500', marginBottom: 10 },
+  headerSubtitle: { fontSize: orientation.width > 500 ? 28 : 16 },
+  headerEmail: { fontSize: orientation.width > 500 ? 28 : 16, fontWeight: 'bold' },
+  buttumArea: { marginHorizontal: orientation.width > 500 ? orientation.width / 5 : 28 },
+  inputNumber: { marginHorizontal: orientation.width > 500 ? orientation.width * 0.3 : 20 },
+  buttumText: { fontSize: orientation.width > 500 ? 34 : 22, color: '#FFF', fontWeight: 'bold' },
 })

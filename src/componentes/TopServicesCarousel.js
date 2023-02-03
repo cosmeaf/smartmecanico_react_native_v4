@@ -26,7 +26,7 @@ const TopServicesCarousel = ({ list, data, onPress = null }) => {
             <Image source={item.image} style={styles.image} resizeMode="stretch" />
             <View style={styles.cardText}>
               <Text style={styles.title}>{item.title}</Text>
-              <Ionicons name="ios-heart-outline" size={orientation.width > 400 ? 40 : 30} color="red" />
+              <Ionicons name="ios-heart-outline" size={orientation.width > 500 ? 40 : 30} color="red" />
             </View>
           </TouchableOpacity>
         )
@@ -40,7 +40,7 @@ export default TopServicesCarousel
 const styles = StyleSheet.create({
   cardContainer: {
     marginHorizontal: 10,
-    width: orientation.width > 400 ? orientation.width / 2 : deviceWidth - 20,
+    width: orientation.width > 500 ? orientation.width / 2 : deviceWidth - 20,
     backgroundColor: '#FFFFFD',
     height: orientation.height / 3,
     borderRadius: 20,
@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
     height: '80%',
     opacity: 0.8
   },
-  cardText: { flexDirection: 'row', justifyContent: 'space-between', marginTop: orientation.width > 400 ? 20 : 10, marginHorizontal: 20 },
-  title: { fontSize: orientation.width > 400 ? 24 : 18, fontWeight: 'bold' }
+  cardText: { flexDirection: 'row', justifyContent: 'space-between', marginTop: orientation.width > 500 ? 20 : 10, marginHorizontal: 20 },
+  title: { fontSize: orientation.width > 500 ? 24 : 18, fontWeight: 'bold' }
 })

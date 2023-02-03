@@ -45,12 +45,12 @@ const SignUp = ({ navigation }) => {
           }
         },
       ])
-    } else if (response.code === 400 && response.message.username && response.message.email) {
+    } else if (response.code === 500 && response.message.username && response.message.email) {
       Alert.alert('Atenção',
         `${response.message.username ? response.message.username : ''} \n& \n${response.message.email ? response.message.email : ''}`)
-    } else if (response.code === 400 && response.message.email) {
+    } else if (response.code === 500 && response.message.email) {
       Alert.alert('Atenção', `${response.message.email ? response.message.email : ''}`)
-    } else if (response.code === 400 && response.message.username) {
+    } else if (response.code === 500 && response.message.username) {
       Alert.alert('Atenção', `${response.message.username ? response.message.username : ''}`)
     } else {
       Alert.alert('Ops!', `Estamos com dificuldades para acessar nosso servidores \nPor Favor tente mais tarde`)
@@ -102,7 +102,7 @@ const SignUp = ({ navigation }) => {
                 </View>
                 <Text style={{ fontSize: 12, color: 'red' }}>{username.error}</Text>
                 <TextInput
-                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
+                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
                   textColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.second}
@@ -112,18 +112,18 @@ const SignUp = ({ navigation }) => {
                   textContentType="name"
                   keyboardType="default"
                   placeholder='Usuário'
-                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
                   autoCapitalize="none"
                   autoCorrect={false}
                   value={username.value}
                   onChangeText={(text) => setUsername({ value: text, error: '' })}
                   error={!!username.error}
                   errorText={username.error}
-                  left={<TextInput.Icon icon="account-circle-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
+                  left={<TextInput.Icon icon="account-circle-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
 
                 <TextInput
-                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
+                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
                   textColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.second}
@@ -133,7 +133,7 @@ const SignUp = ({ navigation }) => {
                   textContentType="emailAddress"
                   keyboardType="email-address"
                   placeholder='E-mail'
-                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
                   underlineColor='transparent'
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -141,15 +141,15 @@ const SignUp = ({ navigation }) => {
                   onChangeText={(text) => setEmail({ value: text, error: '' })}
                   error={!!email.error}
                   errorText={email.error}
-                  left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
+                  left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
                 <TextInput
-                  style={orientation.width > 400 ? styles.inputTablet : styles.input}
+                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
                   textColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.second}
                   placeholder='Senha'
-                  mode={orientation.width > 400 ? 'flat' : 'outlined'}
+                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
                   autoCapitalize="none"
                   returnKeyType="done"
                   autoCorrect={false}
@@ -158,15 +158,21 @@ const SignUp = ({ navigation }) => {
                   error={!!password.error}
                   errorText={password.error}
                   secureTextEntry={isVisible ? false : true}
-                  left={<TextInput.Icon icon="lock-outline" color={theme.colors.primary} size={orientation.width > 400 ? 30 : 20} />}
+                  left={<TextInput.Icon icon="lock-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                   right={<TextInput.Icon
                     color={theme.colors.primary}
-                    size={orientation.width > 400 ? 30 : 20}
+                    size={orientation.width > 500 ? 30 : 20}
                     icon={isVisible ? "eye-outline" : "eye-off-outline"}
                     error={!!password.error}
                     onPress={() => handledIsVisble()}
                   />}
                 />
+                <TouchableOpacity
+                  onPress={() => onSignUpPressed(username.value, email.value, password.value)}
+                  activeOpacity={0.8}
+                  style={styles.buttomSign}>
+                  <Text style={styles.buttomTextSign}>Entrar</Text>
+                </TouchableOpacity>
                 <View style={styles.textRegisterArea}>
                   <TouchableOpacity onPress={() => navigation.navigate('RecoveryPassword')}>
                     <Text style={styles.textRegisterRigth}>Recuperar Senha</Text>
@@ -175,12 +181,6 @@ const SignUp = ({ navigation }) => {
                     <Text style={styles.textRegisterRigth}>Entrar</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={() => onSignUpPressed(username.value, email.value, password.value)}
-                  activeOpacity={0.8}
-                  style={styles.buttomSign}>
-                  <Text style={styles.buttomTextSign}>Entrar</Text>
-                </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
@@ -197,20 +197,20 @@ const SignUp = ({ navigation }) => {
 export default SignUp
 
 const styles = StyleSheet.create({
-  containerForm: { paddingHorizontal: orientation.width > 400 ? orientation.width / 5 : 30 },
+  containerForm: { paddingHorizontal: orientation.width > 500 ? orientation.width / 5 : 30 },
   imageArea: {
     flex: 1,
-    height: orientation.width > 400 ? 200 : null,
+    height: orientation.width > 500 ? 200 : null,
     justifyContent: 'center', alignItems: 'center',
-    marginTop: orientation.width > 400 ? 100 : 50, marginBottom: orientation.width > 400 ? 100 : 30
+    marginTop: orientation.width > 500 ? 100 : 50, marginBottom: orientation.width > 500 ? 100 : 30
   },
-  image: { width: orientation.width > 400 ? 400 : 200, height: orientation.width > 400 ? 200 : 100 },
-  buttomSign: { height: orientation.width > 400 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 20, borderRadius: 5 },
-  buttomTextSign: { color: '#FFF', fontSize: orientation.width > 400 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
+  image: { width: orientation.width > 500 ? 500 : 200, height: orientation.width > 500 ? 200 : 100 },
+  buttomSign: { height: orientation.width > 500 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 20, borderRadius: 5 },
+  buttomTextSign: { color: '#FFF', fontSize: orientation.width > 500 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
   input: { marginBottom: 20 },
   inputTablet: { height: 70, backgroundColor: '#FFF', marginBottom: 20, borderWidth: 1, borderRadius: 10 },
   textRegisterArea: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  textRegister: { fontSize: orientation.width > 400 ? 22 : 14 },
-  textRegisterRigth: { fontSize: orientation.width > 400 ? 22 : 14, fontWeight: 'bold', color: 'green' },
+  textRegister: { fontSize: orientation.width > 500 ? 22 : 14 },
+  textRegisterRigth: { fontSize: orientation.width > 500 ? 22 : 14, fontWeight: 'bold', color: 'green' },
   footer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }
 })

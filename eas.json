@@ -12,7 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-        "autoIncrement": true
+      "autoIncrement": false
     }
   },
   "submit": {
@@ -22,8 +22,8 @@
         "ascAppId": "1582824722",
         "appleTeamId": "VF74R327HV"
       },
-      "android":{
-        "serviceAccountKeyPath":"C:\\Users\\cosme\\Downloads\\pc-api-8334722257742332344-457-887cfb52d60e.json"
+      "android": {
+        "serviceAccountKeyPath": "C:\\Users\\cosme\\Downloads\\pc-api-8334722257742332344-457-887cfb52d60e.json"
       }
     }
   }

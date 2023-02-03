@@ -269,10 +269,11 @@ export default {
       return error.TypeError
     }
   },
-  updateProfile: async (id, birthday, phone_number) => {
+
+  updateProfile: async (id, user, birthday, phone_number, image) => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
-    const data = { id, birthday, phone_number }
+    const data = { id, user, birthday, phone_number, image }
     try {
       const response = await fetch(`${BASE_API}/profile/${id}/`, {
         method: 'PATCH',
@@ -287,6 +288,30 @@ export default {
         const json = await response.json();
         return json;
       } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  updateImage: async (id, formData) => {
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/profile/${id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+        redirect: 'follow'
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }

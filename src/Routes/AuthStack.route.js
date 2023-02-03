@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/Signup';
 import RecoveryPassword from '../screens/RecoveryPassword';
+import ResetPassword from '../screens/ResetPassword';
+
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
@@ -19,7 +21,7 @@ const AuthStack = () => {
       <Stack.Screen name='SignUp' component={SignUp} options={{ title: 'Sign-Ip' }} />
       <Stack.Screen name='RecoveryPassword' component={RecoveryPassword} options={{ title: 'Recovery Password' }} />
       <Stack.Screen name='OtpScreen' component={OtpScreen} options={{ title: 'OPT Verify' }} />
-      <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Change Passowrd' }} />
+      <Stack.Screen name='ResetPassword' component={ResetPassword} options={{ title: 'Reset Password' }} />
     </Stack.Navigator>
   );
 }

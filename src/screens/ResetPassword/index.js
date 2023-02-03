@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   StyleSheet,
   Text, View,
@@ -7,40 +7,70 @@ import {
   Platform,
   Keyboard,
   KeyboardAvoidingView,
+  Alert,
   TouchableWithoutFeedback, Image, ActivityIndicator, Dimensions
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
-import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
-import GlobalContext from '../../Contexts/Context'
+import { repeatPasswordValidator } from '../../helpers/repeatPasswordValidator'
+import Api from '../../service/Api'
 
 const orientation = Dimensions.get('screen')
 const deviceWidth = Math.round(Dimensions.get('window').width);
 
-const SignIn = ({ navigation }) => {
+const ResetPassword = ({ navigation, route }) => {
+  const [password, setPassword] = useState({ value: 'qweasd32', error: '' })
+  const [repeatPassword, setRepeatPassword] = useState({ value: 'qweasd32', error: '' })
 
-  const { signin } = useContext(GlobalContext);
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
   const [isVisible, setIsVisible] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handledIsVisble = () => setIsVisible(() => !isVisible)
 
-  const onLoginPressed = () => {
-    const emailError = emailValidator(email.value)
+  const handleRecoveryPassword = async () => {
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
+    const repeatPasswordError = repeatPasswordValidator(repeatPassword.value)
+
+    if (passwordError || repeatPasswordError) {
       setPassword({ ...password, error: passwordError })
+      setRepeatPassword({ ...repeatPassword, error: repeatPasswordError })
       return
     }
-    setIsLoading(true)
-    signin(email.value, password.value)
-    setTimeout(() => setIsLoading(false), 2000)
+    if (password.value !== repeatPassword.value) {
+      setPassword({ ...password, error: 'Senha diferente de repetir senha' })
+      setRepeatPassword({ ...repeatPassword, error: 'Repetir Senha diferente de senha' })
+    }
+    const response = await Api.changePassword(password.value, route.params.code, route.params.token);
+
+    if (response.code === 500) {
+      console.log(response)
+      Alert.alert('Atenção', `${response.message.error[0]} \nDeseja Solicitar novo código?`, [
+        {
+          text: "Sim",
+          onPress: async () => {
+            setIsLoading(true)
+            navigation.navigate('ResetPassword');
+            setTimeout(() => setIsLoading(false), 2000)
+          }
+        },
+        {
+          text: "Não",
+          onPress: async () => {
+            setIsLoading(true)
+            navigation.replace('SignIn');
+            setTimeout(() => setIsLoading(false), 2000)
+          }
+        }
+      ])
+    } else {
+      Alert.alert('Sucesso', `${response.message}`)
+      setIsLoading(true)
+      navigation.replace('SignIn');
+      setTimeout(() => setIsLoading(false), 2000)
+    }
   }
 
   const theme = {
@@ -57,7 +87,7 @@ const SignIn = ({ navigation }) => {
     </View>
     :
     (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
         <ScrollView keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
           <KeyboardAvoidingView enabled behavior="padding">
@@ -70,32 +100,13 @@ const SignIn = ({ navigation }) => {
                     resizeMode='cover'
                   />
                 </View>
+                <Text style={{ color: '#AB2101' }}>{password.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
                   textColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.second}
-                  label="E-mail"
-                  returnKeyType="next"
-                  autoCompleteType="email"
-                  textContentType="emailAddress"
-                  keyboardType="email-address"
-                  placeholder='E-mail'
-                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={email.value}
-                  onChangeText={(text) => setEmail({ value: text, error: '' })}
-                  error={!!email.error}
-                  errorText={email.error}
-                  left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
-                />
-                <TextInput
-                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
-                  theme={theme}
-                  textColor={theme.colors.primary}
-                  placeholderTextColor={theme.colors.second}
-                  placeholder='Senha'
+                  placeholder='Nova Senha'
                   mode={orientation.width > 500 ? 'flat' : 'outlined'}
                   autoCapitalize="none"
                   returnKeyType="done"
@@ -114,20 +125,38 @@ const SignIn = ({ navigation }) => {
                     onPress={() => handledIsVisble()}
                   />}
                 />
+
+                <Text style={{ color: '#AB2101' }}>{repeatPassword.error}</Text>
+                <TextInput
+                  style={orientation.width > 500 ? styles.inputTablet : styles.input}
+                  theme={theme}
+                  textColor={theme.colors.primary}
+                  placeholderTextColor={theme.colors.second}
+                  placeholder='Repetir Nova Senha'
+                  mode={orientation.width > 500 ? 'flat' : 'outlined'}
+                  autoCapitalize="none"
+                  returnKeyType="done"
+                  autoCorrect={false}
+                  value={repeatPassword.value}
+                  onChangeText={(text) => setRepeatPassword({ value: text, error: '' })}
+                  error={!!repeatPassword.error}
+                  errorText={repeatPassword.error}
+                  secureTextEntry={isVisible ? false : true}
+                  left={<TextInput.Icon icon="lock-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
+                  right={<TextInput.Icon
+                    color={theme.colors.primary}
+                    size={orientation.width > 500 ? 30 : 20}
+                    icon={isVisible ? "eye-outline" : "eye-off-outline"}
+                    error={!!repeatPassword.error}
+                    onPress={() => handledIsVisble()}
+                  />}
+                />
                 <TouchableOpacity
-                  onPress={() => onLoginPressed(email.value, password.value)}
+                  onPress={() => handleRecoveryPassword(password.value, repeatPassword.value)}
                   activeOpacity={0.8}
                   style={styles.buttomSign}>
-                  <Text style={styles.buttomTextSign}>Entrar</Text>
+                  <Text style={styles.buttomTextSign}>Nova Senha</Text>
                 </TouchableOpacity>
-                <View style={styles.textRegisterArea}>
-                  <TouchableOpacity onPress={() => navigation.navigate('RecoveryPassword')}>
-                    <Text style={styles.textRegisterRigth}>Recuperar Senha</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={styles.textRegisterRigth}>Registrar-se</Text>
-                  </TouchableOpacity>
-                </View>
               </View>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
@@ -141,7 +170,7 @@ const SignIn = ({ navigation }) => {
     )
 }
 
-export default SignIn
+export default ResetPassword
 
 const styles = StyleSheet.create({
   containerForm: { paddingHorizontal: orientation.width > 500 ? orientation.width / 5 : 30 },
@@ -152,11 +181,11 @@ const styles = StyleSheet.create({
     marginTop: orientation.width > 500 ? 100 : 50, marginBottom: orientation.width > 500 ? 100 : 30
   },
   image: { width: orientation.width > 500 ? 500 : 200, height: orientation.width > 500 ? 200 : 100 },
-  buttomSign: { height: orientation.width > 500 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 5, borderRadius: 5, marginBottom: 20 },
+  buttomSign: { height: orientation.width > 500 ? 70 : 50, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'green', marginVertical: 20, borderRadius: 8 },
   buttomTextSign: { color: '#FFF', fontSize: orientation.width > 500 ? 34 : 18, fontWeight: 'bold', letterSpacing: 2 },
   input: { marginBottom: 20 },
   inputTablet: { height: 70, backgroundColor: '#FFF', marginBottom: 20, borderWidth: 1, borderRadius: 10 },
-  textRegisterArea: { flexDirection: 'row', justifyContent: 'space-between' },
+  textRegisterArea: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 20 },
   textRegister: { fontSize: orientation.width > 500 ? 22 : 14, marginRight: 20 },
   textRegisterRigth: { fontSize: orientation.width > 500 ? 22 : 14, fontWeight: 'bold', color: 'green' },
   footer: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }

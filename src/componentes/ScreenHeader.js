@@ -17,6 +17,6 @@ export default ScreenHeader
 
 const styles = StyleSheet.create({
   constainer: { paddingHorizontal: 14, paddingVertical: 14 },
-  mainTitle: { fontSize: orientation.width > 400 ? 44 : 24, fontWeight: 'bold' },
-  secondTitle: { fontSize: orientation.width > 400 ? 30 : 20 }
+  mainTitle: { fontSize: orientation.width > 500 ? 44 : 24, fontWeight: 'bold' },
+  secondTitle: { fontSize: orientation.width > 500 ? 30 : 20 }
 })

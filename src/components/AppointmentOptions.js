@@ -25,7 +25,7 @@ export default AppointmentOptions
 const styles = StyleSheet.create({
   cardContainer: {
     marginHorizontal: 10,
-    width: orientation.width > 400 ? orientation.width / 2 : deviceWidth - 20,
+    width: orientation.width > 500 ? orientation.width / 2 : deviceWidth - 20,
     backgroundColor: '#FFFFFD',
     height: orientation.height / 3.5,
     borderRadius: 20,

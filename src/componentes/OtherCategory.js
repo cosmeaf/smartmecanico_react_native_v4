@@ -37,13 +37,13 @@ const OtherCategory = ({ data, list, onPress }) => {
 export default OtherCategory
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: orientation.width > 400 ? 20 : 10 },
+  container: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: orientation.width > 500 ? 20 : 10 },
   carContainer: {
-    paddingHorizontal: orientation.width > 400 ? 20 : 10,
-    marginBottom: orientation.width > 400 ? 30 : 10,
+    paddingHorizontal: orientation.width > 500 ? 20 : 10,
+    marginBottom: orientation.width > 500 ? 30 : 10,
   },
   card: {
-    width: orientation.width > 400 ? orientation.width / 2 - 40 : orientation.width / 2 - 20,
+    width: orientation.width > 500 ? orientation.width / 2 - 40 : orientation.width / 2 - 20,
     height: orientation.height / 5,
     justifyContent: 'center', alignItems: 'center',
     borderRadius: 20,
@@ -51,9 +51,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   imageBox: {},
-  image: { width: orientation.width > 400 ? 100 : 60, height: orientation.width > 400 ? 100 : 60, resizeMode: 'cover', marginBottom: 30 },
+  image: { width: orientation.width > 500 ? 100 : 60, height: orientation.width > 500 ? 100 : 60, resizeMode: 'cover', marginBottom: 30 },
   contentFooter: { position: 'absolute', bottom: 0, left: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20, backgroundColor: '#FFF', width: '100%' },
   titleBox: { justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 1, borderBottomRightRadius: 15, borderBottomLeftRadius: 15, borderColor: 'grey' },
-  title: { textAlign: 'center', fontSize: orientation.width > 400 ? 28 : 14, fontWeight: 'bold' },
+  title: { textAlign: 'center', fontSize: orientation.width > 500 ? 28 : 14, fontWeight: 'bold' },
   favorited: { marginRight: 5, zIndex: 1 }
 })
