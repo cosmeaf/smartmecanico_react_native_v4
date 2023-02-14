@@ -12,6 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
 import GlobalContext from '../../Contexts/Context'
@@ -70,6 +72,7 @@ const SignIn = ({ navigation }) => {
                     resizeMode='cover'
                   />
                 </View>
+                <Text style={{ color: '#AB2101' }}>{email.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -90,6 +93,8 @@ const SignIn = ({ navigation }) => {
                   errorText={email.error}
                   left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
+
+                <Text style={{ color: '#AB2101' }}>{password.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -134,8 +139,7 @@ const SignIn = ({ navigation }) => {
 
         </ScrollView>
         <View style={styles.footer}>
-          <Text>Versão: {Platform.Version}</Text>
-          <Text>Plataforma: {Platform.OS}</Text>
+          <Text style={{ color: 'grey', fontWeight: 'bold' }}>Versão: {Constants.expoConfig.version ? Constants.expoConfig.version : '2.10.0'} </Text>
         </View>
       </SafeAreaView>
     )

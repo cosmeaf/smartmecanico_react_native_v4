@@ -1,12 +1,65 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, Text, View, Linking, TouchableOpacity, ScrollView, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import *as Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import Checkbox from 'expo-checkbox';
 import text from '../documents/TermsOfUse';
+import GlobalContext from '../Contexts/Context';
+import Api from '../service/Api';
 
-const CustomPrivacyPolicy = ({ }) => {
-  const [isChecked, setChecked] = useState(false);
+
+const CustomPrivacyPolicy = () => {
+  const { isAgree } = useContext(GlobalContext);
+  const [user, setUser] = useState({});
+  const [isChecked, setChecked] = useState(isAgree);
   const [complianceModal, setComplianceModal] = useState(true);
+
+  useEffect(() => {
+    getUser();
+  }, [])
+
+  const getUser = async () => {
+    let res = await Api.getUser();
+    if (res.code && res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+        return error;
+      }
+    }
+    res.map((item) => {
+      setUser(item)
+    });
+
+  }
+
+  const createTerms = async () => {
+    const date = new Date()
+    const data = {
+      email: user.email,
+      manufacturer: Device.manufacturer,
+      modelId: Device.modelId,
+      modelName: Device.modelName,
+      deviceName: Device.modelName,
+      isAgree: true,
+    }
+    const response = await Api.createTerms(data);
+    if (response.isAgree) {
+      setComplianceModal(false)
+      setChecked(true)
+    }
+
+  }
+
 
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -19,6 +72,7 @@ const CustomPrivacyPolicy = ({ }) => {
               {/* CheckBox Agree */}
               <View style={styles.section}>
                 <Checkbox
+                  checked={false}
                   style={styles.checkbox}
                   value={isChecked}
                   onValueChange={setChecked}
@@ -28,9 +82,9 @@ const CustomPrivacyPolicy = ({ }) => {
               </View>
               {/* Save Button */}
               <TouchableOpacity
-                style={[styles.saveButtom, { backgroundColor: isChecked ? 'green' : 'grey' }]}
+                style={[styles.saveButtom, { backgroundColor: !isChecked ? 'grey' : 'green' }]}
                 disabled={!isChecked}
-                onPress={() => setComplianceModal(false)}
+                onPress={() => createTerms()}
               >
                 <Text style={styles.saveButtomText}>Confirmar</Text>
               </TouchableOpacity>

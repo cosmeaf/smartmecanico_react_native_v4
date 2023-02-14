@@ -163,6 +163,7 @@ export default ({ navigation }) => {
   }
   // Validation Phone number
   const phoneNumberValidation = async (id, phoneNumber) => {
+
     setRefreshing(true);
     if (phoneNumber.length === 0 && profile.phone_number === null) {
       Alert.alert('Atenção', 'Por Favor Preencher campo Contato')
@@ -174,6 +175,7 @@ export default ({ navigation }) => {
       setRefreshing(true);
       let phone_number = phoneNumber.replace(/\D/g, '');
       let json = await Api.updateProfile(id, profile.birthday, phone_number);
+
       Alert.alert('Updade Successfuly', 'Atualização realizada com sucesso')
       getProfile();
       setRefreshing(false);

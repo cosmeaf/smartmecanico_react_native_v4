@@ -2,7 +2,7 @@
   "expo": {
     "name": "Smart Mecânico",
     "slug": "smartmecanico",
-    "version": "2.2.0",
+    "version": "2.11.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -11,15 +11,20 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "The Smart Mecanico app would like to access your photo library to allow you to upload a profile picture.",
+        "NSPhotoLibraryUsageDescription": "The Smart Mecanico app would like to access your photo library to allow you to upload a profile picture."
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.smartmecanico",
-      "buildNumber": "2.2.0",
-      "requireFullScreen": true
+      "requireFullScreen": true,
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      }
     },
     "plugins": [],
     "android": {
@@ -27,7 +32,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "br.com.smartmecanico"
+      "package": "br.com.smartmecanico",
+      "runtimeVersion": "2.11.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,6 +43,9 @@
         "projectId": "96db8274-f9a2-427a-96e7-85205e860f2e"
       }
     },
-    "owner": "smartmecanico"
+    "owner": "smartmecanico",
+    "updates": {
+      "url": "https://u.expo.dev/96db8274-f9a2-427a-96e7-85205e860f2e"
+    }
   }
 }

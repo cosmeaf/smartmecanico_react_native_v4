@@ -1,9 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const BASE_API = 'http://10.0.0.162/api'
-// const BASE_API = 'http://127.0.0.1/api'
-//const BASE_API = 'http://173.224.117.181:8002/api'
-const BASE_API = 'https://smartmecanico.duckdns.org/api'
+// const BASE_API = 'http://10.0.0.10/api'
+// const BASE_API = 'https://smartmecanico.duckdns.org/api'
+const BASE_API = 'https://smartmecanico.io/api'
 
 
 // Authentication
@@ -169,6 +168,56 @@ export default {
     }
   },
   //-------------------------------------------------------------------------
+  // API ACCESS TERMS AGREE
+  //-------------------------------------------------------------------------
+  getTerms: async () => {
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/terms/`, {
+        method: 'GET',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      } else if (response.status !== 200) {
+        const json = await response.json();
+        return { "code": response.status, "message": json };
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  createTerms: async (data) => {
+    const value = await AsyncStorage.getItem('@accessToken');
+    const token = JSON.parse(value)
+    try {
+      const response = await fetch(`${BASE_API}/terms/`, {
+        method: 'POST',
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json;charset=UTF-8",
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data)
+      });
+      if (response.status === 201) {
+        const json = await response.json();
+        return json;
+      } else if (response.status !== 201) {
+        const json = await response.json();
+        return { "code": response.status, "message": json }
+      }
+    } catch (error) {
+      return error.TypeError
+    }
+  },
+  //-------------------------------------------------------------------------
   // API ACCESS USER
   //-------------------------------------------------------------------------
   getUser: async () => {
@@ -270,10 +319,10 @@ export default {
     }
   },
 
-  updateProfile: async (id, user, birthday, phone_number, image) => {
+  updateProfile: async (id, birthday, phone_number, user) => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
-    const data = { id, user, birthday, phone_number, image }
+    const data = { id, birthday, phone_number, user }
     try {
       const response = await fetch(`${BASE_API}/profile/${id}/`, {
         method: 'PATCH',
@@ -295,14 +344,15 @@ export default {
       return error.TypeError
     }
   },
-  updateImage: async (id, formData) => {
+
+  updateImageProfile: async (id, formData) => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
     try {
       const response = await fetch(`${BASE_API}/profile/${id}/`, {
         method: 'PATCH',
         headers: {
-          'Accept': 'application/json',
+          Accept: "application/json",
           'Authorization': `Bearer ${token}`,
         },
         body: formData,
@@ -311,7 +361,7 @@ export default {
       if (response.status === 200) {
         const json = await response.json();
         return json;
-      } else {
+      } else if (response.status !== 200) {
         const json = await response.json();
         return { "code": response.status, "message": json }
       }
@@ -319,6 +369,7 @@ export default {
       return error.TypeError
     }
   },
+
   //-------------------------------------------------------------------------
   // API VIA CEP
   //-------------------------------------------------------------------------
@@ -340,6 +391,7 @@ export default {
       return error.TypeError
     }
   },
+
   getAddress: async () => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
@@ -363,6 +415,7 @@ export default {
       return error.TypeError
     }
   },
+
   createAddress: async (cep, logradouro, complemento, bairro, localidade, uf) => {
     const data = { cep, logradouro, complemento, bairro, localidade, uf }
     const value = await AsyncStorage.getItem('@accessToken');
@@ -388,6 +441,7 @@ export default {
       return error.TypeError
     }
   },
+
   deleteAddress: async (id) => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
@@ -591,6 +645,7 @@ export default {
   createSchedule: async (day, address, vehicle, service, hour) => {
     const value = await AsyncStorage.getItem('@accessToken');
     const token = JSON.parse(value)
+    const data = {day, address, vehicle, service, hour}
     try {
       const response = await fetch(`${BASE_API}/schedule/`, {
         method: 'POST',
@@ -599,7 +654,7 @@ export default {
           "Content-type": "application/json;charset=UTF-8",
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ day, address, vehicle, service, hour })
+        body: JSON.stringify(data)
       });
       if (response.status === 201) {
         const json = await response.json();

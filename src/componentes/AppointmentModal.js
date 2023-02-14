@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Image, contentContainerStyle, Alert } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
@@ -16,7 +16,6 @@ const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
 
 const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
-  const { signout, authentication } = useContext(GlobalContext);
   const navigation = useNavigation();
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedMonth, setSelectedMonth] = useState(0);
@@ -29,9 +28,6 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   const [vehicle, setVehicle] = useState([]);
   const [address, setAddress] = useState([]);
 
-  if (!authentication) {
-    signout();
-  }
 
   useEffect(() => {
     if (selectedDay > 0) {
@@ -94,7 +90,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     getHourService();
     getVehicle();
     getAddress();
-  }, [authentication])
+  }, [])
 
   const handleRightClick = () => {
     let mountDate = new Date(selectedYear, selectedMonth, 1);
@@ -125,7 +121,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
       ));
     } else {
       Alert.alert('Atenção', `Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde \n código ${res.status}`)
-      signout();
+      return;
     }
   }
 
@@ -144,7 +140,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
       ));
     } else {
       Alert.alert('Atenção', `Estamos com problema para carregar dados do CEP. Pro Favor Tente mais tarde \n código ${res.status}`)
-      signout();
+      return;
     }
   }
 
@@ -152,20 +148,28 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
     let year = selectedYear;
     let month = selectedMonth + 1;
     let day = selectedDay
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
     const date = `${year}-${month}-${day}`
+
     if (date.length === 0) {
       Alert.alert('Atenção', 'Ops, Error ao carregar dados da data')
+      return;
     } else if (address.id.length === 0) {
       Alert.alert('Atenção', 'Ops, Error ao carregar dados do endereço')
+      return;
     } else if (vehicle.id.length === 0 || !vehicle.id) {
       Alert.alert('Atenção', 'Ops, Error ao carregar dados do veículo')
+      return;
     } else if (serviceId.length === 0 || !serviceId) {
       Alert.alert('Atenção', 'Ops, Error ao carregar dados do serviço')
+      return;
     } else if (!selectedHour || selectedHour.length === 0) {
       Alert.alert('Atenção', 'Por Favor, selecione um Horário')
+      return;
     } else {
       let res = await Api.createSchedule(date, address.id, vehicle.id, serviceId, selectedHour);
-      if (res.id) {
+      if (res.id) {  
         Alert.alert('Successo', 'Seu Agendamento foi \nRealizado com Sucesso')
         navigation.navigate('Schedule')
       } else {
@@ -176,7 +180,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
   }
 
   if (vehicle.length === 0) {
-    return (
+    return(
       <Modal isVisible={isVisible} animationIn='slideInUp' animationOut='slideOutDown' style={styles.modal}>
         <TouchableOpacity onPress={onPress} style={styles.modalButtomClose}>
           <Ionicons name="chevron-down" size={30} color="green" />
@@ -184,7 +188,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         </TouchableOpacity>
         <View style={{ flex: 0.8, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
-            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Atenção</Text>
+            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Sem Veículo</Text>
           </View>
           <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
             <Text style={{ fontSize: 18, letterSpacing: 1, marginBottom: 10 }}>
@@ -213,7 +217,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         </TouchableOpacity>
         <View style={{ flex: 0.8, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
-            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Atenção</Text>
+            <Text style={{ color: 'tomato', fontSize: 30, fontWeight: 'bold' }}>Sem Endereço</Text>
           </View>
           <View style={{ marginLeft: 14, marginRight: 14, marginBottom: 20 }}>
             <Text style={{ fontSize: 18, letterSpacing: 1, marginBottom: 10 }}>
@@ -286,6 +290,7 @@ const AppointmentModal = ({ isVisible, onPress, serviceId, serviceTitle }) => {
         {/* Modal Button End Appointment */}
         <View style={{ flex: 0.9, justifyContent: 'flex-end', marginBottom: 30 }}>
           <TouchableOpacity
+            onPressOut={onPress}
             onPress={() => handleSaveClick()}
             style={{ padding: 10, backgroundColor: 'green', marginLeft: 14, marginRight: 14, borderRadius: 10 }}
           >

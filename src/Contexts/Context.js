@@ -13,11 +13,14 @@ export const GlobalProvider = ({ children }) => {
   const [authentication, setAuthentication] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
+  const [isAgree, setIsAgree] = useState(false);
+  const [user, setUser] = useState('');
+  const [validation, setValidation] = useState([]);
 
   useEffect(() => {
-    tokenVerify();
-    getToken();
     getRefreshToken();
+    getToken();
+    tokenVerify();
   }, [accessToken, refreshToken]);
 
   // Sign-In
@@ -147,9 +150,45 @@ export const GlobalProvider = ({ children }) => {
     setIsLoading(false)
   }
 
+  const getUser = async () => {
+    let res = await Api.getUser();
+    if (res.code && res.code !== 200) {
+      try {
+        Alert.alert('Atenção', `${res.message.detail ? res.message.detail : ''}\n Faça login novamente`, [
+          {
+            text: "Continnuar",
+            onPress: () => {
+              signout()
+            }
+          },
+        ])
+        signout();
+      } catch (error) {
+        return error;
+      }
+    }
+    if (res.length > 0) {
+      res.map((item) => {
+        setUser(item)
+      });
+    }
+  }
+  // About Terms and Agree
+  const getTerms = async () => {
+    const response = await Api.getTerms()
+    if (response.length > 0) {
+      const value = response.map((item) => (item.user === user.username && item.isAgree === true));
+      if (value) {
+        setIsLoading(true)
+        setIsAgree(true)
+        setIsLoading(false)
+      }
+    }
+
+  }
 
   return (
-    <GlobalContext.Provider value={{ authentication, isLoading, signin, signup, signout, tokenVerify }}>
+    <GlobalContext.Provider value={{ authentication, isLoading, signin, signup, signout, tokenVerify, isAgree }}>
       {children}
     </GlobalContext.Provider>
   )

@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
+import Constants from 'expo-constants';
 import { nameValidator } from '../../helpers/nameValidator'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
@@ -45,12 +46,12 @@ const SignUp = ({ navigation }) => {
           }
         },
       ])
-    } else if (response.code === 500 && response.message.username && response.message.email) {
+    } else if (response.code === 400 && response.message.username && response.message.email) {
       Alert.alert('Atenção',
         `${response.message.username ? response.message.username : ''} \n& \n${response.message.email ? response.message.email : ''}`)
-    } else if (response.code === 500 && response.message.email) {
+    } else if (response.code === 400 && response.message.email) {
       Alert.alert('Atenção', `${response.message.email ? response.message.email : ''}`)
-    } else if (response.code === 500 && response.message.username) {
+    } else if (response.code === 400 && response.message.username) {
       Alert.alert('Atenção', `${response.message.username ? response.message.username : ''}`)
     } else {
       Alert.alert('Ops!', `Estamos com dificuldades para acessar nosso servidores \nPor Favor tente mais tarde`)
@@ -100,7 +101,7 @@ const SignUp = ({ navigation }) => {
                     resizeMode='cover'
                   />
                 </View>
-                <Text style={{ fontSize: 12, color: 'red' }}>{username.error}</Text>
+                <Text style={{ color: '#AB2101' }}>{username.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -121,7 +122,7 @@ const SignUp = ({ navigation }) => {
                   errorText={username.error}
                   left={<TextInput.Icon icon="account-circle-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
-
+                <Text style={{ color: '#AB2101' }}>{email.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -143,6 +144,7 @@ const SignUp = ({ navigation }) => {
                   errorText={email.error}
                   left={<TextInput.Icon icon="email-outline" color={theme.colors.primary} size={orientation.width > 500 ? 30 : 20} />}
                 />
+                <Text style={{ color: '#AB2101' }}>{password.error}</Text>
                 <TextInput
                   style={orientation.width > 500 ? styles.inputTablet : styles.input}
                   theme={theme}
@@ -171,7 +173,7 @@ const SignUp = ({ navigation }) => {
                   onPress={() => onSignUpPressed(username.value, email.value, password.value)}
                   activeOpacity={0.8}
                   style={styles.buttomSign}>
-                  <Text style={styles.buttomTextSign}>Entrar</Text>
+                  <Text style={styles.buttomTextSign}>Cadastrar</Text>
                 </TouchableOpacity>
                 <View style={styles.textRegisterArea}>
                   <TouchableOpacity onPress={() => navigation.navigate('RecoveryPassword')}>
@@ -187,8 +189,7 @@ const SignUp = ({ navigation }) => {
 
         </ScrollView>
         <View style={styles.footer}>
-          <Text>Versão: {Platform.Version}</Text>
-          <Text>Plataforma: {Platform.OS}</Text>
+          <Text style={{ color: 'grey', fontWeight: 'bold' }}>Versão:{Constants.expoConfig.version ? Constants.expoConfig.version : '2.10.0'} </Text>
         </View>
       </SafeAreaView>
     )

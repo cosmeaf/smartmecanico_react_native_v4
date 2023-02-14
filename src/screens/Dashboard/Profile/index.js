@@ -32,7 +32,7 @@ export default ({ navigation, route }) => {
     setIsLoading(true)
     getProfile();
     getUser();
-    setTimeout(() => setIsLoading(false), 2000)
+    setTimeout(() => setIsLoading(false), 1000)
   }, [authentication])
 
   const getProfile = async () => {
@@ -93,44 +93,38 @@ export default ({ navigation, route }) => {
 
     const result = await ImagePicker.launchImageLibraryAsync();
 
-    if (result.canceled) {
-      return;
-    }
-
-    if (!result.assets[0].uri) {
-      return;
-    }
-
     if (result.assets[0].width > 3088 || result.assets[0].height > 3088) {
       Alert.alert('Atenção', 'Imagem não pode ter resolução superior 3088 x 3088')
       return
     }
 
-    if (result?.assets !== null) {
-      setAvatar(result.assets[0]);
-      updateProfile();
-      getProfile();
-      getUser();
-    }
-
-  }
-
-  const openCamera = async () => {
-    // Ask the user for the permission to access the camera
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert("Você se recusou a permitir que este aplicativo acesse suas Câmera!");
+    if (result.canceled) {
+      Alert.alert("Você se recusou a permitir que este aplicativo acesse suas fotos!");
       return;
     }
 
-    const result = await ImagePicker.launchCameraAsync();
-
     if (result?.assets !== null) {
-      setAvatar(result.assets[0].uri);
-      return
+      setAvatar(result.assets[0]);
+      updateProfile();
     }
+    return result.assets[0].canceled
 
+  }
+
+  const updateProfile = async () => {
+    const formData = new FormData()
+    formData.append('file', {
+      uri: avatar.uri,
+      type: avatar.type,
+      name: avatar.fileName,
+    })
+    const response = await Api.updateImageProfile(profile.id, formData);
+    if (response.image === 'undefined') {
+      // Alert.alert('Error ao carregar imagem')
+    }
+    if (response.image) {
+      // Alert.alert('Successo', response.image)
+    }
   }
 
   const handleUpdateImage = async () => {
@@ -153,23 +147,10 @@ export default ({ navigation, route }) => {
     ])
   }
 
-  const updateProfile = async () => {
-    const formData = new FormData()
-    formData.append('image', {
-      uri: avatar.uri,
-      type: avatar.type,
-      name: avatar.fileName,
-    })
-    const response = await Api.updateImage(profile.id, formData);
-    if (response.image !== profile.image) {
-      Alert.alert('Succeso', 'Imagem atualizada com sucesso')
-      return
-    }
-    Alert.alert('Ops', 'Imagem não pode ser atualizada no momento, tente mais tarde')
-  }
 
 
-  return isLoading || profile.image == null || profile.image === undefined ?
+
+  return isLoading ?
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size='large' color='green' />
     </View>
@@ -177,7 +158,7 @@ export default ({ navigation, route }) => {
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollView}>
           {/* IMAGE */}
-          <View style={styles.contentAvatar}>
+          {/* <View style={styles.contentAvatar}>
             <TouchableOpacity onPress={() => handleUpdateImage()}>
               {avatar
                 ?
@@ -190,7 +171,7 @@ export default ({ navigation, route }) => {
             </TouchableOpacity>
             <Text style={styles.contentTitle}>{user.first_name} {user.last_name}</Text>
             <Text style={styles.contetEmail}>{user.email}</Text>
-          </View>
+          </View> */}
           {/* OPTIONS */}
           <View style={styles.profileData}>
             {/* Acocunt Information */}
@@ -225,14 +206,14 @@ export default ({ navigation, route }) => {
               <Ionicons name='chevron-forward' color='#252525' size={20} />
             </TouchableOpacity>
           </View>
-          {/* SIGN-OUT OF SYSTEM */}
-          <View style={styles.contentButtom}>
-            <TouchableOpacity style={styles.buttonSignout} onPress={() => signout()}>
-              <Text style={styles.buttonSignoutText}>Sair</Text>
-              <Ionicons name="ios-log-out-outline" size={orientation.width > 500 ? 40 : 24} color="black" />
-            </TouchableOpacity>
-          </View>
         </ScrollView>
+        {/* SIGN-OUT OF SYSTEM */}
+        <View style={styles.contentButtom}>
+          <TouchableOpacity style={styles.buttonSignout} onPress={() => signout()}>
+            <Text style={styles.buttonSignoutText}>Sair</Text>
+            <Ionicons name="ios-log-out-outline" size={orientation.width > 500 ? 40 : 24} color="black" />
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     )
 }
@@ -278,7 +259,7 @@ const styles = StyleSheet.create({
   contentButtom: { marginHorizontal: 20, marginTop: 80 },
   buttonSignout: {
     flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF',
-    padding: 8, marginBottom: 10, borderRadius: 10, borderWidth: 1,
+    padding: 8, marginBottom: 20, borderRadius: 10, borderWidth: 1,
   },
   buttonSignoutText: { fontSize: orientation.width > 500 ? 22 : 18, fontWeight: '500', marginRight: 10 }
 })

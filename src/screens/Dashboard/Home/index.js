@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import GlobalContext from '../../../Contexts/Context';
@@ -10,6 +10,7 @@ import TopServicesCarousel from '../../../componentes/TopServicesCarousel';
 import OtherCategory from '../../../componentes/OtherCategory';
 import slideData from '../../../model/data/slide'
 import otherCategoryData from '../../../model/data/categoryData';
+import CustomPrivacyPolicy from '../../../componentes/CustomPrivacyPolicy';
 import Api from '../../../service/Api';
 
 const orientation = Dimensions.get('screen')
@@ -17,6 +18,7 @@ const deviceWidth = Math.round(Dimensions.get('window').width);
 
 export default ({ navigation, route }) => {
   const { authentication, signout } = useContext(GlobalContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
 
@@ -24,26 +26,33 @@ export default ({ navigation, route }) => {
 
   if (!authentication) {
     signout();
+    return;
   }
 
   function handleClick(data) {
     navigation.navigate(data)
+    return;
   }
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
-      <StatusBar style="auto" />
-      <MainHeader title="Smart Mecânico" />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <ScreenHeader mainTitle="Principais" secondTitle="Serviços" />
-        <TopServicesCarousel list={slideData} onPress={handleClick} />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 14, marginTop: 20 }}>
-          <Text style={{ fontSize: orientation.width > 500 ? 36 : 18, fontWeight: 'bold', marginBottom: 10 }}>Agenda Carro</Text>
-        </View>
-        <OtherCategory list={otherCategoryData} onPress={handleClick} />
-      </ScrollView>
-    </SafeAreaView>
-  )
+  return isLoading ?
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size='large' color='green' />
+    </View>
+    :
+    (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
+        <StatusBar style="auto" />
+        <MainHeader title="Smart Mecânico" />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ScreenHeader mainTitle="Principais" secondTitle="Serviços" />
+          <TopServicesCarousel list={slideData} onPress={handleClick} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 14, marginTop: 20 }}>
+            <Text style={{ fontSize: orientation.width > 500 ? 36 : 18, fontWeight: 'bold', marginBottom: 10 }}>Agenda Carro</Text>
+          </View>
+          <OtherCategory list={otherCategoryData} onPress={handleClick} />
+        </ScrollView>
+      </SafeAreaView>
+    )
 }
 
 const styles = StyleSheet.create({})

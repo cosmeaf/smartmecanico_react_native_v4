@@ -65,8 +65,8 @@ const OtpScreen = ({ navigation, route }) => {
         merge: true,
       });
     } else {
-      console.log(response.message.message)
       Alert.alert('Atenção', `${response.message.message}`)
+      return;
     }
   }
 

@@ -46,7 +46,6 @@ const ResetPassword = ({ navigation, route }) => {
     const response = await Api.changePassword(password.value, route.params.code, route.params.token);
 
     if (response.code === 500) {
-      console.log(response)
       Alert.alert('Atenção', `${response.message.error[0]} \nDeseja Solicitar novo código?`, [
         {
           text: "Sim",

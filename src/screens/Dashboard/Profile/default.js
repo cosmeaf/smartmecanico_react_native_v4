@@ -1,29 +1,38 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Alert, ActivityIndicator, FlatList, Platform } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState, useEffect, useContext } from 'react'
+import { StyleSheet, ScrollView, Text, View, Image, Dimensions, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import * as Permissinos from 'expo-permissions'
+import * as ImagePicker from 'expo-image-picker';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
-import styles from './styles';
 
 
+const orientation = Dimensions.get('screen')
+const deviceWidth = Math.round(Dimensions.get('window').width);
+const deviceHeight = Math.round(Dimensions.get('window').height);
+const imageUrl = 'https://smartmecanico.duckdns.org/media/default.png'
 
-export default ({ navigation }) => {
+
+export default ({ navigation, route }) => {
   const { authentication, signout } = useContext(GlobalContext);
-  const [photo, setPhoto] = React.useState(null);
+  const [avatar, setAvatar] = useState({});
   const [profile, setProfile] = useState({});
   const [user, setUser] = useState('');
-  const [pickedImagePath, setPickedImagePath] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   if (!authentication) {
-    navigation.navigate('SignIn')
+    navigation.navigate('SignIn');
+    signout();
+    return
   }
 
   useEffect(() => {
+    setIsLoading(true)
     getProfile();
     getUser();
+    setTimeout(() => setIsLoading(false), 1000)
   }, [authentication])
 
   const getProfile = async () => {
@@ -49,7 +58,6 @@ export default ({ navigation }) => {
       setProfile(item)
     });
   }
-
   const getUser = async () => {
     setUser('')
     let res = await Api.getUser();
@@ -85,11 +93,42 @@ export default ({ navigation }) => {
 
     const result = await ImagePicker.launchImageLibraryAsync();
 
-    if (result?.assets !== null) {
-      //user: profile.user, birthday: profile.birthday, profile: profile.phone_number
-      //setPhoto(result.assets[0].uri);
+    if (result.assets[0].width > 3088 || result.assets[0].height > 3088) {
+      Alert.alert('Atenção', 'Imagem não pode ter resolução superior 3088 x 3088')
+      return
     }
 
+    if (result.canceled) {
+      Alert.alert("Você se recusou a permitir que este aplicativo acesse suas fotos!");
+      return;
+    }
+
+    if (result?.assets !== null) {
+      setAvatar(result.assets[0]);
+      updateProfile();
+    }
+    return result.assets[0].canceled
+
+  }
+
+  const updateProfile = async () => {
+    const formData = new FormData()
+    formData.append('image', {
+      uri: avatar.uri,
+      type: avatar.type,
+      name: avatar.fileName,
+    })
+    const response = await Api.updateImageProfile(profile.id, formData);
+    if (!response.image) {
+      Alert.alert('Ops', 'Formato de imagem inválido')
+      return
+    }
+
+    if (response.image.split('/').pop() !== profile.image.split('/').pop()) {
+      Alert.alert('Succeso', 'Imagem atualizada com sucesso')
+      return
+    }
+    Alert.alert('Ops', 'Algo deu errado para atualizar imagem')
   }
 
   const openCamera = async () => {
@@ -104,23 +143,23 @@ export default ({ navigation }) => {
     const result = await ImagePicker.launchCameraAsync();
 
     if (result?.assets !== null) {
-      setPickedImagePath(result.assets[0].uri);
+      setAvatar(result.assets[0].uri);
       return
     }
 
   }
 
   const handleUpdateImage = async () => {
-    Alert.alert('Selecione',
-      'Como deseja pegar a foto?', [
+    Alert.alert('Smart Mecânico" Deseja Ter Acesso às Suas Fotos',
+      `Allow access to your camera roll to \nupload photos and videos. You can use these in profile image, on your profile, and mode`, [
       {
         text: 'Galeria',
         onPress: () => showImagePicker(),
         style: 'default'
       },
       {
-        text: 'Câmera',
-        onPress: () => openCamera(),
+        text: 'Cancelar',
+        onPress: () => Alert.alert("Antenção", "Você se recusou a permitir que este aplicativo acesse suas fotos!"),
         style: 'default'
       },
       {
@@ -130,180 +169,119 @@ export default ({ navigation }) => {
     ])
   }
 
+
+
+
   return isLoading ?
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size='large' color='green' />
     </View>
     : (
-      <SafeAreaView style={{ flex: 1, marginLeft: 14, marginRight: 14, backgroundColor: '#FFF' }}>
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          {
-            pickedImagePath ? <Image
-              source={{ uri: pickedImagePath }}
-              resizeMode='cover'
-              style={{
-                width: 100, height: 100, overflow: 'hidden', borderRadius: 50, backgroundColor: '#DDD',
-                borderWidth: 1,
-                shadowColor: 'rgba(0,0,0,0.8)',
-                shadowOffset: {
-                  width: 5,
-                  height: 5,
-                },
-                shadowOpacity: 0.75,
-                shadowRadius: 5,
-                elevation: 9
-              }}
-            />
-              :
-              <Image
-                source={{ uri: profile.image }}
-                resizeMode='cover'
-                style={{
-                  width: 100, height: 100, overflow: 'hidden', borderRadius: 50, borderWidth: 1,
-                  shadowColor: 'rgba(0,0,0,0.8)',
-                  shadowOffset: {
-                    width: 5,
-                    height: 5,
-                  },
-                  shadowOpacity: 0.75,
-                  shadowRadius: 5,
-                  elevation: 9
-                }}
-              />
-          }
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scrollView}>
+          {/* IMAGE */}
+          <View style={styles.contentAvatar}>
+            <TouchableOpacity onPress={() => handleUpdateImage()}>
+              {avatar
+                ?
+                <Image style={styles.avatar} source={{ uri: avatar.uri ? avatar.uri : profile.image }} resizeMode={'cover'} />
+                :
+                <Image style={styles.avatar} source={{ uri: profile.image ? profile.image : imageUrl }} resizeMode={'cover'} />
+              }
 
-          <TouchableOpacity style={styles.addPhoto} onPress={() => handleUpdateImage()}>
-            <MaterialIcons name="add-a-photo" size={30} color="#888" />
-          </TouchableOpacity>
-        </View>
-        <Text style={{ textAlign: 'center', fontSize: 22, marginTop: 20 }}> {user.first_name} {user.last_name} </Text>
-        <Text style={{ textAlign: 'center', fontSize: 14, marginBottom: 20, color: '#CCC' }}> {user.email} </Text>
-        <View style={{ marginStart: 10, marginEnd: 10 }}>
-          {/* Acocunt Information */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-              backgroundColor: '#F1F1F1',
-              alignItems: 'center',
-              paddingLeft: 10,
-              paddingRight: 10,
-              paddingBottom: 5,
-              paddingTop: 4,
-              marginBottom: 10,
-              borderRadius: 10
-            }}
-            onPress={() => navigation.navigate('User')}
-          >
-            <Ionicons name='person-circle-outline' color='#252525' size={30} />
-            <Text style={{ fontSize: 18 }}>  Conta</Text>
-            <Ionicons name='chevron-forward' color='#252525' size={20} />
-          </TouchableOpacity>
-          {/* Address Informations */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-              backgroundColor: '#F1F1F1',
-              alignItems: 'center',
-              paddingLeft: 10,
-              paddingRight: 10,
-              paddingBottom: 5,
-              paddingTop: 4,
-              marginBottom: 10,
-              borderRadius: 10
-            }}
-            onPress={() => navigation.navigate('Address')}
-          >
-            <Ionicons name='business-outline' color='#252525' size={30} />
-            <Text style={{ fontSize: 18 }}> Endereço</Text>
-            <Ionicons name='chevron-forward' color='#252525' size={20} />
-          </TouchableOpacity>
-          {/* Vehicle Informations */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-              backgroundColor: '#F1F1F1',
-              alignItems: 'center',
-              paddingLeft: 10,
-              paddingRight: 10,
-              paddingBottom: 5,
-              paddingTop: 4,
-              marginBottom: 10,
-              borderRadius: 10
-            }}
-            onPress={() => navigation.navigate('Vehicle')}
-          >
-            <Ionicons name='car-sport-outline' color='#252525' size={30} />
-            <Text style={{ fontSize: 18 }}> Veículos</Text>
-            <Ionicons name='chevron-forward' color='#252525' size={20} />
-          </TouchableOpacity>
-          {/* System Config */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-              backgroundColor: '#F1F1F1',
-              alignItems: 'center',
-              paddingLeft: 10,
-              paddingRight: 10,
-              paddingBottom: 5,
-              paddingTop: 4,
-              marginBottom: 10,
-              borderRadius: 10
-            }}
-            onPress={() => navigation.navigate('Settings')}
-          >
-            <Ionicons name='settings-outline' color='#252525' size={30} />
-            <Text style={{ fontSize: 18 }}> Ajustes </Text>
-            <Ionicons name='chevron-forward' color='#252525' size={20} />
-          </TouchableOpacity>
-          {/* System Config */}
-          {/* <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-            backgroundColor: '#F1F1F1',
-            alignItems: 'center',
-            paddingLeft: 10,
-            paddingRight: 10,
-            paddingBottom: 5,
-            paddingTop: 4,
-            marginBottom: 10,
-            borderRadius: 10
-          }}
-          onPress={() => navigation.navigate('TabOneScreen')}
-        >
-          <Ionicons name='cog' color='#252525' size={30} />
-          <Text style={{ fontSize: 18 }}> Componentes </Text>
-          <Ionicons name='chevron-forward' color='#252525' size={20} />
-        </TouchableOpacity> */}
-        </View>
-        {/* SIGN-OUT OF SYSTEM */}
-        <View style={{ marginStart: 10, marginEnd: 10, marginTop: 80 }}>
-          <TouchableOpacity style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            backgroundColor: '#FFF',
-            alignItems: 'center',
-            padding: 8,
-            marginBottom: 10,
-            borderRadius: 10,
-            borderWidth: 1,
-          }}
-            onPress={() => signout()}
-          >
-            <Text style={{ fontSize: 18, fontWeight: '500' }}>Sair</Text>
-          </TouchableOpacity>
-        </View>
+              <MaterialIcons name="add-a-photo" size={orientation.width > 500 ? 50 : 30} color="#DFDFDF" style={styles.addPhoto} />
+            </TouchableOpacity>
+            <Text style={styles.contentTitle}>{user.first_name} {user.last_name}</Text>
+            <Text style={styles.contetEmail}>{user.email}</Text>
+          </View>
+          {/* OPTIONS */}
+          <View style={styles.profileData}>
+            {/* Acocunt Information */}
+            <TouchableOpacity style={styles.tabLine}
+              onPress={() => navigation.navigate('User')}
+            >
+              <Ionicons name='person-circle-outline' color='#252525' size={30} />
+              <Text style={styles.tabLineTitle}>Conta</Text>
+              <Ionicons name='chevron-forward' color='#252525' size={20} />
+            </TouchableOpacity>
+            {/* Address Informations */}
+            <TouchableOpacity style={styles.tabLine}
+              onPress={() => navigation.navigate('Address')}
+            >
+              <Ionicons name="location-outline" color="#252525" size={30} />
+              <Text style={styles.tabLineTitle}>Endereço</Text>
+              <Ionicons name='chevron-forward' color='#252525' size={20} />
+            </TouchableOpacity>
+            {/* Vehicle Informations */}
+            <TouchableOpacity
+              style={styles.tabLine}
+              onPress={() => navigation.navigate('Vehicle')}
+            >
+              <Ionicons name='car-sport-outline' color='#252525' size={30} />
+              <Text style={styles.tabLineTitle}> Veículos</Text>
+              <Ionicons name='chevron-forward' color='#252525' size={20} />
+            </TouchableOpacity>
+            {/* System Config */}
+            <TouchableOpacity style={styles.tabLine} onPress={() => navigation.navigate('Settings')}>
+              <Ionicons name='settings-outline' color='#252525' size={30} />
+              <Text style={styles.tabLineTitle}> Ajustes </Text>
+              <Ionicons name='chevron-forward' color='#252525' size={20} />
+            </TouchableOpacity>
+          </View>
+          {/* SIGN-OUT OF SYSTEM */}
+          <View style={styles.contentButtom}>
+            <TouchableOpacity style={styles.buttonSignout} onPress={() => signout()}>
+              <Text style={styles.buttonSignoutText}>Sair</Text>
+              <Ionicons name="ios-log-out-outline" size={orientation.width > 500 ? 40 : 24} color="black" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     )
 }
+
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFF' },
+  scrollView: { marginHorizontal: orientation.width > 500 ? 200 : null },
+  contentAvatar: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 0.4,
+    borderBottomColor: '#AAA',
+    marginBottom: 30,
+    marginHorizontal: orientation.width > 500 ? 20 : 20,
+  },
+  avatar: {
+    width: orientation.width > 500 ? 200 : 100, height: orientation.width > 500 ? 200 : 100,
+    borderRadius: orientation.width > 500 ? 100 : 50,
+    borderWidth: 1, borderColor: '#AAA', marginBottom: 10,
+    overflow: 'hidden',
+  },
+  contentTitle: { fontSize: 16, color: '#AAA' },
+  contetEmail: { fontSize: 16, color: '#AAA', marginBottom: 10 },
+  profileData: { justifyContent: 'center', alignItems: 'center', marginHorizontal: 10 },
+  addPhoto: {
+    position: 'absolute',
+    paddingLeft: orientation.width > 500 ? 175 : 85,
+    paddingTop: orientation.width > 500 ? 175 : 75
+  },
+  tabLine: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    width: '100%', backgroundColor: '#F1F1F1',
+    height: orientation.width > 500 ? 70 : null,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 5,
+    paddingTop: 4,
+    marginBottom: 10,
+    borderRadius: 10
+  },
+  tabLineTitle: { fontSize: orientation.width > 500 ? 22 : 18 },
+  contentButtom: { marginHorizontal: 20, marginTop: 80 },
+  buttonSignout: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF',
+    padding: 8, marginBottom: 10, borderRadius: 10, borderWidth: 1,
+  },
+  buttonSignoutText: { fontSize: orientation.width > 500 ? 22 : 18, fontWeight: '500', marginRight: 10 }
+})
