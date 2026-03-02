@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { RadioButton, Text } from 'react-native-paper';
 
-export function CarRarioButton({ value }) {
-  state = { value: 'first' };
+export function CarRadioButton({ value: initialValue }) {
+  const [value, setValue] = useState(initialValue || 'first');
   return (
-    <RadioButton.Group value={value} >
+    <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value} >
       <View >
         <Text>First</Text>
         <RadioButton value="first" />
@@ -16,7 +16,7 @@ export function CarRarioButton({ value }) {
         <RadioButton value="second" />
       </View>
       <View>
-        <Text>Second</Text>
+        <Text>Third</Text>
         <RadioButton value="third" />
       </View>
     </RadioButton.Group>

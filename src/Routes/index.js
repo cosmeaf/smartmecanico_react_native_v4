@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { View, ActivityIndicator } from "react-native";
 import GlobalContext from '../Contexts/Context';
-import LoadingIcon from '../componentes/LoadingIcon';
+import LoadingIcon from '../components/LoadingIcon';
 
 import AppStack from './AppStack.route';
 import AuthStack from './AuthStack.route';
-import AppTabStack from './TabSatck.route';
+import AppTabStack from './TabStack.route';
 
 
 const Route = () => {

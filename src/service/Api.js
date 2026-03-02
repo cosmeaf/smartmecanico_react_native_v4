@@ -10,7 +10,7 @@ export default {
   //-------------------------------------------------------------------------
   // API AUTH USER
   //-------------------------------------------------------------------------
-  tokenkVerify: async (token) => {
+  tokenVerify: async (token) => {
     try {
       const response = await fetch(`${BASE_API}/verify/`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export default {
       return null
     }
   },
-  tokenkRefresh: async (refresh) => {
+  tokenRefresh: async (refresh) => {
     try {
       const response = await fetch(`${BASE_API}/refresh/`, {
         method: 'POST',

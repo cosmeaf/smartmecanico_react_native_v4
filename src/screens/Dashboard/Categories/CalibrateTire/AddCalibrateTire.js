@@ -5,9 +5,9 @@ import Modal from "react-native-modal";
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaskedTextInput } from 'react-native-mask-text';
-import LoadingIcon from '../../../../componentes/LoadingIcon';
+import LoadingIcon from '../../../../components/LoadingIcon';
 import Api from '../../../../service/Api';
-import TabOneLine from '../../../../componentes/TabOneLine';
+import TabOneLine from '../../../../components/TabOneLine';
 
 
 const AddCalibrateTire = ({ navigation }) => {

@@ -8,7 +8,7 @@ import Moment, { utc } from 'moment';
 import moment from 'moment';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import GlobalContext from '../../../Contexts/Context';
-import TabOneLine from '../../../componentes/TabOneLine';
+import TabOneLine from '../../../components/TabOneLine';
 import Api from '../../../service/Api';
 
 

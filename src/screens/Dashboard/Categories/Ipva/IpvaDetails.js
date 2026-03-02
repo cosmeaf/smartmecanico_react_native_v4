@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useContext, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabOneLine from '../../../../componentes/TabOneLine';
-import LoadingIcon from '../../../../componentes/LoadingIcon';
+import TabOneLine from '../../../../components/TabOneLine';
+import LoadingIcon from '../../../../components/LoadingIcon';
 import GlobalContext from '../../../../Contexts/Context';
 import Api from '../../../../service/Api';
 

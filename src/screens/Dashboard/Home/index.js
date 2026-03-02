@@ -4,13 +4,13 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import GlobalContext from '../../../Contexts/Context';
-import MainHeader from '../../../componentes/MainHeader';
-import ScreenHeader from '../../../componentes/ScreenHeader';
-import TopServicesCarousel from '../../../componentes/TopServicesCarousel';
-import OtherCategory from '../../../componentes/OtherCategory';
+import MainHeader from '../../../components/MainHeader';
+import ScreenHeader from '../../../components/ScreenHeader';
+import TopServicesCarousel from '../../../components/TopServicesCarousel';
+import OtherCategory from '../../../components/OtherCategory';
 import slideData from '../../../model/data/slide'
 import otherCategoryData from '../../../model/data/categoryData';
-import CustomPrivacyPolicy from '../../../componentes/CustomPrivacyPolicy';
+import CustomPrivacyPolicy from '../../../components/CustomPrivacyPolicy';
 import Api from '../../../service/Api';
 
 const orientation = Dimensions.get('screen')

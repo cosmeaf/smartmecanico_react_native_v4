@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import TabOneLine from '../../../../componentes/TabOneLine'
+import TabOneLine from '../../../../components/TabOneLine'
 import Api from '../../../../service/Api'
 
 export default function BudgetDetails({ navigation, route }) {

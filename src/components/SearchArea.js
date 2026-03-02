@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 
-const SearcheArea = () => {
+const SearchArea = () => {
   return (
     <View style={styles.searchArea}>
       <TextInput
@@ -32,4 +32,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default SearcheArea;
+export default SearchArea;
