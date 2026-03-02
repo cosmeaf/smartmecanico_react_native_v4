@@ -11,7 +11,7 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
-import LoadingIcon from '../componentes/LoadingIcon'
+import LoadingIcon from '../components/LoadingIcon'
 import Api from '../service/Api'
 
 

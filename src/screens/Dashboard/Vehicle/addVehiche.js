@@ -8,7 +8,7 @@ import Modal from "react-native-modal";
 import { TextInput, RadioButton } from "react-native-paper";
 import { MaskedTextInput } from 'react-native-mask-text';
 import { FontAwesome5 } from '@expo/vector-icons';
-import TabOneLine from '../../../componentes/TabOneLine';
+import TabOneLine from '../../../components/TabOneLine';
 import Api from '../../../service/Api';
 
 const FIPE_API = 'https://parallelum.com.br/fipe/api/v2'

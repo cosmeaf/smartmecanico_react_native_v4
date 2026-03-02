@@ -9,7 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Octicons } from '@expo/vector-icons'
 import Api from '../service/Api'
-import OtpInputComponent from '../componentes/OtpInputComponent';
+import OtpInputComponent from '../components/OtpInputComponent';
 
 const orientation = Dimensions.get('screen')
 const deviceWidth = Math.round(Dimensions.get('window').width);

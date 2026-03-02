@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator } from 'react-native-paper';
-import TabOneLine from '../../../../componentes/TabOneLine';
-import LoadingIcon from '../../../../componentes/LoadingIcon';
+import TabOneLine from '../../../../components/TabOneLine';
+import LoadingIcon from '../../../../components/LoadingIcon';
 import Api from '../../../../service/Api';
 
 

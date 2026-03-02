@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabOneLine from '../../../componentes/TabOneLine';
+import TabOneLine from '../../../components/TabOneLine';
 import Api from '../../../service/Api';
 
 export default ({ navigation, route }) => {

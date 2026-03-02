@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AppointmentModal from '../../../componentes/AppointmentModal';
+import AppointmentModal from '../../../components/AppointmentModal';
 import Api from '../../../service/Api';
 const image = require('../../../assets/image/slide/007_image.jpg')
 const icon = require('../../../assets/icons/brake.png')

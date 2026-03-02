@@ -130,10 +130,10 @@ export const GlobalProvider = ({ children }) => {
       if (!accessToken && !refreshToken) {
         setAuthentication(false)
       } else {
-        const tokenValidate = await Api.tokenkVerify(accessToken)
+        const tokenValidate = await Api.tokenVerify(accessToken)
         // Verify Token Is Not Valide and to Refresh Token
         if (tokenValidate.code === 401 && tokenValidate.message.code == "token_not_valid") {
-          const refresh = await Api.tokenkRefresh(refreshToken)
+          const refresh = await Api.tokenRefresh(refreshToken)
           // Verify if RefreshToken is not Valid
           if (refresh.code === 401 && refresh.message.code === "token_not_valid") {
             setAuthentication(false)

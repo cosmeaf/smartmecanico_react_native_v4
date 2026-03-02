@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabOneLine from '../../../componentes/TabOneLine';
-import LoadingIcon from '../../../componentes/LoadingIcon';
+import TabOneLine from '../../../components/TabOneLine';
+import LoadingIcon from '../../../components/LoadingIcon';
 import Api from '../../../service/Api';
 
 const SupplyDetails = ({ navigation, route }) => {

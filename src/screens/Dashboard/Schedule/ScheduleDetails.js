@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import TabOneLine from '../../../componentes/TabOneLine';
+import TabOneLine from '../../../components/TabOneLine';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
 

@@ -2,10 +2,10 @@ import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, Image, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LoadingIcon from '../../../componentes/LoadingIcon';
+import LoadingIcon from '../../../components/LoadingIcon';
 import GlobalContext from '../../../Contexts/Context';
 import Api from '../../../service/Api';
-import TabOneLine from '../../../componentes/TabOneLine';
+import TabOneLine from '../../../components/TabOneLine';
 
 
 const Supply = ({ navigation }) => {
